@@ -277,7 +277,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/27/untitled-1503836409292/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/03/基于create-react-app-快速搭建react项目/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -296,7 +296,165 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/08/27/untitled-1503836409292/" itemprop="url">XSS 和CSRF</a></h1>
+                <a class="post-title-link" href="/2017/09/03/基于create-react-app-快速搭建react项目/" itemprop="url">基于create-react-app快速搭建react项目</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-03T18:28:31+08:00">
+                2017-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h1><p>本身安装了nodejs，npm或者yarn</p>
+<pre><code>yarn global add create-react-app
+</code></pre><p>或者</p>
+<pre><code>npm install -g create-react-app
+</code></pre><h1 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h1><pre><code>create-react-app react-demo
+</code></pre><p><img src="/images/1504432144489.png" alt="image"></p>
+<p><img src="/images/1504432202611.png" alt="image"></p>
+<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>查看scripts 中可以执行等命令</p>
+<pre><code>npm run-script
+</code></pre><p><img src="/images/1504432536022.png" alt="image"></p>
+<p>我们可以猜想npm start 是开发模式下，启动服务热加载编译；npm run build 自然是编译程序</p>
+<p>执行</p>
+<pre><code>npm start 
+</code></pre><p>会发现自动打开了浏览器<a href="http://localhost:3000/" target="_blank" rel="external">http://localhost:3000/</a> 属于你等react web 已经出现了<br>可以打开App.js编写代码；<br>另外该开发套件本身没有包含react-router，你需要自己引入</p>
+<pre><code>yarn add react-router
+yarn add react-router-dom
+</code></pre><h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p><a href="https://github.com/su6838354/react-demo" target="_blank" rel="external">https://github.com/su6838354/react-demo</a></p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><p>这时候整个react项目已经搭建好了，不需要知道任何的webpack等工程化技术，在node_modules/react-scripts 目录下我们可以发现该开发套件的真谛。<br><img src="/images/1504432860140.png" alt="image"></p>
+<blockquote>
+<p>bin     执行react-scripts 命令的入口<br>config 根据环境变量和设置，webpack/环境/jest/polyfill等一些配置<br>scripts 各种脚本，编译,测试，初始化，开发等，为package.json中定义的scripts和最初创建项目的命令服务<br>temple 最初创建项目等时候 采用这套模版生成我们最初的项目</p>
+</blockquote>
+<p>在未来项目配置不符合你等需求等时候，可以查看 <a href="https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md" target="_blank" rel="external">https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md</a><br>修改配置以满足需求；</p>
+<p>比如 需要修改引入等js，css等相对路径，修改下自己等环境变量即可<br>export PUBLIC_URL=’/home/static/‘，当然还有其他方式比如修改package.json的homepage<br>参考<br><a href="https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#adding-assets-outside-of-the-module-system" target="_blank" rel="external">https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#adding-assets-outside-of-the-module-system</a></p>
+<p><img src="/images/1504434422598.png" alt="image"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://github.com/facebookincubator/create-react-app" target="_blank" rel="external">https://github.com/facebookincubator/create-react-app</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/27/XSS和CSRF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/08/27/XSS和CSRF/" itemprop="url">XSS 和CSRF</a></h1>
         
 
         <div class="post-meta">
@@ -797,7 +955,7 @@ hexo d
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -808,7 +966,7 @@ hexo d
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -819,7 +977,7 @@ hexo d
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
