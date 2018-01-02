@@ -93,18 +93,18 @@
 
 
 
-<meta name="description" content="通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，那么会有一个默">
+<meta name="description" content="C++构造函数通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，">
 <meta name="keywords" content="C++,书摘">
 <meta property="og:type" content="article">
 <meta property="og:title" content="构造函数语义学">
 <meta property="og:url" content="http://yoursite.com/2015/02/05/构造函数语义学/index.html">
 <meta property="og:site_name" content="苏远的博客">
-<meta property="og:description" content="通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，那么会有一个默">
+<meta property="og:description" content="C++构造函数通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-02T14:40:44.000Z">
+<meta property="og:updated_time" content="2018-01-02T15:00:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="构造函数语义学">
-<meta name="twitter:description" content="通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，那么会有一个默">
+<meta name="twitter:description" content="C++构造函数通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，">
 
 
 
@@ -363,7 +363,7 @@
       
 
       
-        <p>通常很多C++程序员存在两种误解：</p>
+        <h2 id="C-构造函数"><a href="#C-构造函数" class="headerlink" title="C++构造函数"></a>C++构造函数</h2><p>通常很多C++程序员存在两种误解：</p>
 <ul>
 <li>没有定义默认构造函数的类都会被编译器生成一个默认构造函数。</li>
 <li>编译器生成的默认构造函数会明确初始化类中每一个数据成员。</li>
@@ -386,6 +386,43 @@
 - 如果类包含带有默认构造函数的对象成员，那么编译器将会为所有的构造函数插入对这些对象成员的默认构造函数进行必要的调用代码，所谓必要是指类设计者设计的构造函数没有对对象成员进行显式初始化。成员对象默认构造函数的调用顺序，依照其声明顺序。
 - 若类没有定义任何构造函数，编译器会为其合成默认构造函数，再执行上述四点。
 </code></pre><p>需要说明的是，从概念来上来讲，每一个没有定义构造函数的类都会由编译器来合成一个默认构造函数，以使得可以定义一个该类的对象，但是默认构造函数是否真的会被合成，将视是否有需要而定。C++ standard 将合成的默认构造函数分为 trivial 和 notrivial 两种，前文所述的四种情况对应于notrivial默认构造函数，其它情况都属于trivial。对于一个trivial默认构造函数，编译器的态度是，既然它全无用处，干脆就不合成它。在这儿要厘清的是概念与实现的差别，概念上追求缜密完善，在实现上则追求效率，可以不要的东西就不要。</p>
+<h2 id="拷贝构造函数（copy-constuctor）"><a href="#拷贝构造函数（copy-constuctor）" class="headerlink" title="拷贝构造函数（copy constuctor）"></a>拷贝构造函数（copy constuctor）</h2><p>通常C++初级程序员会认为当一个类为没有定义拷贝构造函数的时候，编译器会为其合成一个，答案是否定的。<code>编译器只有在必要的时候在合成拷贝构造函数</code>。<br>那么编译器什么时候合成，什么时候不合成，合成的拷贝构造函数在不同情况下分别如何工作呢？这是本文的重点。</p>
+<h3 id="拷贝构造函数的定义"><a href="#拷贝构造函数的定义" class="headerlink" title="拷贝构造函数的定义"></a>拷贝构造函数的定义</h3><p>有一个参数的类型是其类类型的构造函数是为拷贝构造函数。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">X::X( const X&amp; x);</div><div class="line">Y::Y( const Y&amp; y, int =0 );</div><div class="line">//可以是多参数形式，但其第二个即后继参数都有一个默认值拷贝构造函数的应用</div></pre></td></tr></table></figure>
+<p>当一个类对象以另一个同类实体作为初值时，大部分情况下会调用拷贝构造函数。一般是这三种具体情况：</p>
+<ul>
+<li>显式地以一个类对象作为另一个类对象的初值，形如X xx=x;</li>
+<li>当类对象被作为参数交给函数时。</li>
+<li>当函数返回一个类对象时。<br>后两种情形会产生一个临时对象。</li>
+</ul>
+<h3 id="编译器何时合成拷贝构造函数"><a href="#编译器何时合成拷贝构造函数" class="headerlink" title="编译器何时合成拷贝构造函数"></a>编译器何时合成拷贝构造函数</h3><p>并不是所有未定义有拷贝构造函数的类编译器都会为其合成拷贝构造函数，编译器<code>只有在必要的时候才会为其合成拷贝构造函数</code>。所谓必要的时刻是指编译器在普通手段无法完成解决“当一个类对象以另一个同类实体作为初值”时，才会合成拷贝构造函数。也就是说，当常规武器能解决问题的时候，就没必要动用非常规武器。</p>
+<p>如果一个类<code>没有定义拷贝构造函数</code>，通常按照<code>“成员逐一初始化(DefaultMemberwise Initialization)”的手法来解决“一个类对象以另一个同类实体作为初值”</code>——也就是说把内建或派生的数据成员从某一个对象拷贝到另一个对象身上，如果数据成员是一个对象，则递归使用“成员逐一初始化(Default MemberwiseInitialization)”的手法。</p>
+<p>成员逐一初始化(Default Memberwise Initialization)具体的实现方式则是位逐次拷贝（Bitwise copy semantics）[^注1]。也就是说在能使用这种常规方式来解决“一个类对象以另一个同类实体作为初值”的时候，编译器是不需要合成拷贝构造函数的。但有些时候常规武器不那么管用，我们就得祭出非常规武器了——拷贝构造函数。有以下几种情况之一，位逐次拷贝将不能胜任或者不适合来完成“一个类对象以另一个同类实体作为初值”的工作。此时，如果类没有定义拷贝构造函数，那么编译器将必须<code>为类合成一个拷贝构造函数</code>。</p>
+<ul>
+<li>当类内含一个成员对象，而后者的类声明有一个拷贝构造函数时（不论是设计者定义的还是编译器合成的）。</li>
+<li>当类继承自一个声明有拷贝构造函数的类时（同样，不论这个拷贝构造函数是被显示声明还是由编译器合成的）。</li>
+<li>类中声明有虚函数。</li>
+<li>当类的派生串链中包含有一个或多个虚基类。</li>
+</ul>
+<p>对于前两种情况，不论是基类还是对象成员，既然后者声明有拷贝构造函数时，就表明其类的设计者或者编译器希望以其声明的拷贝构造函数来完成“一个类对象以另一个同类实体作为初值”的工作，而设计者或编译器这样做——声明拷贝构造函数，总有它们的理由，而通常最直接的原因莫过于因为他们想要做一些额外的工作或“位逐次拷贝”无法胜任。</p>
+<p>对于有虚函数的类，如果两个对象的类型相同那么位逐次拷贝其实是可以胜任的。但问题将出现在，如果基类由其继承类进行初始化时，此时若按照位逐次拷贝来完成这个工作，那么基类的vptr将指向其继承类的虚函数表，这将导致无法预料的后果——调用一个错误的虚函数实体是无法避免的，轻则带来程序崩溃，更糟糕的问题可能是这个错误被隐藏了。所以对于有虚函数的类编译器将会明确的使被初始化的对象的vptr指向正确的虚函数表。因此有虚函数的类没有声明拷贝构造函数，编译将为之合成一个，来完成上述工作，以及初始化各数据成员，声明有拷贝构造函数的话也会被插入完成上述工作的代码。</p>
+<p>对于继承串链中有虚基类的情况，问题同样出现在继承类向基类提供初值的情况，此时位逐次拷贝有可能破坏对象中虚基类子对象的位置。</p>
+<h2 id="命名返回值优化和成员初始化队列"><a href="#命名返回值优化和成员初始化队列" class="headerlink" title="命名返回值优化和成员初始化队列"></a>命名返回值优化和成员初始化队列</h2><h3 id="命名返回值优化"><a href="#命名返回值优化" class="headerlink" title="命名返回值优化"></a>命名返回值优化</h3><p>对于一个如foo()这样的函数，它的每一个返回分支都返回相同的对象，编译器有可能对其做Named return Value优化（下文都简称NRV优化），方法是以一个参数result取代返回对象。</p>
+<p>foo()的原型：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">X foo() </div><div class="line">&#123; </div><div class="line">    X xx; </div><div class="line">    if(...) </div><div class="line">        return xx; </div><div class="line">    else </div><div class="line">        return xx; </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>优化后的foo()以result取代xx：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">void  foo(X &amp;result)</div><div class="line">&#123;</div><div class="line">    result.X::X();</div><div class="line">    if(...)</div><div class="line">    &#123;</div><div class="line">        //直接处理result</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    else</div><div class="line">    &#123;</div><div class="line">        //直接处理result</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>对比优化前与优化后的代码可以看出，对于一句类似于X a = foo()这样的代码，NRV优化后的代码相较于原代码节省了一个临时对象的空间（省略了xx）,同时减少了两次函数调用（减少xx对象的默认构造函数和析构函数，以及一次拷贝构造函数的调用，增加了一次对a的默认构造函数的调用）。</p>
+<p>注：Lippman在《深度探索C++》书中指出NRV的开启与关闭取决于是否有显式定义一个拷贝构造函数，我实在想不出有什么理由必须要有显示拷贝构造函数才能开启NRV优化，于是在vs2010中进行了测试，测试结果表明，在release版本中，不论是否定义了一个显式拷贝构造函数，NRV都会开启。由此可见vs2010并不以是否有一个显式拷贝构造函数来决定NRV优化的开启与否。但同时，立足于这一点，可以得出Lippman所说的以是否有一个显式定义的拷贝构造函数来决定是否<br>开启NRV优化，应该指的是他自己领导实现的cfront编译器，而非泛指所有编译器。那么cfront又为什么要以是否定义有显示的拷贝构造函数来决定是否开启NRV优化呢？我猜测，他大概这样以为，当显式定义有拷贝构造函数的时候一般代表着要进行深拷贝，也就是说此时的拷贝构造函数将费时较长，在这样的情况下NRV优化才会有明显的效果。反之，不开启NRV优化也不是什么大的效率损失。</p>
+<p>另外，有一点要注意的是，NRV优化，有可能带来程序员并不想要的结果，最明显的一个就是——当你的类依赖于构造函数或拷贝构造函数，甚至析构函数的调用次数的时候，想想那会发生什么。由此可见、Lippman的cfront对NRV优化抱有更谨慎的态度，而MS显然是更大胆。</p>
+<h3 id="成员初始化队列（Member-Initialization-List）"><a href="#成员初始化队列（Member-Initialization-List）" class="headerlink" title="成员初始化队列（Member Initialization List）"></a>成员初始化队列（Member Initialization List）</h3><p>对于初始化队列，我相信厘清一个概念是非常重要的：在构造函数中对于对象成员的初始化发生在初始化队列中——或者我们可以把初始化队列直接看做是对成员的定义，而构造函数体中进行的则是赋值操作。所以不难理解有四种情况<br>必须用到初始化列表：</p>
+<ul>
+<li>有const成员</li>
+<li>有引用类型成员</li>
+<li>成员对象没有默认构造函数</li>
+<li>基类对象没有默认构造函数</li>
+</ul>
+<p>前两者因为要求定义时初始化，所以必须明确的在初始化队列中给它们提供初值。后两者因为不提供默认构造函数，所有必须显示的调用它们的带参构造函数来定义即初始化它们。</p>
+<p>显而易见的是当类中含有对象成员或者继承自基类的时候，在初始化队列中初始化成员对象和基类子对象会在效率上得到提升——省去了一些赋值操作嘛。</p>
+<p>最后，一个关于初始化队列众所周知的陷阱，初始化队列的顺序，请参考《C++primer》或者《深度探索C++对象模型》。</p>
 
       
     </div>
@@ -440,8 +477,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/23/hello-world/" rel="prev" title="Hello World">
-                Hello World <i class="fa fa-chevron-right"></i>
+              <a href="/2015/03/02/Data语意学/" rel="prev" title="Data 语意学">
+                Data 语意学 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -515,7 +552,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -572,7 +609,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#包含有带默认构造函数的对象成员的类"><span class="nav-number">1.</span> <span class="nav-text">包含有带默认构造函数的对象成员的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承自带有默认构造函数的基类的类"><span class="nav-number">2.</span> <span class="nav-text">继承自带有默认构造函数的基类的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有虚函数的类"><span class="nav-number">3.</span> <span class="nav-text">带有虚函数的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有一个虚基类的类"><span class="nav-number">4.</span> <span class="nav-text">带有一个虚基类的类</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-构造函数"><span class="nav-number">1.</span> <span class="nav-text">C++构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#包含有带默认构造函数的对象成员的类"><span class="nav-number">1.1.</span> <span class="nav-text">包含有带默认构造函数的对象成员的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承自带有默认构造函数的基类的类"><span class="nav-number">1.2.</span> <span class="nav-text">继承自带有默认构造函数的基类的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有虚函数的类"><span class="nav-number">1.3.</span> <span class="nav-text">带有虚函数的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有一个虚基类的类"><span class="nav-number">1.4.</span> <span class="nav-text">带有一个虚基类的类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拷贝构造函数（copy-constuctor）"><span class="nav-number">2.</span> <span class="nav-text">拷贝构造函数（copy constuctor）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#拷贝构造函数的定义"><span class="nav-number">2.1.</span> <span class="nav-text">拷贝构造函数的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译器何时合成拷贝构造函数"><span class="nav-number">2.2.</span> <span class="nav-text">编译器何时合成拷贝构造函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命名返回值优化和成员初始化队列"><span class="nav-number">3.</span> <span class="nav-text">命名返回值优化和成员初始化队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命名返回值优化"><span class="nav-number">3.1.</span> <span class="nav-text">命名返回值优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成员初始化队列（Member-Initialization-List）"><span class="nav-number">3.2.</span> <span class="nav-text">成员初始化队列（Member Initialization List）</span></a></li></ol></li></ol></div>
             
 
           </div>

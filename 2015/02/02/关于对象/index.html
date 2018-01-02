@@ -105,7 +105,7 @@
 <meta property="og:image" content="http://yoursite.com/images/cpp/cpp_2.png">
 <meta property="og:image" content="http://yoursite.com/images/cpp/cpp_3.png">
 <meta property="og:image" content="http://yoursite.com/images/cpp/cpp_3.png">
-<meta property="og:updated_time" content="2018-01-02T14:23:51.000Z">
+<meta property="og:updated_time" content="2018-01-02T15:02:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于对象">
 <meta name="twitter:description" content="C++的额外成本C++较之C的最大区别，无疑在于面向对象。类相较于C的struct不仅只包含了数据，同时还包括了对于数据的操作。在语言层面上C++带来了很多面向对象的新特性，类、继承、多态等等。新特性使得C++更加强大，但同时却伴随着空间布局和存取时间的额外成本。作为一个以效率为目标的语言，C++对于面向对象的实现，其实不大，这些额外成本主要由virtual引起，包括： virtual funct">
@@ -370,27 +370,30 @@
       
         <h2 id="C-的额外成本"><a href="#C-的额外成本" class="headerlink" title="C++的额外成本"></a>C++的额外成本</h2><p>C++较之C的最大区别，无疑在于面向对象。类相较于C的struct不仅只包含了数据，同时还<br>包括了对于数据的操作。在语言层面上C++带来了很多面向对象的新特性，类、继承、多态<br>等等。新特性使得C++更加强大，但同时却伴随着空间布局和存取时间的额外成本。作为一<br>个以效率为目标的语言，C++对于面向对象的实现，其实不大，这些额外成本主要由<br>virtual引起，包括：</p>
 <p>virtual function 机制，用来支持“执行期绑定”。<br>virtual base class ——虚基类机制，以实现共享虚基类的 subobject。<br>除此之外C++没有太多理由比C迟缓。</p>
-<h2 id="三种对象模型"><a href="#三种对象模型" class="headerlink" title="三种对象模型"></a>三种对象模型</h2><p>C++类包含两种数据成员：静态数据成员和非静态数据成员；同时包含成员函数，静态函数<br>和虚函数三种成员函数，这些机制在C++对象是如何被表现的？下面有三种模型可以用以表<br>现它们——简单对象模型、表格驱动对象模型以及C++对象模型。也许你没兴趣去了解有几种<br>方式可以实现C++的对象模型，只想了解C++对象模型。然则，<code>C++对象模型是在前两种对象
-模型上发展而来的，甚至于局部上直接用到前两种对象模型</code>。</p>
+<h2 id="三种对象模型"><a href="#三种对象模型" class="headerlink" title="三种对象模型"></a>三种对象模型</h2><p>C++类包含两种数据成员：静态数据成员和非静态数据成员；同时包含成员函数，静态函数和虚函数三种成员函数，这些机制在C++对象是如何被表现的？下面有三种模型可以用以表现它们——简单对象模型、表格驱动对象模型以及C++对象模型。也许你没兴趣去了解有几种方式可以实C++的对象模型，只想了解C++对象模型。然则，<code>C++对象模型是在前两种对象模型上发展而来的，甚至于局部上直接用到前两种对象模型</code>。</p>
 <p>假定有一个Point类，我们将用三种对象模型来表现它。Point类如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">class Point  </div><div class="line">&#123;  </div><div class="line">public:  </div><div class="line">    Point( float xval ); </div><div class="line">    virtual ~Point();      </div><div class="line">    float x() const;  </div><div class="line">    static int PointCount();  </div><div class="line">protected:  </div><div class="line">    virtual ostream&amp;  print( ostream &amp;os ) const;</div><div class="line">    float _x;  </div><div class="line">    static int _point_count;  </div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<h3 id="简单对象模型"><a href="#简单对象模型" class="headerlink" title="简单对象模型"></a>简单对象模型</h3><p>简单对象模型：一个C++对象<code>存储了所有指向成员的指针</code>，而成员本身<code>不存储</code>在对象中。也<br>就是说不论数据成员还是成员函数，也不论这个是普通成员函数还是虚函数，它们都存储<br>在对象本身之外，同时对象保存指向它们的指针。</p>
+<h3 id="简单对象模型"><a href="#简单对象模型" class="headerlink" title="简单对象模型"></a>简单对象模型</h3><p>简单对象模型：一个C++对象<code>存储了所有指向成员的指针</code>，而成员本身<code>不存储</code>在对象中。也就是说不论数据成员还是成员函数，也不论这个是普通成员函数还是虚函数，它们都存储在对象本身之外，同时对象保存指向它们的指针。</p>
 <p><img src="/images/cpp/cpp_1.png" alt="image"></p>
-<p>简单对象模型对于编译器来说虽然极尽简单,但同时付出的代价是空间和执行期的效率.显而<br>易见的是对于每一个成员都要额外搭上一个指针大小的空间以及对于每成员的操作都增加了<br>一个间接层。因此<code>C++并没有采用这样一种对象模型</code>，但是被用到了C++中“指向成员的指针”<br>的概念当中。</p>
+<p>简单对象模型对于编译器来说虽然极尽简单,但同时付出的代价是空间和执行期的效率.显而易见的是对于每一个成员都要额外搭上一个指针大小的空间以及对于每成员的操作都增加了一个间接层。因此<code>C++并没有采用这样一种对象模型</code>，但是被用到了C++中“指向成员的指针”的概念当中。</p>
 <h3 id="表格驱动对象模型"><a href="#表格驱动对象模型" class="headerlink" title="表格驱动对象模型"></a>表格驱动对象模型</h3><p><img src="/images/cpp/cpp_2.png" alt="image"></p>
-<p>表格驱动模型则更绝，它将对象中所有的成员都抽离出来<code>在外建表</code>，而对象本身只存储指向<br>这个表的指针。右图可以看到，它将所有的数据成员抽离出来建成数据成员表，将所有的函<br>数抽取出来建成一张函数成员表，而对象本身只保持一个指向<code>数据成员表</code>的指针。</p>
-<p>侯大大认为，在对象与成员函数表中间应当加一个虚箭头，他认为这是Lippman的疏漏之处，<br>应当在对象中保存指向函数成员表的指针。</p>
-<p>然而我在这儿还是保留原书（而非译本）的截图，因为以我之拙见，不保存指向成员函数表<br>的指针也没有妨碍。因为形如float Point::x()的成员函数实际上相当于float x(Point*)<br>类型的普通函数，因此保存指向成员函数表的指针当属多此一举。</p>
+<p>表格驱动模型则更绝，它将对象中所有的成员都抽离出来<code>在外建表</code>，而对象本身只存储指向这个表的指针。右图可以看到，它将所有的数据成员抽离出来建成数据成员表，将所有的函数抽取出来建成一张函数成员表，而对象本身只保持一个指向<code>数据成员表</code>的指针。</p>
+<p>侯大大认为，在对象与成员函数表中间应当加一个虚箭头，他认为这是Lippman的疏漏之处，应当在对象中保存指向函数成员表的指针。</p>
+<p>然而我在这儿还是保留原书（而非译本）的截图，因为以我之拙见，不保存指向成员函数表的指针也没有妨碍。因为形如float Point::x()的成员函数实际上相当于float x(Point*)类型的普通函数，因此保存指向成员函数表的指针当属多此一举。</p>
 <p>当然<code>C++也没有采用这一种对象模型</code>，但C++却以此模型作为支持虚函数的方案。</p>
-<h3 id="C-对象模型"><a href="#C-对象模型" class="headerlink" title="C++对象模型"></a>C++对象模型</h3><p>所有的<code>非静态数据</code>成员存储在<code>对象本身</code>中。所有的<code>静态数据成员</code>、<code>成员函数（包括静态与非
-静态）</code>都置于<code>对象之外</code>。另外，用一张<code>虚函数表（virtual table)</code>存储所有指向虚函数的指<br>针，并在表头附加上一个该类的type_info对象，在对象中则保存一个指向虚函数表的指<br>针。如下图：</p>
+<h3 id="C-对象模型"><a href="#C-对象模型" class="headerlink" title="C++对象模型"></a>C++对象模型</h3><p>所有的<code>非静态数据</code>成员存储在<code>对象本身</code>中。所有的<code>静态数据成员</code>、<code>成员函数（包括静态与非静态）</code>都置于<code>对象之外</code>。另外，用一张<code>虚函数表（virtual table)</code>存储所有指向虚函数的指针，并在表头附加上一个该类的type_info对象，在对象中则保存一个指向虚函数表的指针。如下图：</p>
 <p><img src="/images/cpp/cpp_3.png" alt="image"></p>
-<h2 id="class和struct"><a href="#class和struct" class="headerlink" title="class和struct"></a>class和struct</h2><p>按照lippman的意思是，struct仅仅是给想学习C++的C程序员攀上高峰少一点折磨。但遗憾的<br>是当我开始学C++的时候这个问题给我带来更多的疑惑。以我的认识class与struct仅限一个<br>默认的权限（后者为public前者为private）的不同。有时我甚至觉得只有一点畸形，他们不<br>应当如此的相像，我甚至认为struct不应该被扩充，仅仅保存它在C中的原意就好了。[实际上struct还要复杂一点，它有时表现的会和C struct完全一样，有时则会成为<br>class的胞兄弟。]</p>
+<h2 id="class和struct"><a href="#class和struct" class="headerlink" title="class和struct"></a>class和struct</h2><p>按照lippman的意思是，struct仅仅是给想学习C++的C程序员攀上高峰少一点折磨。但遗憾的是当我开始学C++的时候这个问题给我带来更多的疑惑。以我的认识class与struct仅限一个默认的权限（后者为public前者为private）的不同。有时我甚至觉得只有一点畸形，他们不应当如此的相像，我甚至认为struct不应该被扩充，仅仅保存它在C中的原意就好了。[实际上struct还要复杂一点,它有时表现的会和C struct完全一样，有时则会成为class的胞兄弟。]</p>
 <p>一个有意思的C技巧（但别在C++中使用）</p>
 <p>在C中将一个一个元素的数组放在struct的末尾，可以令每个struct的对象拥有可变数组。<br>看代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">struct mumble &#123;  </div><div class="line">    /* stuff */  </div><div class="line">    char pc[ 1 ];  </div><div class="line">&#125;;  </div><div class="line">// grab a string from file or standard input  </div><div class="line">// allocate memory both for struct &amp; string  </div><div class="line">struct mumble *pmumb1 = ( struct mumble* )  </div><div class="line">    malloc(sizeof(struct mumble)+strlen(string)+1);  </div><div class="line">strcpy( &amp;mumble.pc, string );</div></pre></td></tr></table></figure></p>
 <p>这是一个很有意思的小技巧，但是别在C++中使用。因为C++的内存布局相对复杂。例如被继<br>承，有虚函数… 问题将不可避免的发生。</p>
-<h2 id="三种编程典范"><a href="#三种编程典范" class="headerlink" title="三种编程典范"></a>三种编程典范</h2><p>程序模型<br>ADT模型<br>面向对象模型<br>纯粹使用一种典范编程，有莫大的好处，如果混杂多种典范编程有可能带来意想不到的后果<br>，例如将继承类的对象赋值给基类对象，而妄想实现多态，便是一种ADT模型和面向对象模型<br>混合编程带来严重后果的例子。</p>
-<h2 id="一个类的对象的内存大小包括："><a href="#一个类的对象的内存大小包括：" class="headerlink" title="一个类的对象的内存大小包括："></a>一个类的对象的内存大小包括：</h2><p>所有非静态数据成员的大小。<br>由内存对齐而填补的内存大小。<br>为了支持virtual有内部产生的额外负担。<br>如下类：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">class ZooAnimal &#123;  </div><div class="line">public:  </div><div class="line">    ZooAnimal();  </div><div class="line">    virtual ~ZooAnimal();  </div><div class="line">    virtual void rotate();  </div><div class="line">protected:  </div><div class="line">    int loc;  </div><div class="line">    String name;  </div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>在32位计算机上所占内存为16字节：int四字节，String8字节（一个表示长度的整形，一个<br>指向字符串的指针），以及一个指向虚函数表的指针vptr。对于继承类则为基类的内存大小<br>加上本身数据成员的大小。在cfront中其内存布局如下图：</p>
+<h2 id="三种编程典范"><a href="#三种编程典范" class="headerlink" title="三种编程典范"></a>三种编程典范</h2><p>程序模型<br>ADT模型<br>面向对象模型<br>纯粹使用一种典范编程，有莫大的好处，如果混杂多种典范编程有可能带来意想不到的后果，例如将继承类的对象赋值给基类对象，而妄想实现多态，便是一种ADT模型和面向对象模型混合编程带来严重后果的例子。</p>
+<h2 id="一个类的对象的内存大小包括："><a href="#一个类的对象的内存大小包括：" class="headerlink" title="一个类的对象的内存大小包括："></a>一个类的对象的内存大小包括：</h2><ul>
+<li>所有非静态数据成员的大小。</li>
+<li>由内存对齐而填补的内存大小。</li>
+<li>为了支持virtual有内部产生的额外负担。<br>如下类：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">class ZooAnimal &#123;  </div><div class="line">public:  </div><div class="line">    ZooAnimal();  </div><div class="line">    virtual ~ZooAnimal();  </div><div class="line">    virtual void rotate();  </div><div class="line">protected:  </div><div class="line">    int loc;  </div><div class="line">    String name;  </div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在32位计算机上所占内存为16字节：int四字节，String8字节（一个表示长度的整形，一个指向字符串的指针），以及一个指向虚函数表的指针vptr。对于继承类则为基类的内存大小加上本身数据成员的大小。在cfront中其内存布局如下图：</p>
 <p><img src="/images/cpp/cpp_3.png" alt="对象的内存布局"></p>
 
       
@@ -517,7 +520,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
