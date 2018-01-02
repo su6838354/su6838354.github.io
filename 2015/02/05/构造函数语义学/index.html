@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="nodejs,hexo," />
+  <meta name="keywords" content="C++,书摘," />
 
 
 
@@ -93,28 +93,18 @@
 
 
 
-<meta name="description" content="github上建立个人主页 到github上建立个人主页仓库       注意仓库名字必须是你的 个人用户名.github.is   这时候你可以访问你的github个人主页了  参考    https://pages.github.com/    hexo写博客 本地有nodejs环境，安装hexo-cli  npm install -g hexo-cli  参考hexo中文   用hexo建立">
-<meta name="keywords" content="nodejs,hexo">
+<meta name="description" content="通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，那么会有一个默">
+<meta name="keywords" content="C++,书摘">
 <meta property="og:type" content="article">
-<meta property="og:title" content="搭建自己的个人博客">
-<meta property="og:url" content="http://yoursite.com/2017/08/25/github-hexo搭建自己的博客/index.html">
+<meta property="og:title" content="构造函数语义学">
+<meta property="og:url" content="http://yoursite.com/2015/02/05/构造函数语义学/index.html">
 <meta property="og:site_name" content="苏远的博客">
-<meta property="og:description" content="github上建立个人主页 到github上建立个人主页仓库       注意仓库名字必须是你的 个人用户名.github.is   这时候你可以访问你的github个人主页了  参考    https://pages.github.com/    hexo写博客 本地有nodejs环境，安装hexo-cli  npm install -g hexo-cli  参考hexo中文   用hexo建立">
+<meta property="og:description" content="通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，那么会有一个默">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/images/1503591079880.png">
-<meta property="og:image" content="http://yoursite.com/images/1503591185611.png">
-<meta property="og:image" content="http://yoursite.com/images/1503591377977.png">
-<meta property="og:image" content="http://yoursite.com/images/1503592345617.png">
-<meta property="og:image" content="http://yoursite.com/images/1503592386857.png">
-<meta property="og:image" content="http://yoursite.com/images/1503592858550.png">
-<meta property="og:image" content="http://yoursite.com/images/1503593100609.png">
-<meta property="og:image" content="http://yoursite.com/images/1503593191977.png">
-<meta property="og:image" content="http://yoursite.com/images/1503593344161.png">
-<meta property="og:updated_time" content="2017-08-24T17:15:44.000Z">
+<meta property="og:updated_time" content="2018-01-02T14:40:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="搭建自己的个人博客">
-<meta name="twitter:description" content="github上建立个人主页 到github上建立个人主页仓库       注意仓库名字必须是你的 个人用户名.github.is   这时候你可以访问你的github个人主页了  参考    https://pages.github.com/    hexo写博客 本地有nodejs环境，安装hexo-cli  npm install -g hexo-cli  参考hexo中文   用hexo建立">
-<meta name="twitter:image" content="http://yoursite.com/images/1503591079880.png">
+<meta name="twitter:title" content="构造函数语义学">
+<meta name="twitter:description" content="通常很多C++程序员存在两种误解：  没有定义默认构造函数的类都会被编译器生成一个默认构造函数。 编译器生成的默认构造函数会明确初始化类中每一个数据成员。  在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默认构造函数一探究竟。 C++标准规定：如果类的设计者并未为类定义任何构造函数，那么会有一个默">
 
 
 
@@ -142,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/08/25/github-hexo搭建自己的博客/"/>
+  <link rel="canonical" href="http://yoursite.com/2015/02/05/构造函数语义学/"/>
 
 
 
 
 
-  <title>搭建自己的个人博客 | 苏远的博客</title>
+  <title>构造函数语义学 | 苏远的博客</title>
   
 
 
@@ -287,7 +277,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/25/github-hexo搭建自己的博客/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/02/05/构造函数语义学/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -304,7 +294,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">搭建自己的个人博客</h1>
+          <h1 class="post-title" itemprop="name headline">构造函数语义学</h1>
         
 
         <div class="post-meta">
@@ -316,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-25T00:02:42+08:00">
-                2017-08-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-02-05T23:27:07+08:00">
+                2015-02-05
               </time>
             
 
@@ -339,8 +329,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工具/" itemprop="url" rel="index">
-                    <span itemprop="name">工具</span>
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
                   </a>
                 </span>
 
@@ -373,75 +363,29 @@
       
 
       
-        <h1 id="github上建立个人主页"><a href="#github上建立个人主页" class="headerlink" title="github上建立个人主页"></a>github上建立个人主页</h1><ul>
-<li><p>到github上建立个人主页仓库<br>  <img src="/images/1503591079880.png" alt="image"></p>
-<p>  <img src="/images/1503591185611.png" alt="image"></p>
-<blockquote>
-<p>注意仓库名字必须是你的 <code>个人用户名.github.is</code></p>
-</blockquote>
-</li>
-<li><p>这时候你可以访问你的github个人主页了<br><img src="/images/1503591377977.png" alt="image"></p>
-<blockquote>
-<p>参考    <a href="https://pages.github.com/" target="_blank" rel="external">https://pages.github.com/</a></p>
-</blockquote>
-</li>
-</ul>
-<h1 id="hexo写博客"><a href="#hexo写博客" class="headerlink" title="hexo写博客"></a>hexo写博客</h1><ul>
-<li><p>本地有nodejs环境，安装hexo-cli </p>
-<pre><code>npm install -g hexo-cli
-</code></pre><blockquote>
-<p>参考<a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="external">hexo中文</a></p>
-</blockquote>
-</li>
-<li><p>用hexo建立自己的博客项目<a href="https://hexo.io/zh-cn/docs/setup.html" target="_blank" rel="external">https://hexo.io/zh-cn/docs/setup.html</a></p>
-<pre><code>hexo init yourname
-cd yourname
-npm install
-</code></pre></li>
-<li><p>hexo中配置github账户，可自动发布；以文本编辑器打开_config.yml文件，并滚动到最下面添加如下配置信息，如又该字段，修改为你自己的github仓库</p>
-<pre><code># Deployment
-## Docs: https://hexo.io/docs/deployment.html
-deploy:
-  type: git
-  repo: https://github.com/su6838354/su6838354.github.io.git
-  branch: master
-</code></pre></li>
-<li><p>预览hexo中的博客</p>
-<pre><code>hexo s
-</code></pre><p> <img src="/images/1503592345617.png" alt="image"></p>
-<p> <img src="/images/1503592386857.png" alt="image"></p>
-</li>
-<li><p>编译发布</p>
-<pre><code>hexo clean
-hexo g
-hexo d
-</code></pre><p>此时会提示要求你输入github 的账户密码，使用邮箱为账户的正常输入邮箱即可</p>
-</li>
-<li><p>到githu仓库可以看到提交的编译的博客文章，打开自己的主页<a href="https://su6838354.github.io" target="_blank" rel="external">https://su6838354.github.io</a>也可以看到初始化的博客</p>
-</li>
-</ul>
-<h1 id="hexo换主题"><a href="#hexo换主题" class="headerlink" title="hexo换主题"></a>hexo换主题</h1><ul>
-<li>换个next主题<a href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="external">https://github.com/iissnan/hexo-theme-next</a></li>
-</ul>
-<h1 id="hexo写博客-1"><a href="#hexo写博客-1" class="headerlink" title="hexo写博客"></a>hexo写博客</h1><ul>
-<li><p>用hey，<a href="https://github.com/nihgwu/hexo-hey" target="_blank" rel="external">https://github.com/nihgwu/hexo-hey</a>图片可以直接截图后粘贴到编辑器中，改下url中到域名为下图</p>
-<p>  <img src="/images/1503592858550.png" alt="image"></p>
-<p>  写完后正常 hexo clean， hexo g， hexo d</p>
-</li>
-</ul>
-<h1 id="域名绑定"><a href="#域名绑定" class="headerlink" title="域名绑定"></a>域名绑定</h1><p>不想用<a href="https://su6838354.github.io" target="_blank" rel="external">https://su6838354.github.io</a>  ，想换成<a href="http://blog.suleyan.com/" target="_blank" rel="external">http://blog.suleyan.com/</a></p>
+        <p>通常很多C++程序员存在两种误解：</p>
 <ul>
-<li><p>到阿里云申请个域名</p>
-</li>
-<li><p>解析域名到github到个人主页上<br><img src="/images/1503593100609.png" alt="image"><br><img src="/images/1503593191977.png" alt="image"></p>
-</li>
-<li><p>github个人主页添加CNAME配置<br>在hexo项目的source下面添加CNAME<br><img src="/images/1503593344161.png" alt="image"><br>重新编译发布<br>再次访问<a href="https://su6838354.github.io" target="_blank" rel="external">https://su6838354.github.io</a> 会自动转到<a href="http://blog.suleyan.com/" target="_blank" rel="external">http://blog.suleyan.com/</a></p>
-<blockquote>
-<p>注意cnd域名解析可能又延迟生效</p>
-</blockquote>
-</li>
+<li>没有定义默认构造函数的类都会被编译器生成一个默认构造函数。</li>
+<li>编译器生成的默认构造函数会明确初始化类中每一个数据成员。</li>
 </ul>
-<p>参考<br><a href="http://xiaopingblog.cn/2016/04/08/untitled-1460084538799/" target="_blank" rel="external">http://xiaopingblog.cn/2016/04/08/untitled-1460084538799/</a><br><a href="http://www.worldhello.net/gotgithub/03-project-hosting/050-homepage.html" target="_blank" rel="external">http://www.worldhello.net/gotgithub/03-project-hosting/050-homepage.html</a><br><a href="https://segmentfault.com/a/1190000003101692" target="_blank" rel="external">https://segmentfault.com/a/1190000003101692</a></p>
+<p>在读《深度探索C++对象模型》之前，我一直停留在上述二种误解上，所幸的是<br>Lippman为我破除了。下面的部分我将随《深度探索C++对象模型》对C++默<br>认构造函数一探究竟。</p>
+<p>C++标准规定：如果类的设计者并未为类定义任何构造函数，那么会有一个默认<br>构造函数被暗中生成，而这个暗中生成的默认构造函数通常是不做什么事的(无<br>用的)，下面四种情况除外。</p>
+<p>换句话说，<code>有以下四种情况编译器必须为未声明构造函数的类生成一个会做点事
+的默认构造函数</code>。我们会看到这些默认构造函数仅“忠于编译器”，而可能不会按<br>照程序员的意愿程效命。</p>
+<h3 id="包含有带默认构造函数的对象成员的类"><a href="#包含有带默认构造函数的对象成员的类" class="headerlink" title="包含有带默认构造函数的对象成员的类"></a>包含有带默认构造函数的对象成员的类</h3><p>若一个类X没有定义任何构造函数，但却包含一个或以上定义有默认构造函数的对象成员，此时编译器会为X合成默认构造函数，该默认函数会调用对象成员的默认构造函数为之初始化。如果对象的成员没有定义默认构造函数，那么编译器合成的默认构造函数将不会为之提供初始化。例如类A包含两个数据成员对象，分别为：string str和char <em>Cstr，那么编译器生成的默认构造函数将只提<br>供对string类型成员的初始化，而不会提供对char</em>类型的初始化。</p>
+<p>假如类X的设计者为X定义了默认的构造函数来完成对str的初始化，形如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">A::A()&#123;Cstr=”hello”&#125;</div></pre></td></tr></table></figure></p>
+<p>因为默认构造函数已经定义，编译器将不能再生成一个默认构造函数。但是编译器将会扩充程序员定义的默认构造函数——在最前面插入对初始化str的代码。若有多个定义有默认构造函数的成员对象，那么这些成员对象的默认构造函数的调用将依据<code>声明顺序排列</code>。</p>
+<h3 id="继承自带有默认构造函数的基类的类"><a href="#继承自带有默认构造函数的基类的类" class="headerlink" title="继承自带有默认构造函数的基类的类"></a>继承自带有默认构造函数的基类的类</h3><p>如果一个没有定义任何构造函数的类派生自带有默认构造函数的基类，那么编译器为它定义的默认构造函数，将按照声明顺序为之依次调用其基类的默认构造函数。若该类没有定义默认构造函数而定义了<code>多个其他构造函数</code>，那么编译器<code>扩充它的所有构造函数</code>——加入必要的基类默认构造函数。另外，编译器会将基类的默认构造函数代码加在对象成员的默认构造函数代码之前。</p>
+<h3 id="带有虚函数的类"><a href="#带有虚函数的类" class="headerlink" title="带有虚函数的类"></a>带有虚函数的类</h3><p>带有虚函数的类，与其它类不太一样，因为它多了一个vptr，而vptr的设置是由编译器完成的，因此编译器会为类的<code>每个构造函数添加代码来完成对vptr的初始化</code>。</p>
+<h3 id="带有一个虚基类的类"><a href="#带有一个虚基类的类" class="headerlink" title="带有一个虚基类的类"></a>带有一个虚基类的类</h3><p>在这种情况下，编译器要将虚基类在类中的位置准备妥当，提供支持虚基类的机制。也就是说要在所有构造函数中加入实现前述功能的的代码。没有构造函数将合成以完成上述工作。</p>
+<p>总结：简单来讲编译器会为构造函数做的一点事就是调用其基类或成员对象的默认构造函数，以及初始化vprt以及准备虚基类的位置。</p>
+<p>总的来说，编译器将对构造函数动这些手脚：</p>
+<pre><code>- 如果类虚继承自基类，编译器将在所有构造函数中插入准备虚基类位置的代码和提供支持虚基类机制的代码。
+- 如果类声明有虚函数，那么编译器将为之生成虚函数表以存储虚函数地址，并将虚函数指针（vptr）的初始化代码插入到类的所有构造函数中。
+- 如果类的父类有默认构造函数，编译将会对所有的默认构造函数插入调用其父类必要的默认构造函数。必要是指设计者没有显示初始化其父类，调用顺序，依照其继承时声明顺序。
+- 如果类包含带有默认构造函数的对象成员，那么编译器将会为所有的构造函数插入对这些对象成员的默认构造函数进行必要的调用代码，所谓必要是指类设计者设计的构造函数没有对对象成员进行显式初始化。成员对象默认构造函数的调用顺序，依照其声明顺序。
+- 若类没有定义任何构造函数，编译器会为其合成默认构造函数，再执行上述四点。
+</code></pre><p>需要说明的是，从概念来上来讲，每一个没有定义构造函数的类都会由编译器来合成一个默认构造函数，以使得可以定义一个该类的对象，但是默认构造函数是否真的会被合成，将视是否有需要而定。C++ standard 将合成的默认构造函数分为 trivial 和 notrivial 两种，前文所述的四种情况对应于notrivial默认构造函数，其它情况都属于trivial。对于一个trivial默认构造函数，编译器的态度是，既然它全无用处，干脆就不合成它。在这儿要厘清的是概念与实现的差别，概念上追求缜密完善，在实现上则追求效率，可以不要的东西就不要。</p>
 
       
     </div>
@@ -471,9 +415,9 @@ hexo d
       
         <div class="post-tags">
           
-            <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+            <a href="/tags/C/" rel="tag"># C++</a>
           
-            <a href="/tags/hexo/" rel="tag"># hexo</a>
+            <a href="/tags/书摘/" rel="tag"># 书摘</a>
           
         </div>
       
@@ -486,8 +430,8 @@ hexo d
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/23/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2015/02/02/关于对象/" rel="next" title="关于对象">
+                <i class="fa fa-chevron-left"></i> 关于对象
               </a>
             
           </div>
@@ -496,8 +440,8 @@ hexo d
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/08/27/XSS和CSRF/" rel="prev" title="XSS 和CSRF">
-                XSS 和CSRF <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/23/hello-world/" rel="prev" title="Hello World">
+                Hello World <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -628,7 +572,7 @@ hexo d
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#github上建立个人主页"><span class="nav-number">1.</span> <span class="nav-text">github上建立个人主页</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo写博客"><span class="nav-number">2.</span> <span class="nav-text">hexo写博客</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo换主题"><span class="nav-number">3.</span> <span class="nav-text">hexo换主题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo写博客-1"><span class="nav-number">4.</span> <span class="nav-text">hexo写博客</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#域名绑定"><span class="nav-number">5.</span> <span class="nav-text">域名绑定</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#包含有带默认构造函数的对象成员的类"><span class="nav-number">1.</span> <span class="nav-text">包含有带默认构造函数的对象成员的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承自带有默认构造函数的基类的类"><span class="nav-number">2.</span> <span class="nav-text">继承自带有默认构造函数的基类的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有虚函数的类"><span class="nav-number">3.</span> <span class="nav-text">带有虚函数的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有一个虚基类的类"><span class="nav-number">4.</span> <span class="nav-text">带有一个虚基类的类</span></a></li></ol></div>
             
 
           </div>
