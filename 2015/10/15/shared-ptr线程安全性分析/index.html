@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C++,boost," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="shared_ptr的线程安全性boost官方文档对shared_ptr线程安全性的正式表述是：shared_ptr对象提供与内置类型相同级别的线程安全性。【shared_ptrobjects offer the same level of thread safety as built-in types.】具体是以下三点。 - 同一个shared_ptr对象可以被多线程同时读取。【A shared">
+<meta name="keywords" content="C++,boost">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shared_ptr线程安全性分析">
+<meta property="og:url" content="http://yoursite.com/2015/10/15/shared-ptr线程安全性分析/index.html">
+<meta property="og:site_name" content="苏远的博客">
+<meta property="og:description" content="shared_ptr的线程安全性boost官方文档对shared_ptr线程安全性的正式表述是：shared_ptr对象提供与内置类型相同级别的线程安全性。【shared_ptrobjects offer the same level of thread safety as built-in types.】具体是以下三点。 - 同一个shared_ptr对象可以被多线程同时读取。【A shared">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/cpp/ptr_1.png">
+<meta property="og:image" content="http://yoursite.com/images/cpp/ptr_2.png">
+<meta property="og:updated_time" content="2018-01-03T16:07:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="shared_ptr线程安全性分析">
+<meta name="twitter:description" content="shared_ptr的线程安全性boost官方文档对shared_ptr线程安全性的正式表述是：shared_ptr对象提供与内置类型相同级别的线程安全性。【shared_ptrobjects offer the same level of thread safety as built-in types.】具体是以下三点。 - 同一个shared_ptr对象可以被多线程同时读取。【A shared">
+<meta name="twitter:image" content="http://yoursite.com/images/cpp/ptr_1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/10/15/shared-ptr线程安全性分析/"/>
+
+
+
+
+
+  <title>shared_ptr线程安全性分析 | 苏远的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e56d57ba89bb058da8fdd8841e98770f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">苏远的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/index.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/15/shared-ptr线程安全性分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">shared_ptr线程安全性分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-15T01:49:52+08:00">
+                2015-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="shared-ptr的线程安全性"><a href="#shared-ptr的线程安全性" class="headerlink" title="shared_ptr的线程安全性"></a>shared_ptr的线程安全性</h3><p>boost官方文档对shared_ptr线程安全性的正式表述是：shared_ptr对象提供与内置类型相同级别的线程安全性。【shared_ptrobjects offer the same level of thread safety as built-in types.】具体是以下三点。</p>
+<pre><code>- 同一个shared_ptr对象可以被多线程同时读取。【A shared_ptrinstance can be &quot;read&quot; (accessed using only const operations)simultaneously by multiple threads.】
+- 不同的shared_ptr对象可以被多线程同时修改（即使这些shared_ptr对象管理着同一个对象的指针）。【Different shared_ptr instances can be &quot;written to&quot;(accessed using mutable operations such as operator= or reset) simultaneouslyby multiple threads (even when these instances are copies, and share the samereference count underneath.) 】
+- 任何其他并发访问的结果都是无定义的。【Any other simultaneous accesses result in undefined behavior.】
+</code></pre><p>第一种情况是对对象的并发读，自然是线程安全的。<br>第二种情况下，如果两个shared_ptr对象A和B管理的是不同对象的指针，则这两个对象完全不相关，支持并发写也容易理解。但如果A和B管理的是同一个对象P的指针，则A和B需要维护一块共享的内存区域，该区域记录P指针当前的引用计数。对A和B的并发写必然涉及对该引用计数内存区的并发修改，这需要boost做额外的工作，也是本文分析的重点。</p>
+<p>另外weak_ptr和shared_ptr紧密相关，用户可以从weak_ptr构造出shared_ptr，也可以从shared_ptr构造weak_ptr，但是weak_ptr不涉及到对象的生命周期。由于shared_ptr的线程安全性是和weak_ptr耦合在一起的，本文的分析也涉及到weak_ptr。</p>
+<p>下面先从总体上看一下shared_ptr和weak_ptr的实现。</p>
+<h3 id="shared-ptr的结构图"><a href="#shared-ptr的结构图" class="headerlink" title="shared_ptr的结构图"></a>shared_ptr的结构图</h3><p>以下是从boost源码提取出的shared_ptr和weak_ptr的类图。<br><img src="/images/cpp/ptr_1.png" alt=""></p>
+<p>我们首先忽略虚线框内的weak_ptr部分。最高层的shared_ptr就是用户直接使用的类，它提供shared_ptr的构造、复制、重置(reset函数）、解引用、比较、隐式转换为bool等功能。它包含一个指向被管理对象的指针，用来实现解引用操作，并且组合了一个shared_count对象，用来操作引用计数。<br>但shared_count类还不是引用计数类，它只是包含了一个指向引用计数类sp_counted_base的指针，功能上是对sp_counted_base操作的封装。shared_count对象的创建、复制和删除等操作，包含着对sp_counted_base的增加和减小引用计数的操作。<br>最后sp_counted_base类才保存了引用计数，并且对引用计数字段提供无锁保护。它也包含了一个指向被管理对象的指针，是用来删除被管理的对象的。sp_counted_base有三个派生类，分别处理用户指定Deleter和Allocator的情况：</p>
+<ol>
+<li>sp_counted_impl_p：用户没有指定Deleter和Allocator</li>
+<li>sp_counted_impl_pd：用户指定了Deleter，没有指定Allocator</li>
+<li>sp_counted_impl_pda：用户指定了Deleter和 Allocator<br>创建指针P的第一个shared_ptr对象的时候，子对象shared_count同时被建立， shared_count根据用户提供的参数选择创建一个特定的sp_counted_base派生类对象X。之后创建的所有管理P的shared_ptr对象都指向了这个独一无二的X。<br>然后再看虚线框内的weak_ptr就清楚了。weak_ptr和shared_ptr基本上类似，只不过weak_ptr包含的是weak_count子对象，但weak_count和shared_count也都指向了sp_counted_base。<br>如果上面的文字还不够清楚，下面的代码就能说明问题。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">shared_ptr&lt;SomeObject&gt; SP1(new SomeObject());</div><div class="line">shared_ptr&lt;SomeObject&gt; SP2=SP1;</div><div class="line">weak_ptr&lt;SomeObject&gt; WP1=SP1;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>执行完以上代码后，内存中会创建以下对象实例，其中红色箭头表示指向引用计数对象的指针，黑色箭头表示指向被管理对象的指针。<br><img src="/images/cpp/ptr_2.png" alt=""></p>
+<p>从上面可以清楚的看出，SP1、SP2和WP1指向了同一个sp_counted_impl_p对象，这个sp_counted_impl_p对象保存引用计数，是SP1、SP2和WP1等三个对象共同操作的内存区。多线程并发修改SP1、SP2和WP1，有且只有sp_counted_impl_p对象会被并发修改，因此sp_counted_impl_p的线程安全性是shared_ptr以及weak_ptr线程安全性的关键问题。而sp_counted_impl_p的线程安全性是在其基类sp_counted_base中实现的。下面将着重分析sp_counted_base的代码。</p>
+<h3 id="引用计数类sp-counted-base"><a href="#引用计数类sp-counted-base" class="headerlink" title="引用计数类sp_counted_base"></a>引用计数类sp_counted_base</h3><p>幸运的是，sp_counted_base的代码量很小，下面全文列出来，并添加有注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line">class sp_counted_base</div><div class="line">&#123;</div><div class="line">private:</div><div class="line">     // 禁止复制</div><div class="line">    sp_counted_base( sp_counted_base const &amp; );</div><div class="line">    sp_counted_base &amp; operator= ( sp_counted_baseconst &amp; );</div><div class="line"> </div><div class="line">     // shared_ptr的数量</div><div class="line">    long use_count_;  </div><div class="line">     // weak_ptr的数量+1</div><div class="line">    long weak_count_;      </div><div class="line"> </div><div class="line">public:</div><div class="line">     // 唯一的一个构造函数，注意这里把两个计数都置为1</div><div class="line">    sp_counted_base(): use_count_( 1 ), weak_count_( 1 )&#123;    &#125;</div><div class="line"> </div><div class="line">     // 虚基类，因此可以作为基类</div><div class="line">    virtual ~sp_counted_base()&#123;    &#125;</div><div class="line"> </div><div class="line">     // 子类需要重载，用operator delete或者Deleter删除被管理的对象</div><div class="line">    virtual void dispose() = 0;</div><div class="line"> </div><div class="line">     // 子类可以重载，用Allocator等删除当前对象</div><div class="line">    virtual void destroy()&#123;</div><div class="line">        delete this;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    virtual void * get_deleter( sp_typeinfo const &amp; ti ) = 0;</div><div class="line"> </div><div class="line">     // 这个函数在根据shared_count复制shared_count的时候用到</div><div class="line">     // 既然存在一个shared_count作为源，记为A，则只要A不释放，</div><div class="line">     // use_count_就不会被另一个线程release()为1。</div><div class="line">     // 另外，如果一个线程把A作为复制源，另一个线程释放A，执行结果是未定义的。</div><div class="line">     void add_ref_copy()&#123;</div><div class="line">        _InterlockedIncrement( &amp;use_count_ );</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 这个函数在根据weak_count构造shared_count的时候用到</div><div class="line">     // 这是为了避免通过weak_count增加引用计数的时候，</div><div class="line">     // 另外的线程却调用了release函数，清零use_count_并释放了指向的对象</div><div class="line">    bool add_ref_lock()&#123;</div><div class="line">        for( ;; )</div><div class="line">        &#123;</div><div class="line">            long tmp = static_cast&lt; long const volatile&amp; &gt;( use_count_ );</div><div class="line">            if( tmp == 0 ) return false;</div><div class="line"> </div><div class="line">            if( _InterlockedCompareExchange( &amp;use_count_, tmp + 1, tmp ) == tmp )return true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    void release()&#123;</div><div class="line">        if( _InterlockedDecrement( &amp;use_count_ ) == 0 )</div><div class="line">        &#123;</div><div class="line">              // use_count_从1变成0的时候，</div><div class="line">              // 1. 释放对象</div><div class="line">              // 2. 对weak_count_执行一次递减操作。这是因为在初始化的时候（use_count_从0变1时），weak_count初始值为1</div><div class="line">            dispose();</div><div class="line">            weak_release();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    void weak_add_ref()&#123;</div><div class="line">        _InterlockedIncrement( &amp;weak_count_ );</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 递减weak_count_；且在weak_count为0的时候，把自己删除</div><div class="line">    void weak_release()&#123;</div><div class="line">        if( _InterlockedDecrement( &amp;weak_count_ ) == 0 )</div><div class="line">        &#123;</div><div class="line">            destroy();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 返回引用计数。注意如果用户没有额外加锁，引用计数完全可能同时被另外的线程修改掉。</div><div class="line">    long use_count() const&#123;</div><div class="line">        return static_cast&lt;long const volatile &amp;&gt;( use_count_ );</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>代码中的注释已经说明了一些问题，这里再重复一点：use<em>count</em>字段等于当前shared_ptr对象的数量，weak<em>count</em>字段等于当前weak_ptr对象的数量加1。<br>首先不考虑weak_ptr的情况。根据对shared_ptr类的代码分析（代码没有列出来，但很容易找到），shared_ptr之间的复制都是调用add_ref_copy和release函数进行的。假设两个线程分别对SP1和SP2进行操作，操作的过程无非是以下三种情况：</p>
+<ol>
+<li>SP1和SP2都递增引用计数，即add_ref_copy被并发调用，也就是两个_InterlockedIncrement（&amp;use<em>count</em>)并发执行，这是线程安全的。</li>
+<li>SP1和SP2都递减引用计数，即release被并发调用，也就是_InterlockedDecrement(&amp;use<em>count</em> )并发执行，这也是线程安全的。只不过后执行的线程负责删除对象。</li>
+<li>SP1递增引用计数，调用add_ref_copy；SP2递减引用计数，调用release。由于SP1的存在，SP2的release操作无论如何都不会导致use<em>count</em>变为零，也就是说release中if语句的body永远不会被执行。因此，这种情况就化简为_InterlockedIncrement（&amp;use<em>count</em>)和_InterlockedDecrement( &amp;use<em>count</em> )的并发执行，仍然是线程安全的。</li>
+</ol>
+<p>然后考虑weak_ptr。如果是weak_ptr之间的操作，或者从shared_ptr构造weak_ptr，都不涉及到use<em>count</em>的操作，只需要调用weak_add_ref和weak_release来操作weak<em>count</em>。与上面的分析相同，<code>_InterlockedIncrement和_InterlockedDecrement</code>保证了weak_add_ref和weak_release并发操作的线程安全性。但如果存在从weak_ptr构造shared_ptr的操作，则需要考虑在构造weak_ptr的过程中，被管理的对象已经被其他线程被释放的情况。如果从weak_ptr构造shared_ptr仍然是通过add_ref_copy函数完成的，则可能发生以下错误情况：<br> <table><br> <tr><br> <td></td><br> <td>线程1，从weak_ptr创建shared_ptr</td><br> <td>线程2，释放目前唯一存在的shared_ptr</td><br> </tr><br> <tr><br> <td>1</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> <td></td><br> </tr><br>  <tr><br> <td>2</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> </tr><br>   <tr><br> <td>3</td><br> <td><br>开始执行add_ref_copy，导致 use_count递增。<br>发生错误,use_count==1，但是对象已经被删除了</td><br> <td></td><br> </tr><br> </table></p>
+<p>我们自然会想，线程1在第三行结束后，再判断一次use_count是否为1，如果是1，认为对象已经删除，判断失败不就可以了吗。其实是行不通的，下面是一个反例。</p>
+<table><br> <tr><br> <td></td><br> <td>线程1，从weak_ptr创建shared_ptr</td><br> <td>线程2，释放目前唯一存在的shared_ptr</td><br> <td>线程3，从weak_ptr创建shared_ptr</td><br> </tr><br> <tr><br> <td>1</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> <td></td><br>  <td></td><br> </tr><br>  <tr><br> <td>2</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> </tr><br>   <tr><br> <td>3</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> <td></td><br> </tr><br> <tr><br> <td>4</td><br> <td>开始执行add_ref_copy，导致 use_count递增。</td><br> <td></td><br> <td></td><br> </tr><br> <tr><br> <td>5</td><br> <td></td><br> <td></td><br> <td>执行add_ref_copy，导致 use_count递增。</td><br> </tr><br> <tr><br> <td>6</td><br> <td>发现use<em>count</em> != 1，判断执行成功。<br>发生错误,use_count==2，但是对象已经被删除了</td><br> <td></td><br> <td>发现use<em>count</em> != 1，判断执行成功。<br>发生错误,use_count==2，但是对象已经被删除了</td><br> </tr><br><br> </table>
+
+<p>实际上，boost从weak_ptr构造shared_ptr不是调用add_ref_copy，而是调用add_ref_lock函数。add_ref_lock是典型的无锁修改共享变量的代码，下面再把它的代码复制一遍，并添加证明注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">bool add_ref_lock()&#123;</div><div class="line">    for( ;; )</div><div class="line">    &#123;</div><div class="line">        // 第一步，记录下use_count_</div><div class="line">        long tmp = static_cast&lt; long const volatile&amp; &gt;( use_count_ );</div><div class="line">        // 第二步，如果已经被别的线程抢先清0了，则被管理的对象已经或者将要被释放，返回false</div><div class="line">        if( tmp == 0 ) return false;</div><div class="line">        // 第三步，如果if条件执行成功，</div><div class="line">     // 说明在修改use_count_之前,use_count仍然是tmp，大于0</div><div class="line">        // 也就是说use_count_在第一步和第三步之间，从来没有变为0过。</div><div class="line">        // 这是因为use_count一旦变为0，就不可能再次累加为大于0</div><div class="line">        // 因此，第一步和第三步之间，被管理的对象不可能被释放，返回true。</div><div class="line">        if( _InterlockedCompareExchange( &amp;use_count_, tmp + 1, tmp ) == tmp )return true;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在上面的注释中，用到了一个没有被证明的结论，“use_count一旦变为0，就不可能再次累加为大于0”。下面四条可以证明它。</p>
+<ol>
+<li>use<em>count</em>是sp_counted_base类的private对象，sp_counted_base也没有友元函数，因此use<em>count</em>不会被对象外的代码修改。</li>
+<li>成员函数add_ref_copy可以递增use<em>count</em>，但是所有对add_ref_copy函数的调用都是通过一个shared_ptr对象执行的。既然存在shared_ptr对象，use_count在递增之前一定不是0。</li>
+<li>成员函数add_ref_lock可以递增use<em>count</em>，但正如add_ref_lock代码所示，执行第三步的时候，tmp都是大于0的，因此add_ref_lock不会使use<em>count</em>从0递增到1</li>
+<li>其它成员函数从来不会递增use<em>count</em><br>至此，我们可以放下心来，只要add_ref_lock返回true，递增引用计数的行为就是成功的。因此从weak_ptr构造shared_ptr的行为也是完全确定的，要么add_ref_lock返回true，构造成功，要么add_ref_lock返回false，构造失败。<br>综上所述，多线程通过不同的shared_ptr或者weak_ptr对象并发修改同一个引用计数对象sp_counted_base是线程安全的。而sp_counted_base对象是这些智能指针唯一操作的共享内存区，因此最终的结果就是线程安全的。<br>其它操作<br>前面我们分析了，不同的shared_ptr对象可以被多线程同时修改。那其它的问题呢，同一个shared_ptr对象可以对多线程同时修改吗？我们必须要注意到，前面所有的同步都是针对引用计数类sp_counted_base进行的，shared_ptr本身并没有任何同步保护。我们看下面boost文档举出来的非线程安全的例子</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// thread A</div><div class="line">p3.reset(new int(1));</div><div class="line">// thread B</div><div class="line">p3.reset(new int(2)); // undefined, multiple writes</div></pre></td></tr></table></figure>
+<p>下面是shared_ptr类相关的代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">template&lt;class Y&gt;</div><div class="line">void reset(Y * p)</div><div class="line">&#123;</div><div class="line">     this_type(p).swap(*this);</div><div class="line">&#125;</div><div class="line"> </div><div class="line">void swap(shared_ptr&lt;T&gt; &amp; other)</div><div class="line">&#123;</div><div class="line">     std::swap(px, other.px);</div><div class="line">     pn.swap(other.pn);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可以看到，reset执行了两个修改成员变量的操作，thread A和thread B的执行结果可能是非法的。。<br>但是仿照内置对象的语义，boost提供了若干个原子函数，支持通过这些函数并发修改同一个shared_ptr对象。这包括atomic_store、atomic_exchange、atomic_compare_exchange等。以下是实现的代码，不再详细分析。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">template&lt;class T&gt;</div><div class="line">void atomic_store( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; r )&#123;</div><div class="line">    boost::detail::spinlock_pool&lt;2&gt;::scoped_lock lock( p );</div><div class="line">    p-&gt;swap( r );</div><div class="line">&#125;</div><div class="line"> </div><div class="line">template&lt;class T&gt;</div><div class="line">shared_ptr&lt;T&gt; atomic_exchange( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; r )&#123;</div><div class="line">    boost::detail::spinlock &amp; sp = boost::detail::spinlock_pool&lt;2&gt;::spinlock_for( p );</div><div class="line"> </div><div class="line">    sp.lock();</div><div class="line">    p-&gt;swap( r );</div><div class="line">    sp.unlock();</div><div class="line"> </div><div class="line">    return r;</div><div class="line">&#125;</div><div class="line"> </div><div class="line">template&lt;class T&gt;</div><div class="line">bool atomic_compare_exchange( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; * v, shared_ptr&lt;T&gt; w )&#123;</div><div class="line"> </div><div class="line">    boost::detail::spinlock &amp; sp = boost::detail::spinlock_pool&lt;2&gt;::spinlock_for( p );</div><div class="line">    sp.lock();</div><div class="line">    if( p-&gt;_internal_equiv( *v ) )&#123;</div><div class="line">        p-&gt;swap( w );</div><div class="line">        sp.unlock();</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">    else&#123;</div><div class="line">        shared_ptr&lt;T&gt; tmp( *p );</div><div class="line">        sp.unlock();</div><div class="line">        tmp.swap( *v );</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>总结<br>正如boost文档所宣称的，boost为shared_ptr提供了<code>与内置类型同级别的线程安全性</code>。这包括：</p>
+<ol>
+<li>同一个shared_ptr对象可以被多线程同时读取。</li>
+<li>不同的shared_ptr对象可以被多线程同时修改。</li>
+<li>同一个shared_ptr对象不能被多线程直接修改，但可以通过原子函数完成。</li>
+</ol>
+<p>如果把上面的表述中的”shared_ptr”替换为“内置类型”也完全成立。<br>最后，整理这个东西的时候我也发现有些关键点很难表述清楚，这也是由于线程安全性本身比较难严格证明。如果想要完全理解，还是建议阅读shared_ptr完整的代码。shared_ptr在windows下的源代码我已经单独从boost中提取了出来，整理成了单独的文件，且去掉了不相关的条件编译指令。</p>
+<p>参考 <a href="http://blog.csdn.net/jiangfuqiang/article/details/8292906" target="_blank" rel="external">http://blog.csdn.net/jiangfuqiang/article/details/8292906</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+            <a href="/tags/boost/" rel="tag"># boost</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/07/11/libevent学习/" rel="next" title="libevent学习">
+                <i class="fa fa-chevron-left"></i> libevent学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/12/浪潮之巅/" rel="prev" title="浪潮之巅">
+                浪潮之巅 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg"
+               alt="suyuan" />
+          <p class="site-author-name" itemprop="name">suyuan</p>
+           
+              <p class="site-description motion-element" itemprop="description">东京下雨，淋湿巴黎</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#shared-ptr的线程安全性"><span class="nav-number">1.</span> <span class="nav-text">shared_ptr的线程安全性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shared-ptr的结构图"><span class="nav-number">2.</span> <span class="nav-text">shared_ptr的结构图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引用计数类sp-counted-base"><span class="nav-number">3.</span> <span class="nav-text">引用计数类sp_counted_base</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suyuan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
