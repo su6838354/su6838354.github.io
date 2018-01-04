@@ -436,6 +436,365 @@ cp dist ../koa2-hw/public
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/15/react源码2-渲染原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/15/react源码2-渲染原理/" itemprop="url">react源码2-渲染原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-15T22:02:15+08:00">
+                2017-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文大部分内容参考<a href="https://github.com/purplebamboo/blog/issues/2" target="_blank" rel="external">reactjs源码分析-上篇（首次渲染实现原理）</a></p>
+<blockquote>
+<p>一切皆是组件，组件生成元素，元素创建dom的过程中调用组件的生命周期和render</p>
+</blockquote>
+<p>reactjs的核心内容并不多，主要是下面这些：</p>
+<ul>
+<li>虚拟dom对象(Virtual DOM)</li>
+<li>虚拟dom差异化算法（diff algorithm）</li>
+<li>单向数据流渲染（Data Flow）</li>
+<li>组件生命周期</li>
+<li>事件处理</li>
+</ul>
+<p>这篇主要从页面渲染出来过程的角度来分析,一起构建一个最简单到react框架</p>
+<p><img src="/images/react/react-2.png" alt=""></p>
+<h3 id="渲染文本内容"><a href="#渲染文本内容" class="headerlink" title="渲染文本内容"></a>渲染文本内容</h3><ul>
+<li><p>目的：react.render 可以渲染内容到container</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">React.render(&apos;hello world&apos;,document.getElementById(&quot;container&quot;))</div><div class="line">&lt;/script&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>实现</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">//component类，用来表示文本在渲染，更新，删除时应该做些什么事情</div><div class="line">function ReactDOMTextComponent(text) &#123;</div><div class="line">    //存下当前的字符串</div><div class="line">    this._currentElement = &apos;&apos; + text;</div><div class="line">    //用来标识当前component</div><div class="line">    this._rootNodeID = null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//component渲染时生成的dom结构</div><div class="line">ReactDOMTextComponent.prototype.mountComponent = function(rootID) &#123;</div><div class="line">    this._rootNodeID = rootID;</div><div class="line">    return &apos;&lt;span data-reactid=&quot;&apos; + rootID + &apos;&quot;&gt;&apos; + this._currentElement + &apos;&lt;/span&gt;&apos;;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//component工厂  用来返回一个component实例</div><div class="line">function instantiateReactComponent(node)&#123;</div><div class="line">    if(typeof node === &apos;string&apos; || typeof node === &apos;number&apos;)&#123;</div><div class="line">        return new ReactDOMTextComponent(node)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">React = &#123;</div><div class="line">    nextReactRootIndex:0,</div><div class="line">    render:function(element,container)&#123;</div><div class="line"></div><div class="line">        var componentInstance = instantiateReactComponent(element);</div><div class="line">        var markup = componentInstance.mountComponent(React.nextReactRootIndex++);</div><div class="line">        $(container).html(markup);</div><div class="line">        //触发完成mount的事件</div><div class="line">        $(document).trigger(&apos;mountReady&apos;);    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>React.render 作为入口负责调用渲染</li>
+<li>我们引入了component类的概念，ReactDOMTextComponent是一个component类定义，定义对于这种文本类型的节点，在渲染，更新，删除时应该做什么操作，这边暂时只用到渲染，另外两个可以先忽略</li>
+<li>instantiateReactComponent用来根据component的类型（现在只有一种string类型），返回一个component的实例。其实就是个类工厂。</li>
+<li>主要的渲染逻辑放在了具体的componet类去定义。React.render负责调度整个流程，这里是调用instantiateReactComponent生成一个对应component类型的实例对象，然后调用此对象的mountComponent获取生成的内容。最后写到对应的container节点中。</li>
+</ul>
+<h2 id="引起element（元素），渲染文本内容升级为渲染元素"><a href="#引起element（元素），渲染文本内容升级为渲染元素" class="headerlink" title="引起element（元素），渲染文本内容升级为渲染元素"></a>引起element（元素），渲染文本内容升级为渲染元素</h2><p>在reactjs里，当我们希望在hello world外面包一层div,并且带上一些属性，甚至事件时我们可以这么写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//演示事件监听怎么用</div><div class="line">function hello()&#123;</div><div class="line">    alert(&apos;hello&apos;)</div><div class="line">&#125;</div><div class="line"></div><div class="line">var element = React.createElement(&apos;div&apos;,&#123;id:&apos;test&apos;,onclick:hello&#125;,&apos;click me&apos;)</div><div class="line"></div><div class="line">React.render(element,document.getElementById(&quot;container&quot;))</div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line">//生成的html为：</div><div class="line"></div><div class="line">&lt;div data-reactid=&quot;0&quot; id=&quot;test&quot;&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.0&quot;&gt;click me&lt;/span&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"></div><div class="line">//点击文字，会弹出hello的对话框</div><div class="line"></div><div class="line">*/</div></pre></td></tr></table></figure></p>
+<p>上面使用React.createElement创建了一个基本元素。<br>此时我们需要element元素这个概念出现。</p>
+<p>简易版本React.createElement的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">//ReactElement就是虚拟dom的概念，具有一个type属性代表当前的节点类型，还有节点的属性props</div><div class="line">//比如对于div这样的节点type就是div，props就是那些attributes</div><div class="line">//另外这里的key,可以用来标识这个element，用于优化以后的更新，这里可以先不管，知道有这么个东西就好了</div><div class="line">function ReactElement(type,key,props)&#123;</div><div class="line">  this.type = type;</div><div class="line">  this.key = key;</div><div class="line">  this.props = props;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">React = &#123;</div><div class="line">    nextReactRootIndex:0,</div><div class="line">    createElement:function(type,config,children)&#123;</div><div class="line">        var props = &#123;&#125;,propName;</div><div class="line">        config = config || &#123;&#125;</div><div class="line">        //看有没有key，用来标识element的类型，方便以后高效的更新，这里可以先不管</div><div class="line">        var key = config.key || null;</div><div class="line"></div><div class="line">        //复制config里的内容到props</div><div class="line">        for (propName in config) &#123;</div><div class="line">            if (config.hasOwnProperty(propName) &amp;&amp; propName !== &apos;key&apos;) &#123;</div><div class="line">                props[propName] = config[propName];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //处理children,全部挂载到props的children属性上</div><div class="line">        //支持两种写法，如果只有一个参数，直接赋值给children，否则做合并处理</div><div class="line">        var childrenLength = arguments.length - 2;</div><div class="line">        if (childrenLength === 1) &#123;</div><div class="line">            props.children = $.isArray(children) ? children : [children] ;</div><div class="line">        &#125; else if (childrenLength &gt; 1) &#123;</div><div class="line">            var childArray = Array(childrenLength);</div><div class="line">            for (var i = 0; i &lt; childrenLength; i++) &#123;</div><div class="line">                childArray[i] = arguments[i + 2];</div><div class="line">            &#125;</div><div class="line">            props.children = childArray;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return new ReactElement(type, key,props);</div><div class="line"></div><div class="line">    &#125;,</div><div class="line">    render:function(element,container)&#123;</div><div class="line">        var componentInstance = instantiateReactComponent(element);</div><div class="line">        var markup = componentInstance.mountComponent(React.nextReactRootIndex++);</div><div class="line">        $(container).html(markup);</div><div class="line">        //触发完成mount的事件</div><div class="line">        $(document).trigger(&apos;mountReady&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>createElement只是做了简单的参数修正，最终返回一个ReactElement实例对象也就是我们说的虚拟元素的实例(虚拟DOM)。</p>
+<blockquote>
+<p>这里你可能有疑问了，没看出ReactElement 能表示虚拟DOM啊，其实每个reactElement实例的props.children包含他的子节点，子节点的内容就是组件的render 生成的子 reactElement；最后的叶子节点自然是标准标签（div等）</p>
+</blockquote>
+<p>reactElement实例代表的是页面的组织结构</p>
+<p>好了有了元素实例，我们得把他渲染出来，此时render接受的是一个ReactElement而不是文本，我们先改造下instantiateReactComponent：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">function instantiateReactComponent(node)&#123;</div><div class="line">    //文本节点的情况</div><div class="line">    if(typeof node === &apos;string&apos; || typeof node === &apos;number&apos;)&#123;</div><div class="line">        return new ReactDOMTextComponent(node);</div><div class="line">    &#125;</div><div class="line">    //浏览器默认节点的情况</div><div class="line">    if(typeof node === &apos;object&apos; &amp;&amp; typeof node.type === &apos;string&apos;)&#123;</div><div class="line">        //注意这里，使用了一种新的component</div><div class="line">        return new ReactDOMComponent(node);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们增加了一个判断，这样当render的不是文本而是浏览器的基本元素时。我们使用另外一种component来处理它渲染时应该返回的内容。这里就体现了工厂方法instantiateReactComponent的好处了，不管来了什么类型的node，都可以负责生产出一个负责渲染的component实例。这样render完全不需要做任何修改，只需要再做一种对应的component类型（这里是ReactDOMComponent）就行了。</p>
+<p>所以重点我们来看看ReactDOMComponent的具体实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">//component类，用来表示文本在渲染，更新，删除时应该做些什么事情</div><div class="line">function ReactDOMComponent(element)&#123;</div><div class="line">    //存下当前的element对象引用</div><div class="line">    this._currentElement = element;</div><div class="line">    this._rootNodeID = null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//component渲染时生成的dom结构</div><div class="line">ReactDOMComponent.prototype.mountComponent = function(rootID)&#123;</div><div class="line">    //赋值标识</div><div class="line">    this._rootNodeID = rootID;</div><div class="line">    var props = this._currentElement.props;</div><div class="line">    var tagOpen = &apos;&lt;&apos; + this._currentElement.type;</div><div class="line">    var tagClose = &apos;&lt;/&apos; + this._currentElement.type + &apos;&gt;&apos;;</div><div class="line"></div><div class="line">    //加上reactid标识</div><div class="line">    tagOpen += &apos; data-reactid=&apos; + this._rootNodeID;</div><div class="line"></div><div class="line">    //拼凑出属性</div><div class="line">    for (var propKey in props) &#123;</div><div class="line"></div><div class="line">        //这里要做一下事件的监听，就是从属性props里面解析拿出on开头的事件属性的对应事件监听</div><div class="line">        if (/^on[A-Za-z]/.test(propKey)) &#123;</div><div class="line">            var eventType = propKey.replace(&apos;on&apos;, &apos;&apos;);</div><div class="line">            //针对当前的节点添加事件代理,以_rootNodeID为命名空间</div><div class="line">            $(document).delegate(&apos;[data-reactid=&quot;&apos; + this._rootNodeID + &apos;&quot;]&apos;, eventType + &apos;.&apos; + this._rootNodeID, props[propKey]);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //对于children属性以及事件监听的属性不需要进行字符串拼接</div><div class="line">        //事件会代理到全局。这边不能拼到dom上不然会产生原生的事件监听</div><div class="line">        if (props[propKey] &amp;&amp; propKey != &apos;children&apos; &amp;&amp; !/^on[A-Za-z]/.test(propKey)) &#123;</div><div class="line">            tagOpen += &apos; &apos; + propKey + &apos;=&apos; + props[propKey];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //获取子节点渲染出的内容</div><div class="line">    var content = &apos;&apos;;</div><div class="line">    var children = props.children || [];</div><div class="line"></div><div class="line">    var childrenInstances = []; //用于保存所有的子节点的componet实例，以后会用到</div><div class="line">    var that = this;</div><div class="line">    $.each(children, function(key, child) &#123;</div><div class="line">        //这里再次调用了instantiateReactComponent实例化子节点component类，拼接好返回</div><div class="line">        var childComponentInstance = instantiateReactComponent(child);</div><div class="line">        childComponentInstance._mountIndex = key;</div><div class="line"></div><div class="line">        childrenInstances.push(childComponentInstance);</div><div class="line">        //子节点的rootId是父节点的rootId加上新的key也就是顺序的值拼成的新值</div><div class="line">        var curRootId = that._rootNodeID + &apos;.&apos; + key;</div><div class="line">        //得到子节点的渲染内容</div><div class="line">        var childMarkup = childComponentInstance.mountComponent(curRootId);</div><div class="line">        //拼接在一起</div><div class="line">        content += &apos; &apos; + childMarkup;</div><div class="line"></div><div class="line">    &#125;)</div><div class="line"></div><div class="line">    //留给以后更新时用的这边先不用管</div><div class="line">    this._renderedChildren = childrenInstances;</div><div class="line"></div><div class="line">    //拼出整个html内容</div><div class="line">    return tagOpen + &apos;&gt;&apos; + content + tagClose;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>增加了虚拟dom reactElement的定义</li>
+<li>增加了一个新的componet类ReactDOMComponent。</li>
+</ul>
+<p>这样我们就实现了渲染浏览器基本元素的功能了。</p>
+<ul>
+<li><p>对于虚拟dom的渲染逻辑，本质上还是个递归渲染的东西，reactElement会递归渲染自己的子节点。可以看到我们通过instantiateReactComponent屏蔽了子节点的差异，只需要使用不同的componet类，这样都能保证通过mountComponent最终拿到渲染后的内容。</p>
+</li>
+<li><p>另外这边的事件也要说下，可以在传递props的时候传入{onClick:function(){}}这样的参数，这样就会在当前元素上添加事件，代理到document。由于reactjs本身全是在写js，所以监听的函数的传递变得特别简单。</p>
+</li>
+<li><p>这里很多东西没有考虑，比如一些特殊的类型input select等等，再比如img不需要有对应的tagClose等。这里为了保持简单就不再扩展了。另外reactjs的事件处理其实很复杂，实现了一套标准的w3c事件。这里偷懒直接使用jQuery的事件代理到document上了。</p>
+</li>
+</ul>
+<h2 id="引入组件，可以渲染自定义的组件创建的元素"><a href="#引入组件，可以渲染自定义的组件创建的元素" class="headerlink" title="引入组件，可以渲染自定义的组件创建的元素"></a>引入组件，可以渲染自定义的组件创建的元素</h2><p>reactjs通过虚拟dom做到了扩张标记的功能，还记得我们上面element.type只是个简单的字符串，如果是个类呢？如果这个类恰好还有自己的生命周期管理，那扩展性就很高了。</p>
+<p>我们看下reactjs怎么使用自定义元素：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">var HelloMessage = React.createClass(&#123;</div><div class="line">  getInitialState: function() &#123;</div><div class="line">    return &#123;type: &apos;say:&apos;&#125;;</div><div class="line">  &#125;,</div><div class="line">  componentWillMount: function() &#123;</div><div class="line">    console.log(&apos;我就要开始渲染了。。。&apos;)</div><div class="line">  &#125;,</div><div class="line">  componentDidMount: function() &#123;</div><div class="line">    console.log(&apos;我已经渲染好了。。。&apos;)</div><div class="line">  &#125;,</div><div class="line">  render: function() &#123;</div><div class="line">    return React.createElement(&quot;div&quot;, null,this.state.type, &quot;Hello &quot;, this.props.name);</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"></div><div class="line">React.render(React.createElement(HelloMessage, &#123;name: &quot;John&quot;&#125;), document.getElementById(&quot;container&quot;));</div><div class="line"></div><div class="line">/**</div><div class="line">结果为：</div><div class="line"></div><div class="line">html:</div><div class="line">&lt;div data-reactid=&quot;0&quot;&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.0&quot;&gt;say:&lt;/span&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.1&quot;&gt;Hello &lt;/span&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.2&quot;&gt;John&lt;/span&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">console:</div><div class="line">我就要开始渲染了。。。</div><div class="line">我已经渲染好了。。。</div><div class="line"></div><div class="line">*/</div></pre></td></tr></table></figure></p>
+<p>React.createElement接受的不再是字符串，而是一个class。</p>
+<p>React.createClass生成一个自定义标记类，带有基本的生命周期：</p>
+<ul>
+<li>getInitialState 获取最初的属性值this.state</li>
+<li>componentWillmount 在组件准备渲染时调用</li>
+<li>componentDidMount 在组件渲染完成后调用<br>对reactjs稍微有点了解的应该都可以明白上面的用法。</li>
+</ul>
+<p>我们先来看看React.createClass的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">//定义ReactClass类,所有自定义的超级父类</div><div class="line">var ReactClass = function()&#123;</div><div class="line">&#125;</div><div class="line">//留给子类去继承覆盖</div><div class="line">ReactClass.prototype.render = function()&#123;&#125;</div><div class="line"></div><div class="line"></div><div class="line">React = &#123;</div><div class="line">    nextReactRootIndex:0,</div><div class="line">    createClass:function(spec)&#123;</div><div class="line">        //生成一个子类</div><div class="line">        var Constructor = function (props) &#123;</div><div class="line">            this.props = props;</div><div class="line">            this.state = this.getInitialState ? this.getInitialState() : null;</div><div class="line">        &#125;</div><div class="line">        //原型继承，继承超级父类</div><div class="line">        Constructor.prototype = new ReactClass();</div><div class="line">        Constructor.prototype.constructor = Constructor;</div><div class="line">        //混入spec到原型</div><div class="line">        $.extend(Constructor.prototype,spec);</div><div class="line">        return Constructor;</div><div class="line"></div><div class="line">    &#125;,</div><div class="line">    createElement:function(type,config,children)&#123;</div><div class="line">        ...</div><div class="line">    &#125;,</div><div class="line">    render:function(element,container)&#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可以看到createClass生成了一个继承ReactClass的子类，在构造函数里调用this.getInitialState获得最初的state。</p>
+<p>为了演示方便,我们这边的ReactClass相当简单，实际上原始的代码处理了很多东西，比如类的mixin的组合继承支持,比如componentDidMount等可以定义多次，需要合并调用等等，有兴趣的去翻源码吧，不是本文的主要目的，这里就不详细展开了。</p>
+<p>我们这里只是返回了一个继承类的定义，那么具体的componentWillmount，<code>这些生命周期函数在哪里调用呢</code>。</p>
+<p>看看我们上面的两种类型就知道，我们是时候为自定义元素也提供一个componet类了，在那个类里我们会实例化ReactClass，并且管理生命周期，还有父子组件依赖。</p>
+<p>好，我们老规矩先改造instantiateReactComponent</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">function instantiateReactComponent(node)&#123;</div><div class="line">    //文本节点的情况</div><div class="line">    if(typeof node === &apos;string&apos; || typeof node === &apos;number&apos;)&#123;</div><div class="line">        return new ReactDOMTextComponent(node);</div><div class="line">    &#125;</div><div class="line">    //浏览器默认节点的情况</div><div class="line">    if(typeof node === &apos;object&apos; &amp;&amp; typeof node.type === &apos;string&apos;)&#123;</div><div class="line">        //注意这里，使用了一种新的component</div><div class="line">        return new ReactDOMComponent(node);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">    //自定义的元素节点</div><div class="line">    if(typeof node === &apos;object&apos; &amp;&amp; typeof node.type === &apos;function&apos;)&#123;</div><div class="line">        //注意这里，使用新的component,专门针对自定义元素</div><div class="line">        return new ReactCompositeComponent(node);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很简单我们增加了一个判断，使用新的component类形来处理自定义的节点。我们看下<br>ReactCompositeComponent的具体实现:</p>
+<blockquote>
+<p>你在组件render函数 中的写的大量<code>return &lt;div&gt;&lt;/div&gt;</code>将在此刻被调用</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">function ReactCompositeComponent(element)&#123;</div><div class="line">    //存放元素element对象</div><div class="line">    this._currentElement = element;</div><div class="line">    //存放唯一标识</div><div class="line">    this._rootNodeID = null;</div><div class="line">    //存放对应的ReactClass的实例</div><div class="line">    this._instance = null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//用于返回当前自定义元素渲染时应该返回的内容</div><div class="line">ReactCompositeComponent.prototype.mountComponent = function(rootID)&#123;</div><div class="line">    this._rootNodeID = rootID;</div><div class="line">    //拿到当前元素对应的属性值</div><div class="line">    var publicProps = this._currentElement.props;</div><div class="line">    //拿到对应的ReactClass</div><div class="line">    var ReactClass = this._currentElement.type;</div><div class="line">    // Initialize the public class</div><div class="line">    var inst = new ReactClass(publicProps);</div><div class="line">    this._instance = inst;</div><div class="line">    //保留对当前comonent的引用，下面更新会用到</div><div class="line">    inst._reactInternalInstance = this;</div><div class="line"></div><div class="line">    if (inst.componentWillMount) &#123;</div><div class="line">        inst.componentWillMount();</div><div class="line">        //这里在原始的reactjs其实还有一层处理，就是  componentWillMount调用setstate，不会触发rerender而是自动提前合并，这里为了保持简单，就略去了</div><div class="line">    &#125;</div><div class="line">    //调用ReactClass的实例的render方法,返回一个element或者一个文本节点***************重点</div><div class="line">    var renderedElement = this._instance.render();</div><div class="line">    //得到renderedElement对应的component类实例</div><div class="line">    var renderedComponentInstance = instantiateReactComponent(renderedElement);</div><div class="line">    this._renderedComponent = renderedComponentInstance; //存起来留作后用</div><div class="line"></div><div class="line">    //拿到渲染之后的字符串内容，将当前的_rootNodeID传给render出的节点</div><div class="line">    var renderedMarkup = renderedComponentInstance.mountComponent(this._rootNodeID);</div><div class="line"></div><div class="line">    //之前我们在React.render方法最后触发了mountReady事件，所以这里可以监听，在渲染完成后会触发。</div><div class="line">    $(document).on(&apos;mountReady&apos;, function() &#123;</div><div class="line">        //调用inst.componentDidMount</div><div class="line">        inst.componentDidMount &amp;&amp; inst.componentDidMount();</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    return renderedMarkup;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>ReactClass的render一定是返回一个虚拟节点(包括element和text)，这个时候我们使用instantiateReactComponent去得到实例，再使用mountComponent拿到结果作为当前自定义元素的结果。</p>
+</li>
+<li><p>应该说本身自定义元素不负责具体的内容，他更多的是负责生命周期。具体的内容是由它的render方法返回的虚拟节点来负责渲染的。</p>
+</li>
+<li><p>本质上也是递归的去渲染内容的过程。同时因为这种递归的特性，父组件的componentWillMount一定在某个子组件的componentWillMount之前调用，而父组件的componentDidMount肯定在子组件之后，因为监听mountReady事件，肯定是子组件先监听的。</p>
+</li>
+<li><p>需要注意的是自定义元素并不会处理我们createElement时传入的子节点，它只会处理自己render返回的节点作为自己的子节点。不过我们在render时可以使用this.props.children拿到那些传入的子节点，可以自己处理。其实有点类似webcomponents里面的shadow dom的作用。</p>
+</li>
+<li><p>上面实现了三种类型的元素，其实我们发现本质上没有太大的区别，都是有自己对应component类来处理自己的渲染过程。</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/09/react源码-组成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/09/react源码-组成/" itemprop="url">react源码1--页面是怎么出来的</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-09T20:40:55+08:00">
+                2017-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/images/react/react-1.png" alt=""></p>
+<h2 id="创造组件-Component"><a href="#创造组件-Component" class="headerlink" title="创造组件 Component"></a>创造组件 Component</h2><p>上帝创造了世界，浏览器创造了 div、h1、a…这些标签。<br>你可以用他们来创造自定义的组件，当然还有你最外面到那个页面，他是你最顶层到组件。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">class PicList extends Component &#123;</div><div class="line">     render () &#123;</div><div class="line">     	return &lt;div&gt;123&lt;/div&gt;</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面到写法也就是调用 <code>createClass</code>来实现到创建组件</p>
+<h2 id="创建虚拟dom"><a href="#创建虚拟dom" class="headerlink" title="创建虚拟dom"></a>创建虚拟dom</h2><p>是不是感觉一下到虚拟dom有点快，这里我们还是省略了很多内容。<br>真实情况是先createElement api创建出元素，元素就是通过一堆标签组件组织起来的，反应父子关系的结构体，可以认为元素就是虚拟dom。元素会递归的根据各个节点的类型生产真实的DOM结构。</p>
+<p>有了字符串、原始标签（div）、的组件（PicList） 这些模版；<br>react 就可以根据他们到类型构建出虚拟dom。</p>
+<h2 id="创建真实dom"><a href="#创建真实dom" class="headerlink" title="创建真实dom"></a>创建真实dom</h2><p>这个也是react做到事情，每个虚拟dom都会调用自己到mountComponent，会返回真实的标签，构建出真实dom</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://github.com/creeperyang/blog/issues/30" target="_blank" rel="external">比较与理解React的Components，Elements和Instances</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/03/基于create-react-app-快速搭建react项目/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1661,388 +2020,11 @@ yarn add react-router-dom
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/04/22/构造、解构、拷贝 语意学/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苏远的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/04/22/构造、解构、拷贝 语意学/" itemprop="url">构造、解构、拷贝 语意学</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-04-22T23:41:22+08:00">
-                2015-04-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="几点类设计原则"><a href="#几点类设计原则" class="headerlink" title="几点类设计原则"></a>几点类设计原则</h2><ul>
-<li><p>即使是一个抽象基类，如果它有非静态数据成员，也应该给它提供一个带参数的构造函数，来初始化它的数据成员。或许你可以通过其派生类来初始化它的数据成员（假如nostatic data member为publish或protected）,但这样做的后果则是破坏了数据的封装性，使类的维护和修改更加困难。由此引申，类的data member应当被初始化，且只在其构造函数或其member function中初始化。</p>
-</li>
-<li><p>不要将析构函数设计为纯虚的，这不是一个好的设计。将析构函数设计为纯虚函数意味着，即使纯虚函数在语法上允许我们只声明而不定义纯虚函数，但还是必须实现该纯虚析构函数，否则它所有的继承类都将遇到链接错误。一个不能派生继承类的抽象类有什么存在的意义？必须定义纯虚析构函数，而不能仅仅声明它的原因在于：每一个继承类的析构函数会被编译器加以扩展，以静态调用方式其每一个基类的析构函数（假如有的话，不论是显示的还是编译器合成的），所以只要任何一个基类的析构函数缺乏定义，就会导致链接失败。矛盾就在这里，纯虚函数的语法，允许只声明而不定义纯虚析构函数，而编译器则死脑筋的看到一个其基类的析构函数声明，则去调用它的实体，而不管它有没有被定义。</p>
-</li>
-<li><p>真的必要的时候才使用虚函数，不要滥用虚函数。虚函数意味着不小的成本，编译很可能给你的类带来膨胀效应：</p>
-<ul>
-<li>每一个对象要多负担一个word的vptr。</li>
-<li>给每一个构造函数（不论是显示的还是编译器合成的），插入一些代码来初始化vptr，这些代码必须被放在所有基类构造函数的调用之后，但需在任意用户代码之前。没有构造函数则需要合成，并插入代码。</li>
-<li>合成一个拷贝构造函数和一个复制操作符（如果没有的话），并插入对vptr的初始化代码，有的话也需要插入vptr的初始化代码。</li>
-<li>意味着，如果具有bitwise语意，将不再具有，然后是变大的对象、没有那么高效的构造函数，没有那么高效的复制控制。</li>
-</ul>
-</li>
-<li><p>不能决定一个虚函数是否需要 const ，那么就不要它。</p>
-</li>
-<li><p>决不在构造函数或析构函数中使用虚函数机制。在构造函数中，每次调用虚函数会被决议为当前构造函数所对应类的虚函数实体，虚函数机制并不起作用。当一个base类的构造函数含有对虚函数vf()的调用，当其派生类derived的构造函数调用基类base的构造函数的时候，其中调用的虚函数vf()是base中的实体，而不是derived中的实体。这是由vptr初始化的位置决定的——在所有基类构造函数调用之后，在程序员供应的代码或是成员初始化队列之前。因构造函数的调用顺序是：有根源到末端，由内而外，所以对象的构造过程可以看成是，从构建一个最基础的对象开始，一步步构建成一个目标对象。析构函数则有着与构造相反的顺序，因此在构造或析构函数中使用虚函数机制，往往不是程序员的意图。若要在构造函数或析构函数中调用虚函数，应当直接以静态方式调用，而不要通过虚函数机制。</p>
-</li>
-</ul>
-<h2 id="构造、复制、析构语意学"><a href="#构造、复制、析构语意学" class="headerlink" title="构造、复制、析构语意学"></a>构造、复制、析构语意学</h2><p>一种所谓的Plain OI’Data声明形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">struct Point &#123;</div><div class="line">    float x,y,z;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>概念上来讲，对于一段这样的C++代码,编译器会为之合成一个默认构造函数、复制构造函数、析构函数、赋值操作符。然而实际上编译器会分析这段代码，并给Point贴上Plain OI’Data标签。编译器在此后对于Point的处理与在C中完全一样,也就是说上述的函数都不会被合成。可见概念上应当由编译器合成的函数，并不一定会合成，编译器只有在必要的时候才会合成它们。由此一来，原本在观念上应该调用这些函数的地方实质上不会调用，而是用其它的方法来完成上面的功能，比方复制控制会用bitwise copy。</p>
-<h3 id="对象构造语意学"><a href="#对象构造语意学" class="headerlink" title="对象构造语意学"></a>对象构造语意学</h3><h3 id="无继承情况下的对象构造：略。"><a href="#无继承情况下的对象构造：略。" class="headerlink" title="无继承情况下的对象构造：略。"></a>无继承情况下的对象构造：略。</h3><h4 id="单继承体系下的对象构造"><a href="#单继承体系下的对象构造" class="headerlink" title="单继承体系下的对象构造"></a>单继承体系下的对象构造</h4><p>对于简单定义的一个对象T object;,很明显它的默认构造函数会被调用（被编译器合成的或用户提供的）。但是一个构造函数究竟做了什么，就显得比较复杂了——编译器给了它很多的隐藏代码。编译器一般会做如下扩充操作：</p>
-<ul>
-<li><p>调用所有虚基类的构造函数，从左到右，从最深到最浅：</p>
-<ul>
-<li>如果该类被列于成员初始化列表中，任何明确明确指定的参数，都应该被传递过来。若没有列入成员初始化列表中，虚基类的一个默认构造函数被调用（有的话）。</li>
-<li>此外，要保证虚基类的偏移量在执行期可存取，对于使用vbptr来实现虚基类的编译器来说，满足这点要求就是对vbptr的初始化。</li>
-<li>然而，只有在类对象代表着“most-derived class”时，这些构造函数才可能会被调用。一些支持这个行为的代码会被放进去^注2（直观点说就是，虚基类的构造由最外层类控制)。</li>
-</ul>
-</li>
-<li><p>调用所有基类构造函数，依声明顺序：</p>
-<ul>
-<li>如果该基类被列入了成员初始化队列，那么所有明确指定的参数，应该被传递过来。</li>
-<li>没有列入的话，那么调用其默认构造函数，如果有的话。</li>
-<li>如果该基类是第二顺位或之后的基类，this 指针必须被调整。</li>
-</ul>
-</li>
-<li><p>正确初始化vptr,如果有的话。</p>
-</li>
-<li>调用没有出现在初始化成员列表中的member object的默认构造函数，如果有的话。</li>
-<li>记录在成员初始化队列中的数据成员初始化操作以声明的顺序被放进构造函数中。</li>
-</ul>
-<h4 id="虚拟继承下的构造抑制"><a href="#虚拟继承下的构造抑制" class="headerlink" title="虚拟继承下的构造抑制"></a>虚拟继承下的构造抑制</h4><p>有如下继承体系：</p>
-<p><img src="/images/cpp/cpp_10.png" alt=""></p>
-<p>根据c++ 语法，Point 的初始化应有most-derived class来施行。也就是说当Vertex3d为most-derived class的时候，应当由它的构造函数来调用Point的构造函数初始化Point子对象，Vertex3d的子对象的构造函数对于Point的调用则应当抑制。如果没有抑制会怎么样?当我们定义Vertex3d cv;时，Vertex3d的构造函数中调用Point的构造函数、而随之调用它的子对象，Point3d和Vertex的<br>构造函数中也调用了Point的构造函数。先不说，对于同一个子对象进行三次初始化是否有效率，更重要的是，这将不可避免的带来错误。由Vertex3d指定的子对象Point的值，会被覆盖掉。</p>
-<p>编译器通常使用一个条件变量来表示是否为most-derived class,各构造函数根据这个条件变量来决定是否调用虚基类的构造函数，因此通过控制这个条件变量，就可以抑制非most-derived class调用虚基类的构造函数。当然也有其它的方法来做同样的事。</p>
-<h3 id="对象复制语意学"><a href="#对象复制语意学" class="headerlink" title="对象复制语意学"></a>对象复制语意学</h3><p>设计一个类，并考虑到要以一个对象指定给另一个对象时，有三种选择：</p>
-<ul>
-<li>什么都不做，采用编译器提供默认行为（bitwise copy或者由编译器合成一个）。</li>
-<li>自己提供一个赋值运算符操作。</li>
-<li>明确拒绝将一个对象指定给另一个对象。<br>对于第三点，只要将赋值操作符声明为private，且不定义它就可以了。对于第二点，只有在第一点的行为不安全或不正确，或你特别想往其中插入点东西的时候。</li>
-</ul>
-<p>以下四种情况 copy assignment operator(还是用它的英文名，感觉顺畅点)，不具有bitwise copy语意，也就是说这些情况下，编译器要合成copy assignmentoperator而不能依靠bitwise copy来完成赋值操作，这四种情况与构造函数、拷贝构造函数的情况类似，原因可以参考它们的。四种情况如下：</p>
-<ul>
-<li>类包含有定义了copy assignment operator的class object成员。</li>
-<li>类的基类有copy assignment operator。</li>
-<li>类声明有任何虚函数的时候（问题同样会出现在由继承类对象向基类对象拷贝的时候）。</li>
-<li>当class继承体系中有虚基类时。<br>在虚拟继承情况下，copy assignment opertator会遇到一个不可避免的问题，virtual base class subobject的复制行为会发生多次，与前面说到的在虚拟继承情况下虚基类被构造多次是一个意思，不同的是在这里不能抑制非most-derivedclass 对virtual base class 的赋值行为。</li>
-</ul>
-<p>安全的做法是把虚基类的赋值放在最后，避免被覆盖。</p>
-<h3 id="对象析构语意学"><a href="#对象析构语意学" class="headerlink" title="对象析构语意学"></a>对象析构语意学</h3><p>只有在基类拥有析构函数，或者object member拥有析构函数的时候，编译器才为类合成析构函数，否则都被视为不需要。</p>
-<p>析构的顺序正好与构造相反：</p>
-<ul>
-<li>本身的析构函数被执行。</li>
-<li>以声明的相反顺序调用member object 的析构函数，如果有的话。</li>
-<li>重设vptr 指向适当的基类的虚函数表，如果有的话。</li>
-<li>以声明相反的顺序调用上一层的析构函数，如果有的话。</li>
-<li>如果当前类是 most-derivedclass，那么以构造的相反顺序调用虚基类的析构函数。</li>
-</ul>
-<p>“在此之前”的叙述并不适合我，我喜欢很直白的方式，按顺序来。书中的方式在于，从最浅显的步骤入手，然后告诉你，做这步之前，你还该做点什么。所以，我以对原文的理解写下这点。Lippman的原文为：</p>
-<blockquote>
-<p>These constructors, however, may be invoked if, and only if, the class object represents the “most-derived class.” Some mechanism supporting this must be put into place.</p>
-</blockquote>
-<p>侯捷的译文为：</p>
-<blockquote>
-<p>如果class object是最底层（most-derived）的class,其constructors可能被调用；某些用以支持这个行为的机制必须被放进来。</p>
-</blockquote>
-<p>我认为，Lippman在这一句上要说的是，虚基类的构造函数只能由most-derived class调用，而为了支持这一机制，需要插入一些代码来抑制非most-derived class对虚基类构造函数的调用。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/04/22/执行期语意学/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苏远的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/04/22/执行期语意学/" itemprop="url">执行期语意学</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-04-22T20:27:34+08:00">
-                2015-04-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="new-expression、operator-new-和-placement-new"><a href="#new-expression、operator-new-和-placement-new" class="headerlink" title="new expression、operator new 和 placement new"></a>new expression、operator new 和 placement new</h2><p>之前虽然一直知道有new expression、operator new和placement new，但对于这三个“new”,却不甚了了，这些天从《深度探索C++对象模型》读到new和delete，特意结合《C++ Primer》写下这篇笔记，以作总结。三个虽然都是new，但每个new都不相同各有各的特点，各有各的风味，本文重点在于总结比较这三个“new”，但期间也不忘提一提推倒这三个“new”的哥们——delete。</p>
-<p>new expression 和 operator new</p>
-<p>一个看起来很简单的new expression运算，其实暗含一些步骤，像这样的一次简单运用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int *p=new int (5)实际上包含着两个步骤：</div></pre></td></tr></table></figure></p>
-<ul>
-<li>调用一个合适的operator new实体分配足够的未类型化的内存。</li>
-<li>调用合适的构造函数初始化这块内存，当然int没有构造函数，但是会进行赋值操作：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">*p=5。</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>由此可见：new expression和operator new完全不是一回事，但关系不浅——operator new 为new expression分配内存。</p>
-<p>摘录一下 《C++ primer》关于对比new expression 和 operator new的一小段话：</p>
-<blockquote>
-<p>标准库函数 operator new和 operator delete 的命名容易让人误解。与其他operator 函数（如 operator=）不同，这些函数没有重载new或delete expression，实际上，我们不能重定义new或delete expression的行为。</p>
-</blockquote>
-<p>这段话有两个要点：</p>
-<ul>
-<li>operator new和operator delete不是new expression和delete expression的重载，它们完全是另外的一个独立的东西，具有不同的语意，这与operator +是对+ expression的重载不同。</li>
-<li>new expression和delete expression是不能被重载的，可以看出它们与普通的expression 不同。</li>
-<li>operator new其实也是可以直接利用的，譬如当我们只想分配内存，而不愿意进行初始化的时候，我们就可以直接用operator new 来进行。用法如下：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">T* newelements = static_cast&lt;T*&gt;(operator new ( sizeof(T) );</div></pre></td></tr></table></figure>
-<p>标准库重载有两个版本的operator new，分别为单个对象和数组对象服务，单个对象版本的<br>提供给分配单个对象new expression调用，数组版的提供给分配数组的 new expression 调<br>用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">void *operator new(size_t);       // allocate an object</div><div class="line">void *operator new[](size_t);     // allocate an array</div></pre></td></tr></table></figure></p>
-<p>我们可以分别重载这两个版本，来定义我们自己的分配单个对象或对象数组的内存方式。当我们自己在重载operator new时，不一定要完全按照上面两个版本的原型重载，唯一的两个要求是：返回一个void*类型和第一个参数的类型必须为size_t。</p>
-<p>还要注意的是，在类中重载的operator new和operator delete是隐式静态的，因为前者运行于对象构造之前，后者运行与对象析构之后，所以他们不能也不应该拥有一个this指针来存取数据。另外，new expression 默认调用的是单参数的operator new——上面声明的那种，而其它不同形式的重载，则只能显式调用了。</p>
-<p>delete expression与new expression相对应，而operator delete则与operator new对应。<br>依上所述，则不难推断出关于delete expression和operator delete之间的关系以及一些特性，此略。</p>
-<p>当使用new expression来动态分配数组的时候，Lippman在《深度探索C++对象模型》中指出：</p>
-<ul>
-<li>当分配的类型有一个默认构造函数的时候，new expression将调用一个所谓的vec_new()函数来分配内存，而不是operator new内存。但我在VC ++ 20102上测试的结果却是，不论有没有构造函数，new expression都是调用operator new来分配内存，并在此之后，调用默认构造函数逐个初始化它们，而不调用所谓的vec_new()，也许cfront确实离我们有点遥远。</li>
-</ul>
-<h2 id="两个-delete-后的问题"><a href="#两个-delete-后的问题" class="headerlink" title="两个 delete 后的问题"></a>两个 delete 后的问题</h2><p>最近在网上看到两个关于指针 delete 后的问题。第一种情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int* p = new int;</div><div class="line">delete p;</div><div class="line">delete p;// p为什么能delete两次，而程序运行的时候还不报错。</div></pre></td></tr></table></figure></p>
-<p>第二种情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int* p = new int ;</div><div class="line">delete p;</div><div class="line">*p = 5;     //delete后对*p进行再赋值居然也可以（他的平台上运行并没有引发什么错误）？</div></pre></td></tr></table></figure></p>
-<p>在回答这两个问题之前，我们先想想delete p; 这一语句意味着什么？p指向一个地址，以该地址为起始地址保存有一个int变量（虽然该变量并没有进行初始化），delete p之后p所指向的地址空间被释放，也就是说这个int变量的生命结束，但是p仍旧是一个合法的指针，它仍旧指向原来的地址，而且该地址仍旧代表着一个合法的程序空间。与delete之前唯一的不同是，你已经丧失了那快程序空间的所有权。这带来一个什么样的问题？你租了一间储物室（int* p = new int;），后来退租了（delete p;），但你却保存了出入该储物室的钥匙（指针p）没有归还。拥有这片钥匙，你或许什么都不做，这自然没有问题。<br>但是：你或许出于好心，又跑过去告诉房东，“Hi！这储物室已经退租了（第一种情况）”。哦噢，会发生什么？我们假设此时这个房子已经有了新的租客。愚笨的房东直接相信了你的话，认为这<br>个储物室空着，把它又租给新的人。于是一间只能给一个人用的储物室，却租给了两个人，再之后各种难以预料的情况就会发生。</p>
-<p>又或许，你很无耻，你虽然退租，但却想用你的钥匙依旧享有储物室的使用权（第二种情况），结果呢，你存在这间储物室的东西可能会被现在的租客丢掉，而你也可能把他的东西丢掉，腾出空间来放你的。</p>
-<p>回到上面的程序上来，毫无疑问的是上面的程序在语法上来讲是合乎规范的，但是暗藏着很大<br>的逻辑错误，不论你对一块已经释放的内存再度delete，还是再度给它赋值，都暗含着很大<br>的危险，因为当你delete后，就代表着将这块内存归还。而这块被归还的内存很可能已经被再<br>度分配出去，此时不论是你再度delete还是重新赋值，都将破坏其它代码的数据，同时你存<br>储在其中的数据也很容易被覆盖。至于报不报错，崩不崩溃，这取决于有一个怎么样的“房东”，<br>聪明且负责的“房东”会阻止你上述的行为——终止你的程序，懒惰的房东，则听之任之。</p>
-<p>上述情况下的指针p被称为野指针——指向了一块“垃圾内存”，或者说指向了一块不应该读写的<br>内存。避免野指针的好方法是，当一个指针变为野指针的时候，马上赋值为NULL，其缘由在<br>于，你可以很容易的判断一个指针是否为NULL,却难以抉择其是否为野指针。而且，delete<br>一个空指针，不会做任何操作，因此总是安全的。</p>
-<h2 id="不用一个基类指针指向派生类数组？"><a href="#不用一个基类指针指向派生类数组？" class="headerlink" title="不用一个基类指针指向派生类数组？"></a>不用一个基类指针指向派生类数组？</h2><p>《深度探索C++对象模型》中指出，不要用一个基类指针指向派生类的数组。因为在他的cfront中的vec_delete是根据被删除指针的类型来调用析构函数——也就是说虚函数机制在这儿不起作用了。照这样的思路来说，对一个派生类的数组依次调用其基类的析构函数，显然大多时候不能正确析构——派生类一般大于其基类。但是我感兴趣的一点是，这么多年过去了，这样一个不太合理的设计是否有所改进呢？说它不太合理是，以C++编程者的思路，在这样一种情况下，它应该支持多态，而且在这种情况下支持多态并不需要太复杂的机制和代价。我在vc++2008和vc++ 2010下的结果是：是的，有与cfront不同，它支持多态。</p>
-<p>我的测试代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">class point&#123;</div><div class="line">public:</div><div class="line">        virtual ~point()&#123;</div><div class="line">            std::cout&lt;&lt;&quot;point::~point()&quot;&lt;&lt;std::endl;</div><div class="line">        &#125;</div><div class="line">private:</div><div class="line">    int  a;</div><div class="line">&#125;;</div><div class="line">class point3d:public point&#123;</div><div class="line">public:</div><div class="line">    virtual ~point3d()</div><div class="line">        &#123;</div><div class="line">            std::cout&lt;&lt;&quot;point3d::~point3d()&quot;&lt;&lt;std::endl;</div><div class="line">        &#125;</div><div class="line">private:</div><div class="line">    int b;</div><div class="line">&#125;;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    point *p=new point3d[2];</div><div class="line">    delete[] p;</div><div class="line">    system(&quot;pause&quot;);</div><div class="line">&#125; ;</div></pre></td></tr></table></figure>
-<p>输出的结果，也令人满意：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">point3d::~point3d()</div><div class="line">point::~point()</div><div class="line">point3d::~point3d()</div><div class="line">point::~point()</div></pre></td></tr></table></figure>
-<p>确实调用了派生类的析构函数，而非基类的析构函数。</p>
-<p>即使如此，是否能安心的使用一个基类指针指向派生类数组？我不太安心！——对于基类的析构函数是否为虚函数没有把握。所以最好还是不要把一个基类的指针指向派生类数组。非得这么做？那么我认为delete的时候将之类类型转换为派生类就差不多了，可以这样:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">delete[] static_cast&lt;point3d*&gt;(p);</div></pre></td></tr></table></figure>
-<p>似乎不必要像Lippman说的这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">for ( int ix = 0; ix &lt; elem_count; ++ix ) </div><div class="line">&#123;  </div><div class="line">    Point3d *p = &amp;((Point3d*)ptr)[ ix ];  </div><div class="line">    delete p;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="placement-operator-new"><a href="#placement-operator-new" class="headerlink" title="placement operator new"></a>placement operator new</h2><p>placement operator new用来在指定地址上构造对象，要注意的是，它并不分配内存，仅仅是对指定地址调用构造函数。其调用方式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">point *pt=new(p) point3d;</div></pre></td></tr></table></figure></p>
-<p>观其名字可知，它是operator new的一个重载版本。它的实现方式异常简单，传回一个指针即 可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">void* operator new(site_t,void *p)</div><div class="line">&#123;</div><div class="line">    return p;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>不必要惊讶于它的简单，《深度探索C++对象模型》中Lippman告诉我们，它有另一半重要的工作是被扩充而来。我在想，扩充一个类中定义的placement operator new还好说，但是要如何 扩充一个库中提供的placement operator new呢？毕竟它要放之四海而皆准，我原以为这其中 有什么高超的技巧。后来我则坚信根本就没有什么扩充，placement operator new 也并不强 大。</p>
-<p>我先明确调用了 placement operator new ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">point *pt=(point*)operator new(sizeof(point), p) ;</div></pre></td></tr></table></figure></p>
-<p>如我所料，输出结果显示（我在point的默认构造函数和placement operator new中间各输 出一句不同的话），此时 point的默认构造函数并不会被调用。然后我通过new expression 的方式来间接调用placement operator new：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">point *pt=new(p) point();</div></pre></td></tr></table></figure></p>
-<p>这个时候 point 的默认的构造函数被调用了。可见 placement operator new并没有什么奇特 的地方，它与一般的operator new不同处在于，它不会申请内存。它也不会在指定的地址调用 构造函数，而调用构造函数的的全部原因在于new expression总是先调用一个匹配参数的 operator new然后再调用指定类型的匹配参数的构造函数，而说到底 placement operator new 也是一个operator new。</p>
-<p>通过一个placement operator new构建的一个对象，如果你使用delete来撤销对象，那么其内 存也被回收，如果想保存内存而析构对象，好的办法是显示调用其析构函数。</p>
-<p>看一份代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">struct Base &#123; int j; virtual void f(); &#125;;</div><div class="line">struct Derived : Base &#123; void f(); &#125;;</div><div class="line">void fooBar() &#123;  </div><div class="line">   Base b;  </div><div class="line">   b.f(); // Base::f() invoked  </div><div class="line">   b.~Base();  </div><div class="line">   new ( &amp;b ) Derived; // 1  </div><div class="line">   b.f(); // which f() invoked?  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上述两个类的大小相同，因此将Derived对象放在 Base对象中是安全的，但是在最后一句代码 中 b.f()调用的是哪一个类的f()。答案是Base::f() 的。虽然此时b中存储的实际上是一个 Derived对象，但是，通过一个对象来调用虚函数，将被静态决议出来，虚函数机制不会被启用。</p>
-<p>参考：Lippman 的两本书《深度探索C++对象模型》和《C++ Primer》。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2088,7 +2070,7 @@ yarn add react-router-dom
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2099,7 +2081,7 @@ yarn add react-router-dom
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2110,7 +2092,7 @@ yarn add react-router-dom
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

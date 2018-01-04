@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="reactjs," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="本文大部分内容参考reactjs源码分析-上篇（首次渲染实现原理）  一切皆是组件，组件生成元素，元素创建dom的过程中调用组件的生命周期和render  reactjs的核心内容并不多，主要是下面这些：  虚拟dom对象(Virtual DOM) 虚拟dom差异化算法（diff algorithm） 单向数据流渲染（Data Flow） 组件生命周期 事件处理  这篇主要从页面渲染出来过程的角度">
+<meta name="keywords" content="reactjs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="react源码2-渲染原理">
+<meta property="og:url" content="http://yoursite.com/2017/10/15/react源码2-渲染原理/index.html">
+<meta property="og:site_name" content="苏远的博客">
+<meta property="og:description" content="本文大部分内容参考reactjs源码分析-上篇（首次渲染实现原理）  一切皆是组件，组件生成元素，元素创建dom的过程中调用组件的生命周期和render  reactjs的核心内容并不多，主要是下面这些：  虚拟dom对象(Virtual DOM) 虚拟dom差异化算法（diff algorithm） 单向数据流渲染（Data Flow） 组件生命周期 事件处理  这篇主要从页面渲染出来过程的角度">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/react/react-2.png">
+<meta property="og:updated_time" content="2018-01-04T15:58:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="react源码2-渲染原理">
+<meta name="twitter:description" content="本文大部分内容参考reactjs源码分析-上篇（首次渲染实现原理）  一切皆是组件，组件生成元素，元素创建dom的过程中调用组件的生命周期和render  reactjs的核心内容并不多，主要是下面这些：  虚拟dom对象(Virtual DOM) 虚拟dom差异化算法（diff algorithm） 单向数据流渲染（Data Flow） 组件生命周期 事件处理  这篇主要从页面渲染出来过程的角度">
+<meta name="twitter:image" content="http://yoursite.com/images/react/react-2.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/15/react源码2-渲染原理/"/>
+
+
+
+
+
+  <title>react源码2-渲染原理 | 苏远的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e56d57ba89bb058da8fdd8841e98770f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">苏远的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/index.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/15/react源码2-渲染原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">react源码2-渲染原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-15T22:02:15+08:00">
+                2017-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文大部分内容参考<a href="https://github.com/purplebamboo/blog/issues/2" target="_blank" rel="external">reactjs源码分析-上篇（首次渲染实现原理）</a></p>
+<blockquote>
+<p>一切皆是组件，组件生成元素，元素创建dom的过程中调用组件的生命周期和render</p>
+</blockquote>
+<p>reactjs的核心内容并不多，主要是下面这些：</p>
+<ul>
+<li>虚拟dom对象(Virtual DOM)</li>
+<li>虚拟dom差异化算法（diff algorithm）</li>
+<li>单向数据流渲染（Data Flow）</li>
+<li>组件生命周期</li>
+<li>事件处理</li>
+</ul>
+<p>这篇主要从页面渲染出来过程的角度来分析,一起构建一个最简单到react框架</p>
+<p><img src="/images/react/react-2.png" alt=""></p>
+<h3 id="渲染文本内容"><a href="#渲染文本内容" class="headerlink" title="渲染文本内容"></a>渲染文本内容</h3><ul>
+<li><p>目的：react.render 可以渲染内容到container</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">React.render(&apos;hello world&apos;,document.getElementById(&quot;container&quot;))</div><div class="line">&lt;/script&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>实现</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">//component类，用来表示文本在渲染，更新，删除时应该做些什么事情</div><div class="line">function ReactDOMTextComponent(text) &#123;</div><div class="line">    //存下当前的字符串</div><div class="line">    this._currentElement = &apos;&apos; + text;</div><div class="line">    //用来标识当前component</div><div class="line">    this._rootNodeID = null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//component渲染时生成的dom结构</div><div class="line">ReactDOMTextComponent.prototype.mountComponent = function(rootID) &#123;</div><div class="line">    this._rootNodeID = rootID;</div><div class="line">    return &apos;&lt;span data-reactid=&quot;&apos; + rootID + &apos;&quot;&gt;&apos; + this._currentElement + &apos;&lt;/span&gt;&apos;;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//component工厂  用来返回一个component实例</div><div class="line">function instantiateReactComponent(node)&#123;</div><div class="line">    if(typeof node === &apos;string&apos; || typeof node === &apos;number&apos;)&#123;</div><div class="line">        return new ReactDOMTextComponent(node)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">React = &#123;</div><div class="line">    nextReactRootIndex:0,</div><div class="line">    render:function(element,container)&#123;</div><div class="line"></div><div class="line">        var componentInstance = instantiateReactComponent(element);</div><div class="line">        var markup = componentInstance.mountComponent(React.nextReactRootIndex++);</div><div class="line">        $(container).html(markup);</div><div class="line">        //触发完成mount的事件</div><div class="line">        $(document).trigger(&apos;mountReady&apos;);    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>React.render 作为入口负责调用渲染</li>
+<li>我们引入了component类的概念，ReactDOMTextComponent是一个component类定义，定义对于这种文本类型的节点，在渲染，更新，删除时应该做什么操作，这边暂时只用到渲染，另外两个可以先忽略</li>
+<li>instantiateReactComponent用来根据component的类型（现在只有一种string类型），返回一个component的实例。其实就是个类工厂。</li>
+<li>主要的渲染逻辑放在了具体的componet类去定义。React.render负责调度整个流程，这里是调用instantiateReactComponent生成一个对应component类型的实例对象，然后调用此对象的mountComponent获取生成的内容。最后写到对应的container节点中。</li>
+</ul>
+<h2 id="引起element（元素），渲染文本内容升级为渲染元素"><a href="#引起element（元素），渲染文本内容升级为渲染元素" class="headerlink" title="引起element（元素），渲染文本内容升级为渲染元素"></a>引起element（元素），渲染文本内容升级为渲染元素</h2><p>在reactjs里，当我们希望在hello world外面包一层div,并且带上一些属性，甚至事件时我们可以这么写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//演示事件监听怎么用</div><div class="line">function hello()&#123;</div><div class="line">    alert(&apos;hello&apos;)</div><div class="line">&#125;</div><div class="line"></div><div class="line">var element = React.createElement(&apos;div&apos;,&#123;id:&apos;test&apos;,onclick:hello&#125;,&apos;click me&apos;)</div><div class="line"></div><div class="line">React.render(element,document.getElementById(&quot;container&quot;))</div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line">//生成的html为：</div><div class="line"></div><div class="line">&lt;div data-reactid=&quot;0&quot; id=&quot;test&quot;&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.0&quot;&gt;click me&lt;/span&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"></div><div class="line">//点击文字，会弹出hello的对话框</div><div class="line"></div><div class="line">*/</div></pre></td></tr></table></figure></p>
+<p>上面使用React.createElement创建了一个基本元素。<br>此时我们需要element元素这个概念出现。</p>
+<p>简易版本React.createElement的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">//ReactElement就是虚拟dom的概念，具有一个type属性代表当前的节点类型，还有节点的属性props</div><div class="line">//比如对于div这样的节点type就是div，props就是那些attributes</div><div class="line">//另外这里的key,可以用来标识这个element，用于优化以后的更新，这里可以先不管，知道有这么个东西就好了</div><div class="line">function ReactElement(type,key,props)&#123;</div><div class="line">  this.type = type;</div><div class="line">  this.key = key;</div><div class="line">  this.props = props;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">React = &#123;</div><div class="line">    nextReactRootIndex:0,</div><div class="line">    createElement:function(type,config,children)&#123;</div><div class="line">        var props = &#123;&#125;,propName;</div><div class="line">        config = config || &#123;&#125;</div><div class="line">        //看有没有key，用来标识element的类型，方便以后高效的更新，这里可以先不管</div><div class="line">        var key = config.key || null;</div><div class="line"></div><div class="line">        //复制config里的内容到props</div><div class="line">        for (propName in config) &#123;</div><div class="line">            if (config.hasOwnProperty(propName) &amp;&amp; propName !== &apos;key&apos;) &#123;</div><div class="line">                props[propName] = config[propName];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //处理children,全部挂载到props的children属性上</div><div class="line">        //支持两种写法，如果只有一个参数，直接赋值给children，否则做合并处理</div><div class="line">        var childrenLength = arguments.length - 2;</div><div class="line">        if (childrenLength === 1) &#123;</div><div class="line">            props.children = $.isArray(children) ? children : [children] ;</div><div class="line">        &#125; else if (childrenLength &gt; 1) &#123;</div><div class="line">            var childArray = Array(childrenLength);</div><div class="line">            for (var i = 0; i &lt; childrenLength; i++) &#123;</div><div class="line">                childArray[i] = arguments[i + 2];</div><div class="line">            &#125;</div><div class="line">            props.children = childArray;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return new ReactElement(type, key,props);</div><div class="line"></div><div class="line">    &#125;,</div><div class="line">    render:function(element,container)&#123;</div><div class="line">        var componentInstance = instantiateReactComponent(element);</div><div class="line">        var markup = componentInstance.mountComponent(React.nextReactRootIndex++);</div><div class="line">        $(container).html(markup);</div><div class="line">        //触发完成mount的事件</div><div class="line">        $(document).trigger(&apos;mountReady&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>createElement只是做了简单的参数修正，最终返回一个ReactElement实例对象也就是我们说的虚拟元素的实例(虚拟DOM)。</p>
+<blockquote>
+<p>这里你可能有疑问了，没看出ReactElement 能表示虚拟DOM啊，其实每个reactElement实例的props.children包含他的子节点，子节点的内容就是组件的render 生成的子 reactElement；最后的叶子节点自然是标准标签（div等）</p>
+</blockquote>
+<p>reactElement实例代表的是页面的组织结构</p>
+<p>好了有了元素实例，我们得把他渲染出来，此时render接受的是一个ReactElement而不是文本，我们先改造下instantiateReactComponent：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">function instantiateReactComponent(node)&#123;</div><div class="line">    //文本节点的情况</div><div class="line">    if(typeof node === &apos;string&apos; || typeof node === &apos;number&apos;)&#123;</div><div class="line">        return new ReactDOMTextComponent(node);</div><div class="line">    &#125;</div><div class="line">    //浏览器默认节点的情况</div><div class="line">    if(typeof node === &apos;object&apos; &amp;&amp; typeof node.type === &apos;string&apos;)&#123;</div><div class="line">        //注意这里，使用了一种新的component</div><div class="line">        return new ReactDOMComponent(node);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们增加了一个判断，这样当render的不是文本而是浏览器的基本元素时。我们使用另外一种component来处理它渲染时应该返回的内容。这里就体现了工厂方法instantiateReactComponent的好处了，不管来了什么类型的node，都可以负责生产出一个负责渲染的component实例。这样render完全不需要做任何修改，只需要再做一种对应的component类型（这里是ReactDOMComponent）就行了。</p>
+<p>所以重点我们来看看ReactDOMComponent的具体实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">//component类，用来表示文本在渲染，更新，删除时应该做些什么事情</div><div class="line">function ReactDOMComponent(element)&#123;</div><div class="line">    //存下当前的element对象引用</div><div class="line">    this._currentElement = element;</div><div class="line">    this._rootNodeID = null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//component渲染时生成的dom结构</div><div class="line">ReactDOMComponent.prototype.mountComponent = function(rootID)&#123;</div><div class="line">    //赋值标识</div><div class="line">    this._rootNodeID = rootID;</div><div class="line">    var props = this._currentElement.props;</div><div class="line">    var tagOpen = &apos;&lt;&apos; + this._currentElement.type;</div><div class="line">    var tagClose = &apos;&lt;/&apos; + this._currentElement.type + &apos;&gt;&apos;;</div><div class="line"></div><div class="line">    //加上reactid标识</div><div class="line">    tagOpen += &apos; data-reactid=&apos; + this._rootNodeID;</div><div class="line"></div><div class="line">    //拼凑出属性</div><div class="line">    for (var propKey in props) &#123;</div><div class="line"></div><div class="line">        //这里要做一下事件的监听，就是从属性props里面解析拿出on开头的事件属性的对应事件监听</div><div class="line">        if (/^on[A-Za-z]/.test(propKey)) &#123;</div><div class="line">            var eventType = propKey.replace(&apos;on&apos;, &apos;&apos;);</div><div class="line">            //针对当前的节点添加事件代理,以_rootNodeID为命名空间</div><div class="line">            $(document).delegate(&apos;[data-reactid=&quot;&apos; + this._rootNodeID + &apos;&quot;]&apos;, eventType + &apos;.&apos; + this._rootNodeID, props[propKey]);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //对于children属性以及事件监听的属性不需要进行字符串拼接</div><div class="line">        //事件会代理到全局。这边不能拼到dom上不然会产生原生的事件监听</div><div class="line">        if (props[propKey] &amp;&amp; propKey != &apos;children&apos; &amp;&amp; !/^on[A-Za-z]/.test(propKey)) &#123;</div><div class="line">            tagOpen += &apos; &apos; + propKey + &apos;=&apos; + props[propKey];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //获取子节点渲染出的内容</div><div class="line">    var content = &apos;&apos;;</div><div class="line">    var children = props.children || [];</div><div class="line"></div><div class="line">    var childrenInstances = []; //用于保存所有的子节点的componet实例，以后会用到</div><div class="line">    var that = this;</div><div class="line">    $.each(children, function(key, child) &#123;</div><div class="line">        //这里再次调用了instantiateReactComponent实例化子节点component类，拼接好返回</div><div class="line">        var childComponentInstance = instantiateReactComponent(child);</div><div class="line">        childComponentInstance._mountIndex = key;</div><div class="line"></div><div class="line">        childrenInstances.push(childComponentInstance);</div><div class="line">        //子节点的rootId是父节点的rootId加上新的key也就是顺序的值拼成的新值</div><div class="line">        var curRootId = that._rootNodeID + &apos;.&apos; + key;</div><div class="line">        //得到子节点的渲染内容</div><div class="line">        var childMarkup = childComponentInstance.mountComponent(curRootId);</div><div class="line">        //拼接在一起</div><div class="line">        content += &apos; &apos; + childMarkup;</div><div class="line"></div><div class="line">    &#125;)</div><div class="line"></div><div class="line">    //留给以后更新时用的这边先不用管</div><div class="line">    this._renderedChildren = childrenInstances;</div><div class="line"></div><div class="line">    //拼出整个html内容</div><div class="line">    return tagOpen + &apos;&gt;&apos; + content + tagClose;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>增加了虚拟dom reactElement的定义</li>
+<li>增加了一个新的componet类ReactDOMComponent。</li>
+</ul>
+<p>这样我们就实现了渲染浏览器基本元素的功能了。</p>
+<ul>
+<li><p>对于虚拟dom的渲染逻辑，本质上还是个递归渲染的东西，reactElement会递归渲染自己的子节点。可以看到我们通过instantiateReactComponent屏蔽了子节点的差异，只需要使用不同的componet类，这样都能保证通过mountComponent最终拿到渲染后的内容。</p>
+</li>
+<li><p>另外这边的事件也要说下，可以在传递props的时候传入{onClick:function(){}}这样的参数，这样就会在当前元素上添加事件，代理到document。由于reactjs本身全是在写js，所以监听的函数的传递变得特别简单。</p>
+</li>
+<li><p>这里很多东西没有考虑，比如一些特殊的类型input select等等，再比如img不需要有对应的tagClose等。这里为了保持简单就不再扩展了。另外reactjs的事件处理其实很复杂，实现了一套标准的w3c事件。这里偷懒直接使用jQuery的事件代理到document上了。</p>
+</li>
+</ul>
+<h2 id="引入组件，可以渲染自定义的组件创建的元素"><a href="#引入组件，可以渲染自定义的组件创建的元素" class="headerlink" title="引入组件，可以渲染自定义的组件创建的元素"></a>引入组件，可以渲染自定义的组件创建的元素</h2><p>reactjs通过虚拟dom做到了扩张标记的功能，还记得我们上面element.type只是个简单的字符串，如果是个类呢？如果这个类恰好还有自己的生命周期管理，那扩展性就很高了。</p>
+<p>我们看下reactjs怎么使用自定义元素：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">var HelloMessage = React.createClass(&#123;</div><div class="line">  getInitialState: function() &#123;</div><div class="line">    return &#123;type: &apos;say:&apos;&#125;;</div><div class="line">  &#125;,</div><div class="line">  componentWillMount: function() &#123;</div><div class="line">    console.log(&apos;我就要开始渲染了。。。&apos;)</div><div class="line">  &#125;,</div><div class="line">  componentDidMount: function() &#123;</div><div class="line">    console.log(&apos;我已经渲染好了。。。&apos;)</div><div class="line">  &#125;,</div><div class="line">  render: function() &#123;</div><div class="line">    return React.createElement(&quot;div&quot;, null,this.state.type, &quot;Hello &quot;, this.props.name);</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"></div><div class="line">React.render(React.createElement(HelloMessage, &#123;name: &quot;John&quot;&#125;), document.getElementById(&quot;container&quot;));</div><div class="line"></div><div class="line">/**</div><div class="line">结果为：</div><div class="line"></div><div class="line">html:</div><div class="line">&lt;div data-reactid=&quot;0&quot;&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.0&quot;&gt;say:&lt;/span&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.1&quot;&gt;Hello &lt;/span&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.2&quot;&gt;John&lt;/span&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">console:</div><div class="line">我就要开始渲染了。。。</div><div class="line">我已经渲染好了。。。</div><div class="line"></div><div class="line">*/</div></pre></td></tr></table></figure></p>
+<p>React.createElement接受的不再是字符串，而是一个class。</p>
+<p>React.createClass生成一个自定义标记类，带有基本的生命周期：</p>
+<ul>
+<li>getInitialState 获取最初的属性值this.state</li>
+<li>componentWillmount 在组件准备渲染时调用</li>
+<li>componentDidMount 在组件渲染完成后调用<br>对reactjs稍微有点了解的应该都可以明白上面的用法。</li>
+</ul>
+<p>我们先来看看React.createClass的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">//定义ReactClass类,所有自定义的超级父类</div><div class="line">var ReactClass = function()&#123;</div><div class="line">&#125;</div><div class="line">//留给子类去继承覆盖</div><div class="line">ReactClass.prototype.render = function()&#123;&#125;</div><div class="line"></div><div class="line"></div><div class="line">React = &#123;</div><div class="line">    nextReactRootIndex:0,</div><div class="line">    createClass:function(spec)&#123;</div><div class="line">        //生成一个子类</div><div class="line">        var Constructor = function (props) &#123;</div><div class="line">            this.props = props;</div><div class="line">            this.state = this.getInitialState ? this.getInitialState() : null;</div><div class="line">        &#125;</div><div class="line">        //原型继承，继承超级父类</div><div class="line">        Constructor.prototype = new ReactClass();</div><div class="line">        Constructor.prototype.constructor = Constructor;</div><div class="line">        //混入spec到原型</div><div class="line">        $.extend(Constructor.prototype,spec);</div><div class="line">        return Constructor;</div><div class="line"></div><div class="line">    &#125;,</div><div class="line">    createElement:function(type,config,children)&#123;</div><div class="line">        ...</div><div class="line">    &#125;,</div><div class="line">    render:function(element,container)&#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可以看到createClass生成了一个继承ReactClass的子类，在构造函数里调用this.getInitialState获得最初的state。</p>
+<p>为了演示方便,我们这边的ReactClass相当简单，实际上原始的代码处理了很多东西，比如类的mixin的组合继承支持,比如componentDidMount等可以定义多次，需要合并调用等等，有兴趣的去翻源码吧，不是本文的主要目的，这里就不详细展开了。</p>
+<p>我们这里只是返回了一个继承类的定义，那么具体的componentWillmount，<code>这些生命周期函数在哪里调用呢</code>。</p>
+<p>看看我们上面的两种类型就知道，我们是时候为自定义元素也提供一个componet类了，在那个类里我们会实例化ReactClass，并且管理生命周期，还有父子组件依赖。</p>
+<p>好，我们老规矩先改造instantiateReactComponent</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">function instantiateReactComponent(node)&#123;</div><div class="line">    //文本节点的情况</div><div class="line">    if(typeof node === &apos;string&apos; || typeof node === &apos;number&apos;)&#123;</div><div class="line">        return new ReactDOMTextComponent(node);</div><div class="line">    &#125;</div><div class="line">    //浏览器默认节点的情况</div><div class="line">    if(typeof node === &apos;object&apos; &amp;&amp; typeof node.type === &apos;string&apos;)&#123;</div><div class="line">        //注意这里，使用了一种新的component</div><div class="line">        return new ReactDOMComponent(node);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">    //自定义的元素节点</div><div class="line">    if(typeof node === &apos;object&apos; &amp;&amp; typeof node.type === &apos;function&apos;)&#123;</div><div class="line">        //注意这里，使用新的component,专门针对自定义元素</div><div class="line">        return new ReactCompositeComponent(node);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很简单我们增加了一个判断，使用新的component类形来处理自定义的节点。我们看下<br>ReactCompositeComponent的具体实现:</p>
+<blockquote>
+<p>你在组件render函数 中的写的大量<code>return &lt;div&gt;&lt;/div&gt;</code>将在此刻被调用</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">function ReactCompositeComponent(element)&#123;</div><div class="line">    //存放元素element对象</div><div class="line">    this._currentElement = element;</div><div class="line">    //存放唯一标识</div><div class="line">    this._rootNodeID = null;</div><div class="line">    //存放对应的ReactClass的实例</div><div class="line">    this._instance = null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//用于返回当前自定义元素渲染时应该返回的内容</div><div class="line">ReactCompositeComponent.prototype.mountComponent = function(rootID)&#123;</div><div class="line">    this._rootNodeID = rootID;</div><div class="line">    //拿到当前元素对应的属性值</div><div class="line">    var publicProps = this._currentElement.props;</div><div class="line">    //拿到对应的ReactClass</div><div class="line">    var ReactClass = this._currentElement.type;</div><div class="line">    // Initialize the public class</div><div class="line">    var inst = new ReactClass(publicProps);</div><div class="line">    this._instance = inst;</div><div class="line">    //保留对当前comonent的引用，下面更新会用到</div><div class="line">    inst._reactInternalInstance = this;</div><div class="line"></div><div class="line">    if (inst.componentWillMount) &#123;</div><div class="line">        inst.componentWillMount();</div><div class="line">        //这里在原始的reactjs其实还有一层处理，就是  componentWillMount调用setstate，不会触发rerender而是自动提前合并，这里为了保持简单，就略去了</div><div class="line">    &#125;</div><div class="line">    //调用ReactClass的实例的render方法,返回一个element或者一个文本节点***************重点</div><div class="line">    var renderedElement = this._instance.render();</div><div class="line">    //得到renderedElement对应的component类实例</div><div class="line">    var renderedComponentInstance = instantiateReactComponent(renderedElement);</div><div class="line">    this._renderedComponent = renderedComponentInstance; //存起来留作后用</div><div class="line"></div><div class="line">    //拿到渲染之后的字符串内容，将当前的_rootNodeID传给render出的节点</div><div class="line">    var renderedMarkup = renderedComponentInstance.mountComponent(this._rootNodeID);</div><div class="line"></div><div class="line">    //之前我们在React.render方法最后触发了mountReady事件，所以这里可以监听，在渲染完成后会触发。</div><div class="line">    $(document).on(&apos;mountReady&apos;, function() &#123;</div><div class="line">        //调用inst.componentDidMount</div><div class="line">        inst.componentDidMount &amp;&amp; inst.componentDidMount();</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    return renderedMarkup;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>ReactClass的render一定是返回一个虚拟节点(包括element和text)，这个时候我们使用instantiateReactComponent去得到实例，再使用mountComponent拿到结果作为当前自定义元素的结果。</p>
+</li>
+<li><p>应该说本身自定义元素不负责具体的内容，他更多的是负责生命周期。具体的内容是由它的render方法返回的虚拟节点来负责渲染的。</p>
+</li>
+<li><p>本质上也是递归的去渲染内容的过程。同时因为这种递归的特性，父组件的componentWillMount一定在某个子组件的componentWillMount之前调用，而父组件的componentDidMount肯定在子组件之后，因为监听mountReady事件，肯定是子组件先监听的。</p>
+</li>
+<li><p>需要注意的是自定义元素并不会处理我们createElement时传入的子节点，它只会处理自己render返回的节点作为自己的子节点。不过我们在render时可以使用this.props.children拿到那些传入的子节点，可以自己处理。其实有点类似webcomponents里面的shadow dom的作用。</p>
+</li>
+<li><p>上面实现了三种类型的元素，其实我们发现本质上没有太大的区别，都是有自己对应component类来处理自己的渲染过程。</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/reactjs/" rel="tag"># reactjs</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/09/react源码-组成/" rel="next" title="react源码1--页面是怎么出来的">
+                <i class="fa fa-chevron-left"></i> react源码1--页面是怎么出来的
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/19/huwai-1511105901710/" rel="prev" title="户外项目">
+                户外项目 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg"
+               alt="suyuan" />
+          <p class="site-author-name" itemprop="name">suyuan</p>
+           
+              <p class="site-description motion-element" itemprop="description">东京下雨，淋湿巴黎</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#渲染文本内容"><span class="nav-number">1.</span> <span class="nav-text">渲染文本内容</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引起element（元素），渲染文本内容升级为渲染元素"><span class="nav-number"></span> <span class="nav-text">引起element（元素），渲染文本内容升级为渲染元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引入组件，可以渲染自定义的组件创建的元素"><span class="nav-number"></span> <span class="nav-text">引入组件，可以渲染自定义的组件创建的元素</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suyuan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
