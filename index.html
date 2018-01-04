@@ -526,8 +526,7 @@ cp dist ../koa2-hw/public
       
         
           
-            <p>本文大部分内容参考<a href="https://github.com/purplebamboo/blog/issues/2" target="_blank" rel="external">reactjs源码分析-上篇（首次渲染实现原理）</a></p>
-<blockquote>
+            <blockquote>
 <p>一切皆是组件，组件生成元素，元素创建dom的过程中调用组件的生命周期和render</p>
 </blockquote>
 <p>reactjs的核心内容并不多，主要是下面这些：</p>
@@ -554,7 +553,7 @@ cp dist ../koa2-hw/public
 <li>instantiateReactComponent用来根据component的类型（现在只有一种string类型），返回一个component的实例。其实就是个类工厂。</li>
 <li>主要的渲染逻辑放在了具体的componet类去定义。React.render负责调度整个流程，这里是调用instantiateReactComponent生成一个对应component类型的实例对象，然后调用此对象的mountComponent获取生成的内容。最后写到对应的container节点中。</li>
 </ul>
-<h2 id="引起element（元素），渲染文本内容升级为渲染元素"><a href="#引起element（元素），渲染文本内容升级为渲染元素" class="headerlink" title="引起element（元素），渲染文本内容升级为渲染元素"></a>引起element（元素），渲染文本内容升级为渲染元素</h2><p>在reactjs里，当我们希望在hello world外面包一层div,并且带上一些属性，甚至事件时我们可以这么写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//演示事件监听怎么用</div><div class="line">function hello()&#123;</div><div class="line">    alert(&apos;hello&apos;)</div><div class="line">&#125;</div><div class="line"></div><div class="line">var element = React.createElement(&apos;div&apos;,&#123;id:&apos;test&apos;,onclick:hello&#125;,&apos;click me&apos;)</div><div class="line"></div><div class="line">React.render(element,document.getElementById(&quot;container&quot;))</div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line">//生成的html为：</div><div class="line"></div><div class="line">&lt;div data-reactid=&quot;0&quot; id=&quot;test&quot;&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.0&quot;&gt;click me&lt;/span&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"></div><div class="line">//点击文字，会弹出hello的对话框</div><div class="line"></div><div class="line">*/</div></pre></td></tr></table></figure></p>
+<h3 id="引起element（元素），渲染文本内容升级为渲染元素"><a href="#引起element（元素），渲染文本内容升级为渲染元素" class="headerlink" title="引起element（元素），渲染文本内容升级为渲染元素"></a>引起element（元素），渲染文本内容升级为渲染元素</h3><p>在reactjs里，当我们希望在hello world外面包一层div,并且带上一些属性，甚至事件时我们可以这么写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//演示事件监听怎么用</div><div class="line">function hello()&#123;</div><div class="line">    alert(&apos;hello&apos;)</div><div class="line">&#125;</div><div class="line"></div><div class="line">var element = React.createElement(&apos;div&apos;,&#123;id:&apos;test&apos;,onclick:hello&#125;,&apos;click me&apos;)</div><div class="line"></div><div class="line">React.render(element,document.getElementById(&quot;container&quot;))</div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line">//生成的html为：</div><div class="line"></div><div class="line">&lt;div data-reactid=&quot;0&quot; id=&quot;test&quot;&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.0&quot;&gt;click me&lt;/span&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"></div><div class="line">//点击文字，会弹出hello的对话框</div><div class="line"></div><div class="line">*/</div></pre></td></tr></table></figure></p>
 <p>上面使用React.createElement创建了一个基本元素。<br>此时我们需要element元素这个概念出现。</p>
 <p>简易版本React.createElement的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">//ReactElement就是虚拟dom的概念，具有一个type属性代表当前的节点类型，还有节点的属性props</div><div class="line">//比如对于div这样的节点type就是div，props就是那些attributes</div><div class="line">//另外这里的key,可以用来标识这个element，用于优化以后的更新，这里可以先不管，知道有这么个东西就好了</div><div class="line">function ReactElement(type,key,props)&#123;</div><div class="line">  this.type = type;</div><div class="line">  this.key = key;</div><div class="line">  this.props = props;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">React = &#123;</div><div class="line">    nextReactRootIndex:0,</div><div class="line">    createElement:function(type,config,children)&#123;</div><div class="line">        var props = &#123;&#125;,propName;</div><div class="line">        config = config || &#123;&#125;</div><div class="line">        //看有没有key，用来标识element的类型，方便以后高效的更新，这里可以先不管</div><div class="line">        var key = config.key || null;</div><div class="line"></div><div class="line">        //复制config里的内容到props</div><div class="line">        for (propName in config) &#123;</div><div class="line">            if (config.hasOwnProperty(propName) &amp;&amp; propName !== &apos;key&apos;) &#123;</div><div class="line">                props[propName] = config[propName];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //处理children,全部挂载到props的children属性上</div><div class="line">        //支持两种写法，如果只有一个参数，直接赋值给children，否则做合并处理</div><div class="line">        var childrenLength = arguments.length - 2;</div><div class="line">        if (childrenLength === 1) &#123;</div><div class="line">            props.children = $.isArray(children) ? children : [children] ;</div><div class="line">        &#125; else if (childrenLength &gt; 1) &#123;</div><div class="line">            var childArray = Array(childrenLength);</div><div class="line">            for (var i = 0; i &lt; childrenLength; i++) &#123;</div><div class="line">                childArray[i] = arguments[i + 2];</div><div class="line">            &#125;</div><div class="line">            props.children = childArray;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return new ReactElement(type, key,props);</div><div class="line"></div><div class="line">    &#125;,</div><div class="line">    render:function(element,container)&#123;</div><div class="line">        var componentInstance = instantiateReactComponent(element);</div><div class="line">        var markup = componentInstance.mountComponent(React.nextReactRootIndex++);</div><div class="line">        $(container).html(markup);</div><div class="line">        //触发完成mount的事件</div><div class="line">        $(document).trigger(&apos;mountReady&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>createElement只是做了简单的参数修正，最终返回一个ReactElement实例对象也就是我们说的虚拟元素的实例(虚拟DOM)。</p>
@@ -579,7 +578,7 @@ cp dist ../koa2-hw/public
 <li><p>这里很多东西没有考虑，比如一些特殊的类型input select等等，再比如img不需要有对应的tagClose等。这里为了保持简单就不再扩展了。另外reactjs的事件处理其实很复杂，实现了一套标准的w3c事件。这里偷懒直接使用jQuery的事件代理到document上了。</p>
 </li>
 </ul>
-<h2 id="引入组件，可以渲染自定义的组件创建的元素"><a href="#引入组件，可以渲染自定义的组件创建的元素" class="headerlink" title="引入组件，可以渲染自定义的组件创建的元素"></a>引入组件，可以渲染自定义的组件创建的元素</h2><p>reactjs通过虚拟dom做到了扩张标记的功能，还记得我们上面element.type只是个简单的字符串，如果是个类呢？如果这个类恰好还有自己的生命周期管理，那扩展性就很高了。</p>
+<h3 id="引入组件，可以渲染自定义的组件创建的元素"><a href="#引入组件，可以渲染自定义的组件创建的元素" class="headerlink" title="引入组件，可以渲染自定义的组件创建的元素"></a>引入组件，可以渲染自定义的组件创建的元素</h3><p>reactjs通过虚拟dom做到了扩张标记的功能，还记得我们上面element.type只是个简单的字符串，如果是个类呢？如果这个类恰好还有自己的生命周期管理，那扩展性就很高了。</p>
 <p>我们看下reactjs怎么使用自定义元素：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">var HelloMessage = React.createClass(&#123;</div><div class="line">  getInitialState: function() &#123;</div><div class="line">    return &#123;type: &apos;say:&apos;&#125;;</div><div class="line">  &#125;,</div><div class="line">  componentWillMount: function() &#123;</div><div class="line">    console.log(&apos;我就要开始渲染了。。。&apos;)</div><div class="line">  &#125;,</div><div class="line">  componentDidMount: function() &#123;</div><div class="line">    console.log(&apos;我已经渲染好了。。。&apos;)</div><div class="line">  &#125;,</div><div class="line">  render: function() &#123;</div><div class="line">    return React.createElement(&quot;div&quot;, null,this.state.type, &quot;Hello &quot;, this.props.name);</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"></div><div class="line">React.render(React.createElement(HelloMessage, &#123;name: &quot;John&quot;&#125;), document.getElementById(&quot;container&quot;));</div><div class="line"></div><div class="line">/**</div><div class="line">结果为：</div><div class="line"></div><div class="line">html:</div><div class="line">&lt;div data-reactid=&quot;0&quot;&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.0&quot;&gt;say:&lt;/span&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.1&quot;&gt;Hello &lt;/span&gt;</div><div class="line">    &lt;span data-reactid=&quot;0.2&quot;&gt;John&lt;/span&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">console:</div><div class="line">我就要开始渲染了。。。</div><div class="line">我已经渲染好了。。。</div><div class="line"></div><div class="line">*/</div></pre></td></tr></table></figure></p>
 <p>React.createElement接受的不再是字符串，而是一个class。</p>
 <p>React.createClass生成一个自定义标记类，带有基本的生命周期：</p>
@@ -612,6 +611,7 @@ cp dist ../koa2-hw/public
 <li><p>上面实现了三种类型的元素，其实我们发现本质上没有太大的区别，都是有自己对应component类来处理自己的渲染过程。</p>
 </li>
 </ul>
+<p>本文大部分内容参考<a href="https://github.com/purplebamboo/blog/issues/2" target="_blank" rel="external">reactjs源码分析-上篇（首次渲染实现原理）</a></p>
 
           
         
@@ -1365,6 +1365,240 @@ yarn add react-router-dom
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/09/react-使用的小建议/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/03/09/react-使用的小建议/" itemprop="url">react 使用的小建议</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-09T00:08:16+08:00">
+                2017-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>react 前后使用了近2年时间，这里给出一些体会</p>
+<h3 id="使用pureRender，setState和Immutable-js来操作state"><a href="#使用pureRender，setState和Immutable-js来操作state" class="headerlink" title="使用pureRender，setState和Immutable.js来操作state"></a>使用pureRender，setState和Immutable.js来操作state</h3><p>Immutable 中文意思不可变。</p>
+<p>不能直接修改state的值，要用setState 和Immutable</p>
+<p>react 官方要求不要直接修改state，比如this.state.name = “suyuan”是错误的写法，应该用this.setState({name, “suyuan”})；</p>
+<ul>
+<li><p>原因1.其实state并不是不可变的，官方是希望你把他当做不变来用，因为只有setState的时候才会发生消息给react 来re-render，this.state.name=”bianhua” 不会引起re-rener;</p>
+</li>
+<li><p>原因2.本来不管你数据有没有变化， setState就一定会重新渲染，为了提高性能一般会引去pureRender技术（本文其他章节有描述），该技术是进行浅比较（根节点的地址），p1,p2,p3</p>
+</li>
+</ul>
+<p><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170309003304266-906222557.png" alt=""></p>
+<p>假如你这样错误的写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">let p1=state.p1;</div><div class="line">p1.name = &quot;bianhua&quot;;</div><div class="line">this.setState(&#123;p1:p1&#125;);</div></pre></td></tr></table></figure></p>
+<p>用了pureRender技术后，react 发现p1没有变化（p1的地址没变，不是新对象），也不会re-render</p>
+<p>所以你应该这样写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">let p1=JsFrom(state.p1);</div><div class="line">p1.name = &quot;bianhua&quot;;</div><div class="line">this.setState(&#123;p1:p1&#125;);</div></pre></td></tr></table></figure></p>
+<p>这篇文章描述了immutable</p>
+<p><a href="https://zhuanlan.zhihu.com/p/20295971?columnSlug=purerender" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/20295971?columnSlug=purerender</a></p>
+<h3 id="使用PureRenders"><a href="#使用PureRenders" class="headerlink" title="使用PureRenders"></a>使用PureRenders</h3><p>Example Mixin 混入类s:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var PureRenderMixin = require(&apos;react-addons-pure-render-mixin&apos;);</div><div class="line">React.createClass(&#123;</div><div class="line">  mixins:[PureRenderMixin],</div><div class="line">  render: function() &#123;</div><div class="line">    return &lt;div className=&#123;this.props.className&#125;&gt;foo&lt;/div&gt;;</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>Example using ES6 class syntax:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">import PureRenderMixin from &apos;react-addons-pure-render-mixin&apos;;</div><div class="line">class FooComponent extends React.Component &#123;</div><div class="line">  constructor(props) &#123;</div><div class="line">    super(props);</div><div class="line">    this.shouldComponentUpdate=PureRenderMixin.shouldComponentUpdate.bind(this);</div><div class="line">  &#125;</div><div class="line">  render() &#123;</div><div class="line">    return &lt;div className=&#123;this.props.className&#125;&gt;foo&lt;/div&gt;;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>或者用pure-render-decorator 装饰器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">import &#123;Component&#125; from &apos;react&apos;;</div><div class="line"></div><div class="line">import pureRender from &apos;pure-render-decorator&apos;;</div><div class="line"></div><div class="line">@pureRender</div><div class="line">export default class Test extends Component &#123;</div><div class="line">  render() &#123;</div><div class="line">    return &lt;div /&gt;;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>a. 优化了性能<br>PureRenderMixin 重写了shouldComponentUpdate，只有在props或者state真正改变的时候才会重新render，这个在react性能上是一个优化，从此以后你可以大胆的setState，而不需要写这样的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (this.state.someVal !== computedVal) &#123; // 判断是否需要setState，因为每次setState都会引起render，不管你的数据是不是真的变化了</div><div class="line">    this.setState(&#123;someVal: computedVal&#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>b.有一点要注意，继承PureRenderMixin要求render 必须是纯函数，当然本来react官文就说render should 纯函数，这里跟需要时纯函数，为什么？</p>
+<ul>
+<li>b.1.单纯react来讲，页面和state直接反应，如果render不是纯函数，就会导致页面展示和state对不上号，还有去查询其他关联数据;</li>
+<li>b.2.从继承混入类来说，如果你写了下面这种不纯的代码<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">render: function () &#123;</div><div class="line">    //…</div><div class="line">    if (this._previousFoo !== this.props.foo) &#123; // &lt;-- IMPURE</div><div class="line">        return renderSomethingDifferent();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>依赖了一个其他变量this._previousFoo，就会引入bug；</p>
+<ul>
+<li>本来不用混入类，你setState后就算state不改变，也会render，然后再render过程中this._previousFoo的数据变化可能导致页面发生变化；</li>
+<li><p>现在引入混入类，完蛋了，setState后，state数据不变也就不会render了，页面不变了，和你希望的不一样了。<br>所以render要纯正，除非上面this._previousFoo 你保证永远不变，是个const</p>
+</li>
+<li><p>c 还有个重要的事情要说，我觉得太重要了，PureRenderMixin混入类 只会进行浅比较，就是C++里面的指针(地址比较)，如果你修改了一个数组的某个item，你其实是希望render的，但是PureRenderMixin 认为数组的地址没变，数组也就没变，也就没render；怎么办？</p>
+<ul>
+<li>c.1.组件创建新对象–切片 array.silce()</li>
+<li>c.2.object创建新对象– var copy = Object.assign({}, obj);</li>
+<li>c.3.react 自带的操作数据的方式 <a href="https://facebook.github.io/react/docs/update.html" target="_blank" rel="external">https://facebook.github.io/react/docs/update.html</a></li>
+<li>c.4..第三方库Immutable.js 和 mori</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>这里有个坑，用了purRender有时候无效，比如组件下面包含了子组件的时候，<code>this.props.children 就算数据不变，对象也不是原来的对象的</code>，为了优化某个组件的性能我还特意重写了shouldComponentUpdate，把props.children 排除了，这个可能是purRender的原则，看了下源代码完全没搞明白，所以假如render不纯的话（比如使用了this.name）我估计还是会重写渲染，有兴趣会试验一下(render 不纯，purRender无效)</p>
+<p>这里插入一句，redux中的mapToState() 做为reducer和Component的桥梁，reducer 在返回newState后虽然肯定会执行mapToState，但是mapToState中return出去的数据{xkey:xvalue}，如果xvalue的地址没有改变，mapToState关联的Component也不会render;</p>
+</blockquote>
+<h3 id="适当的使用context，方便给子组件传变量"><a href="#适当的使用context，方便给子组件传变量" class="headerlink" title="适当的使用context，方便给子组件传变量"></a>适当的使用context，方便给子组件传变量</h3><p>父组件给子组件上下文定义个变量，子组件声明这个变量，就可以使用；<br>方便数据传递，不需要通过props一层层塞进去</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">// ------Component A</div><div class="line">class A extends React.Component &#123;</div><div class="line"></div><div class="line">// add the following property</div><div class="line">static childContextTypes = &#123;</div><div class="line">  user: React.PropTypes.object.isRequired</div><div class="line">&#125;</div><div class="line"></div><div class="line">// add the following method</div><div class="line">  getChildContext() &#123;</div><div class="line">    return &#123;</div><div class="line">      user: this.props.user  //children 组件可以使用this.context.user</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"> </div><div class="line">  render() &#123;</div><div class="line">   return &lt;div&gt;&#123;this.props.children&#125;&lt;/div&gt;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"> </div><div class="line"></div><div class="line">// -----Component D</div><div class="line">class D extends React.Component &#123;</div><div class="line">// add the following property</div><div class="line">static contextTypes = &#123;</div><div class="line">  user: React.PropTypes.object.isRequired</div><div class="line">&#125;</div><div class="line"></div><div class="line">  render() &#123;</div><div class="line">    return &lt;div&gt;&#123;this.context.user.name&#125;&lt;/div&gt;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>或者<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function D(props, context) &#123;</div><div class="line">  return (</div><div class="line">    &lt;div&gt;&#123;this.context.user.name&#125;&lt;/div&gt;</div><div class="line">  );</div><div class="line">&#125;</div><div class="line"></div><div class="line">D.contextTypes = &#123;</div><div class="line">  user: React.PropTypes.object.isRequired</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="使用propTypes-和defaultProps"><a href="#使用propTypes-和defaultProps" class="headerlink" title="使用propTypes 和defaultProps"></a>使用propTypes 和defaultProps</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">class Greeting extends React.Component &#123;</div><div class="line"></div><div class="line">  static propTypes = &#123;</div><div class="line">    name: React.PropTypes.string</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  static defaultProps = &#123;</div><div class="line">　　name: &quot;suyuans&quot;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  render() &#123;</div><div class="line"></div><div class="line">    return (</div><div class="line"></div><div class="line">      &lt;h1&gt;Hello, &#123;this.props.name&#125;&lt;/h1&gt;</div><div class="line"></div><div class="line">    );</div><div class="line"></div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> React 可以帮你检测传入的props是否有误，自己在使用组件时候也会更清晰需要传入什么props<br>不过要记得在编译线上版本的时候设置环境变量NODE_ENV=”production”，避免影响线上的性能 </p>
+<h3 id="减少操作state"><a href="#减少操作state" class="headerlink" title="减少操作state"></a>减少操作state</h3><p>所有的编程语言在写代码的过程中，都希望是无状态的，纯函数的方式；<br>React 提供了setState 接口，但是我们还要是减少他的使用；</p>
+<p>如果state使用不好可能导致组件复杂混乱，re-render 失控；</p>
+<p>比如在 componentDidMount() or componentDidUpdate()生命周期中使用setState，</p>
+<ul>
+<li>1是控制不好可能发生死循环，</li>
+<li>2是加入子组件也类似的使用，子子组件等刷新的次数会成2的幂次方增加；</li>
+</ul>
+<p>不过使用state是必不可少的，但是一定要封装好state，确保只有本组件可见；</p>
+<p>假如父组件需要知道一些关于子组件的state，这就破坏了组件的结构，意味着组件的抽象失败，可以需要对该组件重构</p>
+<h3 id="集中管理state"><a href="#集中管理state" class="headerlink" title="集中管理state"></a>集中管理state</h3><p>在工作中，父组件需要知道子组件的state或者信息是必不可少的，一般我们把state完全集中在一个地方（一般最顶层）控制，</p>
+<blockquote>
+<p>父组件通过props向子组件传递信息，</p>
+</blockquote>
+<p>这就是Flux 架构模型：用集合仓库来管理state，用action事件来驱动state的更新，这时候state的存储和操作都是原子性的，任何state的变化都会去重新渲染组件，以达到单向数据流的目的；</p>
+<p>意思就是所有组件都依赖props渲染数据，数据源全部来自数据中心state，组件通过 事件、管道、回调、方法、stream来和数据中心通信。</p>
+<p>这个看起来有点低效，但是react所倡导的就是 js的速度很快和虚拟dom diff的思想；</p>
+<p>纯props的组件库会更好的发挥purRender相关的优势；</p>
+<p>缺点是 会使得原来一些简单的通过setSate的事情变的麻烦了，但是优点是单向数据流更直观的反应了我们的应用。<br><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170309003329016-81628401.png" alt=""></p>
+<p>这种思想就像flux架构，见下图<br><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170309003344281-230588814.png" alt=""></p>
+<p>一旦数据中心store 数据变更了，他就render组件，组件会向子组件传递变更的数据</p>
+<p>说白了，组件就是处理props 到 页面的纯函数，这样的组件也更容易使用和测试， 组件正常的展示，正常触发事件，触发事件后store数据更新正常 就表明组件一切ok。</p>
+<p>如果组件之间通过回调函数来操作，组件之间的耦合性就太高，需要知道对方的一些数据、接口、函数，这样抽象就失败了，应该通过action的方式相互通讯。</p>
+<h3 id="尽量把代码写在render中"><a href="#尽量把代码写在render中" class="headerlink" title="尽量把代码写在render中"></a>尽量把代码写在render中</h3><p>尽量把componentWillReceiveProps or componentWillMount 下面的代码写到render中，</p>
+<p>把一些处理props，或者计算setState的处理函数写到render</p>
+<p>永远不要担心js的速度，这样写的好处很多，减少bug并容易发现bug，减少重复代码等</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">// bad</div><div class="line">componentWillMount: function () &#123;</div><div class="line">    this.setState(&#123;</div><div class="line">        computedFoo: compute(this.props.foo)</div><div class="line">    &#125;);</div><div class="line">&#125;,</div><div class="line"></div><div class="line">componentWillReceiveProps: function (nextProps) &#123;</div><div class="line">    this.setState(&#123;</div><div class="line">        computedFoo: compute(nextProps.foo)</div><div class="line">    &#125;);</div><div class="line">&#125;,</div><div class="line"></div><div class="line">render: function () &#123;</div><div class="line">    return React.DOM.div(&#123;className: this.state.computedFoo&#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">// better</div><div class="line">render: function () &#123;</div><div class="line">    var computedFoo = compute(this.props.foo);</div><div class="line">    return React.DOM.div(&#123;className: computedFoo&#125;);</div><div class="line">&#125;</div><div class="line">``` </div><div class="line"></div><div class="line">也可以在render 中计算获取其他的组件，在render 做更多的事情，当然也不要把render搞的太长太大</div><div class="line"></div><div class="line"> </div><div class="line">### MIXIN 或者extend 非常好用</div><div class="line">现在可以用继承代替mixin</div><div class="line">可以用他们来创建复用的功能块</div><div class="line"></div><div class="line">PureRenderMixin  就是覆盖了shouldComponentUpdate() 方法</div><div class="line"></div><div class="line">你可能有疑问了，生命周期componentWillMount之类的继承下来不就遭了，有的我不需要是不是要重写个空的？放心，`mixin特意把生命周期排除出去啊`，哈哈 机智啊,但是继承估计不行，所以最好不要在基类中处理生命周期</div><div class="line"></div><div class="line">比如我们可以把处理state的逻辑放到mixin中，就算只有一个组件只用也ok，这样可以保证组件内部的无状态性，通过mixin 来构建有状态的组件，以后你可以通过修改mixin来更换功能，复用这个组件，mixin这时候有点control层的角色扮演，不过小心的是mixin要被抛弃了，用extend把</div><div class="line"></div><div class="line"></div><div class="line">### 使用类实例的属性</div><div class="line">尽管组件应该是以props为参数的纯函数，但是有时候使用实例属性也是明智的。</div><div class="line"></div><div class="line">有时候this.foo比this.props.foo要更合适；要注意的是PureRender 的时候render下不要这样使用，原因看之前的内容。</div><div class="line"></div><div class="line">如果这个数据不影响页面的呈现，这样用是非常方便的</div></pre></td></tr></table></figure>
+<p>componentWillReceiveProps: function () {<br>    this._timer = Date.now();<br>},</p>
+<p>onLoadHandler: function () {<br>    this.trigger(“load:time”, Date.now() - this._timer);<br>},</p>
+<p>render: function () {<br>    return React.DOM.img({<br>        src: this.props.src,<br>        onLoad: this.onLoadHandler<br>    });<br>}<br>```</p>
+<p>上面用一个实例属性来存放开始时候，以计算load时间，这个时间变化后我也不需要页面展示渲染，所以可以放在实例属性中。</p>
+<p>一句话，数据变化了，页面不需要刷新变化的，可以作为实例属性</p>
+<p>数据变化，页面变化的那就是state了</p>
+<h3 id="组件通信"><a href="#组件通信" class="headerlink" title="组件通信"></a>组件通信</h3><ul>
+<li>父到子  1.props, 2.ref   </li>
+<li>子到父  1.回调函数this.props.callback()</li>
+<li>兄弟   1.通过父绕一圈，2.采用第三方消息系统如js-signals:<br><a href="https://github.com/millermedeiros/js-signals" target="_blank" rel="external">https://github.com/millermedeiros/js-signals</a> </li>
+<li>一切通信，如果用了flux或者redux就解决了</li>
+</ul>
+<h3 id="下面是一些js使用建议"><a href="#下面是一些js使用建议" class="headerlink" title="下面是一些js使用建议"></a>下面是一些js使用建议</h3><ul>
+<li>1.遵循es6严格模式</li>
+<li>2.声明变量的优先级 const、let</li>
+<li>3.箭头函数代替繁杂的bind</li>
+<li>4.可以引用typescript减少bug，当然用了严格模式也足够了</li>
+</ul>
+<h3 id="推荐个组件库-antd"><a href="#推荐个组件库-antd" class="headerlink" title="推荐个组件库 antd"></a>推荐个组件库 antd</h3><p>推荐使用redux（control、modal层） 管理react（view层s），redux-saga处理异步事件</p>
+<h3 id="本文参考了"><a href="#本文参考了" class="headerlink" title="本文参考了"></a>本文参考了</h3><p>React建议：<br><a href="http://aeflash.com/2015-02/react-tips-and-best-practices.html" target="_blank" rel="external">http://aeflash.com/2015-02/react-tips-and-best-practices.html</a><br>immutable使用：<br><a href="https://zhuanlan.zhihu.com/p/20295971?columnSlug=purerender" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/20295971?columnSlug=purerender</a><br><a href="https://www.w3ctech.com/topic/1595" target="_blank" rel="external">https://www.w3ctech.com/topic/1595</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/15/shared-ptr线程安全性分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1839,187 +2073,6 @@ yarn add react-router-dom
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/07/03/站在对象模型的类端/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苏远的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/07/03/站在对象模型的类端/" itemprop="url">站在对象模型的类端</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-07-03T23:47:56+08:00">
-                2015-07-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="模板的实例化"><a href="#模板的实例化" class="headerlink" title="模板的实例化"></a>模板的实例化</h2><p>一个模板只有被使用到，才会被实例化，否则不会被实例化。对于一个实例化后的模板来说，未被调用的成员函数将不会被实例化，只有成员函数被使用时，C++标准才要求实例化他们。其原因，有两点：</p>
-<ul>
-<li>空间和时间效率的考虑，如果模板类中有100个成员函数，对某个特定类型只有2个函数会被使用，针对另一个特定类型只会使用3个，那么如果将剩余的195个函数实例化将浪费大量的时间和空间。</li>
-<li>使模板有最大的适用性。并不是实例化出来的每个类型都支持所有模板的全部成员函数所需要的运算符。如果只实例化那些真正被使用的成员函数的话，那么原本在编译期有错误的类型也能够得到支持。</li>
-</ul>
-<p>可以明确的要求在一个文件中将整个类模板实例化：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">template class Point3d&lt;float&gt;;</div></pre></td></tr></table></figure>
-<p>也可以显示指定实例化一个模板类的成员函数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">template float Point3d&lt;float&gt;::X() const;</div></pre></td></tr></table></figure>
-<p>或是针对一个模板函数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">template Point3d&lt;float&gt; operator+(</div><div class="line">    const Point3d&lt;float&gt;&amp;, const Point3d&lt;float&gt;&amp; );</div></pre></td></tr></table></figure>
-<p>模板的错误报告，使用模板并遇到错误的大概都深有体会，那就是一个灾难。</p>
-<p>模板的名称决议</p>
-<p>一开始先要区分两种意义,一种是C++ 标准所谓的“scope of the template definition”，直译就是“定义模板的范围”。另一种是C++标准所谓的“scope of the temlate instantiation”，可以直译为“实例化模板的范围”。</p>
-<p>第一种情况：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// scope of the template definition</div><div class="line">extern double foo ( double );  </div><div class="line">    </div><div class="line">template &lt; class type &gt;  </div><div class="line">class ScopeRules  </div><div class="line">&#123;  </div><div class="line">public:  </div><div class="line">    void invariant() &#123;  </div><div class="line">        _member = foo( _val );  </div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">    type type_dependent() &#123;  </div><div class="line">        return foo( _member );  </div><div class="line">    &#125;  </div><div class="line">    // ...  </div><div class="line">private:  </div><div class="line">    int _val;  </div><div class="line">    type _member;  </div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>第二种情况:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//scope of the template instantiation  </div><div class="line">extern int foo( int );  </div><div class="line">// ...  </div><div class="line">ScopeRules&lt; int &gt; sr0;  </div><div class="line">sr0.invariant();</div><div class="line">sr0.type_dependent();</div></pre></td></tr></table></figure>
-<p>在“scope of the template instantiation ”中 两个foo()都声明在此 scope中。猜猜sr0.invariant() 中调用的是哪个foo()函数，出乎意料，实际调用的是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern double foo ( double );</div></pre></td></tr></table></figure></p>
-<p>看上去，应该调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern int foo( int );</div></pre></td></tr></table></figure></p>
-<p>毕竟，_val 的类型是 int 类型，它们才完全匹配。而 sr0.type_dependent()中调用的却在我们意料之中，调用的是:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern int foo( int );</div></pre></td></tr></table></figure></p>
-<p>诸上所述,看上去或合理或不合理的选择，原因在于:</p>
-<blockquote>
-<p>template 之中， 对于一个非成员名字的决议结果是根据这个 name的使用是否与“用以实例化该模板的参数类型”有关来决定name。如果其使用互不相干，那么就以“scope of the template dclaration”来决定name。如果其使用的互相关联，那么就以“scope of the template instantiation”来决定name.</p>
-</blockquote>
-<p>对于上面这一段话我的理解比较粗鲁且直接：在模板中，一个非成员名字的决议在于它适不适合在当前决议，当它完全与实例化模板的参数的类型无关的时候，就可以在当前决议下来；如果有关的话，则认为不适合在当前决议下来，将被推迟到实例化这个模板实例化的时候来决议。为什么以与实例化的类型相关不相关来区别适不适合当前决议？一个与实例化类型无关的名字，如果推迟到实例化的时候来决议，将使模板的设计者无所适从，一个模板的设计者能容忍一个与实例化类型无关的名字在他的模板中表现出当前不具有的含义吗？当然不行，那种场面，估计没有一个模板设计者能够hold住。相反，对于一个与实例化类型有关的名字，天生就应该可以根据实例化模板的不同类型表现出不同含义，如果其名字早在模板定义时被决议出来，那就该轮到模板的使用者hold不住了。当然所上完全属一家之言，呸，连一家之言都不算，怎么敢自称“家”。如有不同理解，可当我一派胡言，如果你聊发善心，可以对我赐教一二，当聆听受教。</p>
-<h2 id="异常处理-Exception-Handling"><a href="#异常处理-Exception-Handling" class="headerlink" title="异常处理(Exception Handling)"></a>异常处理(Exception Handling)</h2><p>C++的 exception handling 有三个主要的子句组成：</p>
-<ul>
-<li>一个throw子句。它在程序的某处丢出一个exception，被丢出的exception可以是内建类型，也可以是自定义类型。——抛出exception组件。</li>
-<li>一个或多个 catch 子句。 每一个 catch 子句都是一个 exception handler。每个子句可以处理一种类型(也包括其继承类)的exception，在大括号中包含处理代码。——专治各种不服组件。每一个catch子句都可以用来处理某种exception。</li>
-<li>一个 try 区段。用大括号包围一系列语句，这些语句有可能抛出exception，从而引发catch 子句的作用。——逮捕各种 exception 组件。</li>
-</ul>
-<p>当一个 exception 被抛出后，控制权从函数调用中被释放，寻找一个吻合的catch子句，如果各层调用都没有吻合的catch子句，terminate()将被调用。在控制权被放弃后，堆栈中的每一个函数调用也被出栈，这个过程称为unwinding the stack(关于 stack unwinding ,可以参考《C++ Primer》第四版之 17.1.2 Stack Unwinding)，在每一个函数被出栈之前,其局部变量会被摧毁。</p>
-<p>异常抛出有可能带来一些问题，比方在一块内存的lock和unlock内存之间，或是在new和delete之间的代码抛出了异常，那么将导致本该进行的unlock或delete操作不能进行。解决方法之一是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">void  mumble( void *arena )  </div><div class="line">&#123;  </div><div class="line">    Point *p;  </div><div class="line">    p = new Point;  </div><div class="line">    try &#123;  </div><div class="line">        smLock( arena );  </div><div class="line">        // ...  </div><div class="line">    &#125;  </div><div class="line">    catch ( ... ) &#123;  </div><div class="line">        smUnLock( arena );  </div><div class="line">        delete p;  </div><div class="line">        throw;  </div><div class="line">    &#125;  </div><div class="line">    smUnLock( arena );  </div><div class="line">    delete p;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在函数被出栈之前，先截住异常，在unlock和delete之后再将异常原样抛出。new expression的调用不用包括在try块之内是因为，不论在new operator调用时还是构造函数调用时抛出异常，都会在抛出异常之前释放已分配好的资源，所以不用再调用delete 。</p>
-<p>另一个办法是，将这些资源管理的问题，封装在一个类对象中，由析构函数释放资源，这样就不需要对代码进行上面那样的处理——利用函数释放控制权之前会析构所有局部对象的原理。</p>
-<p>在对单个对象构造过程中抛出异常，会只调用已经构造好的base class object或member class object的析构函数。同样的道理，适用于数组身上，如果在调用构造函数过程中抛出异常，那么之前所有被构造好的元素的析构函数被调用，对于抛出异常的该元素，则遵循关于单个对象构造的原则，然后释放已经分配好的内存。</p>
-<p>只有在一个catch子句评估完毕并且知道它不会再抛出exception后，真正的exception object才会被释放。关于 catch子句使用引用还是使用对象来捕获异常，省略。</p>
-<h2 id="执行期类型识别（Runtime-Type-Identification-RTTI）"><a href="#执行期类型识别（Runtime-Type-Identification-RTTI）" class="headerlink" title="执行期类型识别（Runtime Type Identification RTTI）"></a>执行期类型识别（Runtime Type Identification RTTI）</h2><ul>
-<li>RTTI 只支持多态类，也就是说没有定义虚函数是的类是不能进行 RTTI的。</li>
-<li><p>对指针进行dynamic_cast失败会返回NULL ,而对引用的话，识别会抛出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bad_cast exception。</div></pre></td></tr></table></figure>
-</li>
-<li><p>typeid 可以返回const type_info&amp;，用以获取类型信息。<br>关于1是因为RTTI的实现是通过vptr来获取存储在虚函数表中的type_info* ，事实上为非多态类提供RTTI,也没有多大意义。 2的原因在于指针可以被赋值为0，以表示 no object，但是引用不行。关于3，虽然第一点指出RTTI只支持多态类，但typeid和type_info同样可用于内建类型及所有非多态类。与多态类的差别在于，非多态类的type_info对象是静态取得(所以不能叫“执行期类型识别”)，而多态类的是在执行期获得。</p>
-</li>
-</ul>
-<p>参考：深度探索C++对象模型</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2070,7 +2123,7 @@ yarn add react-router-dom
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-count">23</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

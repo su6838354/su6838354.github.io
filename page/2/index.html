@@ -277,6 +277,187 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/07/03/站在对象模型的类端/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2015/07/03/站在对象模型的类端/" itemprop="url">站在对象模型的类端</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-07-03T23:47:56+08:00">
+                2015-07-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="模板的实例化"><a href="#模板的实例化" class="headerlink" title="模板的实例化"></a>模板的实例化</h2><p>一个模板只有被使用到，才会被实例化，否则不会被实例化。对于一个实例化后的模板来说，未被调用的成员函数将不会被实例化，只有成员函数被使用时，C++标准才要求实例化他们。其原因，有两点：</p>
+<ul>
+<li>空间和时间效率的考虑，如果模板类中有100个成员函数，对某个特定类型只有2个函数会被使用，针对另一个特定类型只会使用3个，那么如果将剩余的195个函数实例化将浪费大量的时间和空间。</li>
+<li>使模板有最大的适用性。并不是实例化出来的每个类型都支持所有模板的全部成员函数所需要的运算符。如果只实例化那些真正被使用的成员函数的话，那么原本在编译期有错误的类型也能够得到支持。</li>
+</ul>
+<p>可以明确的要求在一个文件中将整个类模板实例化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">template class Point3d&lt;float&gt;;</div></pre></td></tr></table></figure>
+<p>也可以显示指定实例化一个模板类的成员函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">template float Point3d&lt;float&gt;::X() const;</div></pre></td></tr></table></figure>
+<p>或是针对一个模板函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">template Point3d&lt;float&gt; operator+(</div><div class="line">    const Point3d&lt;float&gt;&amp;, const Point3d&lt;float&gt;&amp; );</div></pre></td></tr></table></figure>
+<p>模板的错误报告，使用模板并遇到错误的大概都深有体会，那就是一个灾难。</p>
+<p>模板的名称决议</p>
+<p>一开始先要区分两种意义,一种是C++ 标准所谓的“scope of the template definition”，直译就是“定义模板的范围”。另一种是C++标准所谓的“scope of the temlate instantiation”，可以直译为“实例化模板的范围”。</p>
+<p>第一种情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// scope of the template definition</div><div class="line">extern double foo ( double );  </div><div class="line">    </div><div class="line">template &lt; class type &gt;  </div><div class="line">class ScopeRules  </div><div class="line">&#123;  </div><div class="line">public:  </div><div class="line">    void invariant() &#123;  </div><div class="line">        _member = foo( _val );  </div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">    type type_dependent() &#123;  </div><div class="line">        return foo( _member );  </div><div class="line">    &#125;  </div><div class="line">    // ...  </div><div class="line">private:  </div><div class="line">    int _val;  </div><div class="line">    type _member;  </div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>第二种情况:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//scope of the template instantiation  </div><div class="line">extern int foo( int );  </div><div class="line">// ...  </div><div class="line">ScopeRules&lt; int &gt; sr0;  </div><div class="line">sr0.invariant();</div><div class="line">sr0.type_dependent();</div></pre></td></tr></table></figure>
+<p>在“scope of the template instantiation ”中 两个foo()都声明在此 scope中。猜猜sr0.invariant() 中调用的是哪个foo()函数，出乎意料，实际调用的是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern double foo ( double );</div></pre></td></tr></table></figure></p>
+<p>看上去，应该调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern int foo( int );</div></pre></td></tr></table></figure></p>
+<p>毕竟，_val 的类型是 int 类型，它们才完全匹配。而 sr0.type_dependent()中调用的却在我们意料之中，调用的是:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern int foo( int );</div></pre></td></tr></table></figure></p>
+<p>诸上所述,看上去或合理或不合理的选择，原因在于:</p>
+<blockquote>
+<p>template 之中， 对于一个非成员名字的决议结果是根据这个 name的使用是否与“用以实例化该模板的参数类型”有关来决定name。如果其使用互不相干，那么就以“scope of the template dclaration”来决定name。如果其使用的互相关联，那么就以“scope of the template instantiation”来决定name.</p>
+</blockquote>
+<p>对于上面这一段话我的理解比较粗鲁且直接：在模板中，一个非成员名字的决议在于它适不适合在当前决议，当它完全与实例化模板的参数的类型无关的时候，就可以在当前决议下来；如果有关的话，则认为不适合在当前决议下来，将被推迟到实例化这个模板实例化的时候来决议。为什么以与实例化的类型相关不相关来区别适不适合当前决议？一个与实例化类型无关的名字，如果推迟到实例化的时候来决议，将使模板的设计者无所适从，一个模板的设计者能容忍一个与实例化类型无关的名字在他的模板中表现出当前不具有的含义吗？当然不行，那种场面，估计没有一个模板设计者能够hold住。相反，对于一个与实例化类型有关的名字，天生就应该可以根据实例化模板的不同类型表现出不同含义，如果其名字早在模板定义时被决议出来，那就该轮到模板的使用者hold不住了。当然所上完全属一家之言，呸，连一家之言都不算，怎么敢自称“家”。如有不同理解，可当我一派胡言，如果你聊发善心，可以对我赐教一二，当聆听受教。</p>
+<h2 id="异常处理-Exception-Handling"><a href="#异常处理-Exception-Handling" class="headerlink" title="异常处理(Exception Handling)"></a>异常处理(Exception Handling)</h2><p>C++的 exception handling 有三个主要的子句组成：</p>
+<ul>
+<li>一个throw子句。它在程序的某处丢出一个exception，被丢出的exception可以是内建类型，也可以是自定义类型。——抛出exception组件。</li>
+<li>一个或多个 catch 子句。 每一个 catch 子句都是一个 exception handler。每个子句可以处理一种类型(也包括其继承类)的exception，在大括号中包含处理代码。——专治各种不服组件。每一个catch子句都可以用来处理某种exception。</li>
+<li>一个 try 区段。用大括号包围一系列语句，这些语句有可能抛出exception，从而引发catch 子句的作用。——逮捕各种 exception 组件。</li>
+</ul>
+<p>当一个 exception 被抛出后，控制权从函数调用中被释放，寻找一个吻合的catch子句，如果各层调用都没有吻合的catch子句，terminate()将被调用。在控制权被放弃后，堆栈中的每一个函数调用也被出栈，这个过程称为unwinding the stack(关于 stack unwinding ,可以参考《C++ Primer》第四版之 17.1.2 Stack Unwinding)，在每一个函数被出栈之前,其局部变量会被摧毁。</p>
+<p>异常抛出有可能带来一些问题，比方在一块内存的lock和unlock内存之间，或是在new和delete之间的代码抛出了异常，那么将导致本该进行的unlock或delete操作不能进行。解决方法之一是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">void  mumble( void *arena )  </div><div class="line">&#123;  </div><div class="line">    Point *p;  </div><div class="line">    p = new Point;  </div><div class="line">    try &#123;  </div><div class="line">        smLock( arena );  </div><div class="line">        // ...  </div><div class="line">    &#125;  </div><div class="line">    catch ( ... ) &#123;  </div><div class="line">        smUnLock( arena );  </div><div class="line">        delete p;  </div><div class="line">        throw;  </div><div class="line">    &#125;  </div><div class="line">    smUnLock( arena );  </div><div class="line">    delete p;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在函数被出栈之前，先截住异常，在unlock和delete之后再将异常原样抛出。new expression的调用不用包括在try块之内是因为，不论在new operator调用时还是构造函数调用时抛出异常，都会在抛出异常之前释放已分配好的资源，所以不用再调用delete 。</p>
+<p>另一个办法是，将这些资源管理的问题，封装在一个类对象中，由析构函数释放资源，这样就不需要对代码进行上面那样的处理——利用函数释放控制权之前会析构所有局部对象的原理。</p>
+<p>在对单个对象构造过程中抛出异常，会只调用已经构造好的base class object或member class object的析构函数。同样的道理，适用于数组身上，如果在调用构造函数过程中抛出异常，那么之前所有被构造好的元素的析构函数被调用，对于抛出异常的该元素，则遵循关于单个对象构造的原则，然后释放已经分配好的内存。</p>
+<p>只有在一个catch子句评估完毕并且知道它不会再抛出exception后，真正的exception object才会被释放。关于 catch子句使用引用还是使用对象来捕获异常，省略。</p>
+<h2 id="执行期类型识别（Runtime-Type-Identification-RTTI）"><a href="#执行期类型识别（Runtime-Type-Identification-RTTI）" class="headerlink" title="执行期类型识别（Runtime Type Identification RTTI）"></a>执行期类型识别（Runtime Type Identification RTTI）</h2><ul>
+<li>RTTI 只支持多态类，也就是说没有定义虚函数是的类是不能进行 RTTI的。</li>
+<li><p>对指针进行dynamic_cast失败会返回NULL ,而对引用的话，识别会抛出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bad_cast exception。</div></pre></td></tr></table></figure>
+</li>
+<li><p>typeid 可以返回const type_info&amp;，用以获取类型信息。<br>关于1是因为RTTI的实现是通过vptr来获取存储在虚函数表中的type_info* ，事实上为非多态类提供RTTI,也没有多大意义。 2的原因在于指针可以被赋值为0，以表示 no object，但是引用不行。关于3，虽然第一点指出RTTI只支持多态类，但typeid和type_info同样可用于内建类型及所有非多态类。与多态类的差别在于，非多态类的type_info对象是静态取得(所以不能叫“执行期类型识别”)，而多态类的是在执行期获得。</p>
+</li>
+</ul>
+<p>参考：深度探索C++对象模型</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/04/22/构造、解构、拷贝 语意学/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1943,192 +2124,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/01/13/scxml-图像展示器-（基于C-MFC-GDI-tinyxpath的实现）/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苏远的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/01/13/scxml-图像展示器-（基于C-MFC-GDI-tinyxpath的实现）/" itemprop="url">scxml 图像展示器 （基于C++ MFC GDI tinyxpath的实现）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-01-13T22:50:12+08:00">
-                2015-01-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/个人项目/" itemprop="url" rel="index">
-                    <span itemprop="name">个人项目</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Scxml是w3c出来的基于状态机的对话脚本语言标准，具体内容可以谷歌到，这里讲述自己开发的一个把scxml转化为可交互图形的程序。</p>
-<p>源代码上传到了<a href="https://github.com/su6838354/scxml_exec" target="_blank" rel="external">github</a></p>
-<h3 id="整体设计"><a href="#整体设计" class="headerlink" title="整体设计"></a>整体设计</h3><p>基本原则是把具有状态机关系的xml语言转换为矩形、矩形之间的线、矩形的子父级关系。</p>
-<p>整个模块由下而上分为 5部分</p>
-<ul>
-<li>1.Scxml 脚本</li>
-<li>2.Parser 层（依赖Tinyxpath）</li>
-<li>3.Model 层</li>
-<li>4.Layout 层 (Model转化为虚拟图形对象)</li>
-<li>5.View 图形（MFC和GDI [ Gdiplus::Graphics]实现 ）</li>
-</ul>
-<p>Parser层会通过tinyxpth解析scxml脚本并产出Modal对象，并对上层提供getState，getTransitions，GetFinals等接口，接口之间的参数类型就是Model层定义的；</p>
-<p>Layout层获取所有的state和transition，然后转化为虚拟图形对象ScxmlRectangle和ScxmlLine等；</p>
-<p>View层通过MFC实现，将虚拟图形对象进行描绘和渲染</p>
-<h3 id="包设计"><a href="#包设计" class="headerlink" title="包设计"></a>包设计</h3><p>下面这个是包设计图，UI从LayOut中获得图形信息画图，LayOut从IGetScxmlObject获得解析信息，<br><img src="/images/cpp/scxml_1.png" alt=""><br>Parser层通过Iread可以读取到scxml文件中的元素，ModelFactory将获取的元素转换为自定义对象，提供IGetModel给layout</p>
-<h3 id="用例图"><a href="#用例图" class="headerlink" title="用例图"></a>用例图</h3><p>下面是layout层和parser层的用例图，</p>
-<ul>
-<li>layout用于描述自动状态机布局的过程，包含从scxml_parser模块获取对象，根据对象内容计算出整个图形布局<ul>
-<li>Rectangle Scxml   用于输出图形的中心点、宽度、高度，线条起始点等内容</li>
-<li>GetScxmlObject   解析scxml对象，生成矩形和有向线段</li>
-</ul>
-</li>
-<li><p>Parser描述从scxml格式解析成对象的过程，以及和外部模块之间的关系，</p>
-<ul>
-<li>Read scxml     主要用于按照需求读取scxml文件内容，其调用tinyxpath模块执行自定义的xpath语法</li>
-<li><p>create model          将读取的内容构建成对象</p>
-<p><img src="/images/cpp/scxml_2.png" alt=""> </p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Layout的类图如下"><a href="#Layout的类图如下" class="headerlink" title="Layout的类图如下"></a>Layout的类图如下</h3><ul>
-<li>Line        线，包含起始点和终点</li>
-<li>Rectangle       矩形，包含中心点、宽度、高度</li>
-<li><p>ScxmlLayout         包含所有矩形和线条的数据，拥有计算整个图形布局的方法</p>
-<p><img src="/images/cpp/scxml_3.png" alt=""> </p>
-<h3 id="Layout时序图"><a href="#Layout时序图" class="headerlink" title="Layout时序图"></a>Layout时序图</h3></li>
-<li><p>根据scxml对象，执行LayOut算法，生成图形信息</p>
-</li>
-<li><p>调用scxml_parser模块，获取自定义的scxml对象，生成相应的图形内容，执行布局算法，输出图形信息</p>
-<p> <img src="/images/cpp/scxml_4.png" alt=""> </p>
-</li>
-</ul>
-<h3 id="Parser-类图如下"><a href="#Parser-类图如下" class="headerlink" title="Parser 类图如下"></a>Parser 类图如下</h3><ul>
-<li>Xtinyxpath     调用Xpath语言查找scxml元素</li>
-<li><p>ScxmlParser          调用tinyxpath获取元素，封装为scxmlobject对象</p>
-<p>   <img src="/images/cpp/scxml_5.png" alt=""></p>
-</li>
-</ul>
-<h3 id="Parser时序图："><a href="#Parser时序图：" class="headerlink" title="Parser时序图："></a>Parser时序图：</h3><p>scxml文件解析过程     调用tinyxpath模块，实现在C++中内嵌使用xpath语言，按要求获取scxml元素，转化成自定义的对象，用于layout画图</p>
-<p>  <img src="/images/cpp/scxml_6.png" alt=""></p>
-<h3 id="展示效果如下"><a href="#展示效果如下" class="headerlink" title="展示效果如下"></a>展示效果如下</h3><p>下面为一个相对复杂的scxml，包含了并行、多层的嵌套关系</p>
-<p>  <img src="/images/cpp/scxml_7.png" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2179,7 +2174,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-count">23</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
