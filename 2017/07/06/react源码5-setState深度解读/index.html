@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="reactjs," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="React虽然只是MVVM中的View部分，但还是实现了View和model的绑定。修改数据的同时，可以实现View的刷新。这大大简化了我们的逻辑，只用关心数据流的变化。这个特性则要归功于setState()方法。React中利用队列机制来管理state，避免了很多重复的View刷新。下面我们来从源码角度探寻下setState机制。 时序流程为了研究setState导致的页面更新更简单，我们通过定">
+<meta name="keywords" content="reactjs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="react源码5-setState深度解读">
+<meta property="og:url" content="http://yoursite.com/2017/07/06/react源码5-setState深度解读/index.html">
+<meta property="og:site_name" content="苏远的博客">
+<meta property="og:description" content="React虽然只是MVVM中的View部分，但还是实现了View和model的绑定。修改数据的同时，可以实现View的刷新。这大大简化了我们的逻辑，只用关心数据流的变化。这个特性则要归功于setState()方法。React中利用队列机制来管理state，避免了很多重复的View刷新。下面我们来从源码角度探寻下setState机制。 时序流程为了研究setState导致的页面更新更简单，我们通过定">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/react/state_10.png">
+<meta property="og:image" content="http://yoursite.com/images/react/state_1.jpg">
+<meta property="og:image" content="http://yoursite.com/images/react/state_2.jpg">
+<meta property="og:image" content="http://yoursite.com/images/react/state_3.jpg">
+<meta property="og:image" content="http://yoursite.com/images/react/state_11.png">
+<meta property="og:updated_time" content="2018-01-07T13:36:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="react源码5-setState深度解读">
+<meta name="twitter:description" content="React虽然只是MVVM中的View部分，但还是实现了View和model的绑定。修改数据的同时，可以实现View的刷新。这大大简化了我们的逻辑，只用关心数据流的变化。这个特性则要归功于setState()方法。React中利用队列机制来管理state，避免了很多重复的View刷新。下面我们来从源码角度探寻下setState机制。 时序流程为了研究setState导致的页面更新更简单，我们通过定">
+<meta name="twitter:image" content="http://yoursite.com/images/react/state_10.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/06/react源码5-setState深度解读/"/>
+
+
+
+
+
+  <title>react源码5-setState深度解读 | 苏远的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e56d57ba89bb058da8fdd8841e98770f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">苏远的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/index.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/06/react源码5-setState深度解读/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">react源码5-setState深度解读</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-06T00:45:15+08:00">
+                2017-07-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>React虽然只是MVVM中的View部分，但还是实现了View和model的绑定。修改数据的同时，可以实现View的刷新。<br>这大大简化了我们的逻辑，只用关心数据流的变化。这个特性则要归功于<code>setState()</code>方法。<br>React中利用<code>队列机制</code>来管理state，<code>避免了很多重复</code>的View刷新。下面我们来从源码角度探寻下setState机制。</p>
+<h3 id="时序流程"><a href="#时序流程" class="headerlink" title="时序流程"></a>时序流程</h3><p>为了研究setState导致的页面更新更简单，我们通过定时器来触发setState，避免onClick 等事件机制等引入带来过多困扰。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">componentDidMount() &#123;</div><div class="line">    window.setTimeout(()=&gt;&#123;</div><div class="line">        console.log(&apos;did mount set state&apos;)</div><div class="line">        this.setState(&#123;count: 100&#125;)</div><div class="line">    &#125;, 1000)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这段代码显然会引起页面更新，当然页面有用到count变量。我们先从全局看下整个流程。<br><img src="/images/react/state_10.png" alt=""></p>
+<p>可以看出setState主要做了以下几件事情：</p>
+<ul>
+<li>更新队列中添加变更内容</li>
+<li>执行一堆事务，事务中会做实际dom diff，页面更新渲染等内容</li>
+</ul>
+<h3 id="setState"><a href="#setState" class="headerlink" title="setState"></a>setState</h3><p>看下面例子，都知道count加了1次。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">add = () =&gt; &#123;</div><div class="line">    this.setState(&#123;count: this.state.count+1&#125;)</div><div class="line">    this.setState(&#123;count: this.state.count+1&#125;)</div><div class="line">    console.log(&apos;set state&apos;, this.state)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们先来跟着setState 进去看看<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">ReactComponent.prototype.setState = function (partialState, callback) &#123;</div><div class="line">  this.updater.enqueueSetState(this, partialState);// *********1</div><div class="line">  if (callback) &#123;</div><div class="line">    this.updater.enqueueCallback(this, callback, &apos;setState&apos;);</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">//*********1</div><div class="line">enqueueSetState: function (publicInstance, partialState) &#123;</div><div class="line">    var internalInstance = getInternalInstanceReadyForUpdate(publicInstance, &apos;setState&apos;);</div><div class="line">    if (!internalInstance) &#123;</div><div class="line">      return;</div><div class="line">    &#125;</div><div class="line">  </div><div class="line">  	// 如果_pendingStateQueue为空,则创建它。可以发现队列是数组形式实现的</div><div class="line">    var queue = internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = []);</div><div class="line">    queue.push(partialState);</div><div class="line">    </div><div class="line">	// 将要更新的ReactComponent放入数组中</div><div class="line">    enqueueUpdate(internalInstance);//*************2</div><div class="line">  &#125;,</div><div class="line">  </div><div class="line">  //**************2</div><div class="line">  function enqueueUpdate(component) &#123;</div><div class="line">  ensureInjected();</div><div class="line"></div><div class="line">  // 如果不是正处于创建或更新组件阶段,则处理update事务</div><div class="line">  //**************3</div><div class="line">  if (!batchingStrategy.isBatchingUpdates) &#123;</div><div class="line">    batchingStrategy.batchedUpdates(enqueueUpdate, component);</div><div class="line">    return;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 如果正在创建或更新组件,则暂且先不处理update,只是将组件放在dirtyComponents数组中</div><div class="line">  dirtyComponents.push(component);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>setState做的主要的事件就是提交了一个更新到队列，没有实际的数据或者页面更新；就行 git add一样，没有做真正的git commit。<br>如下图可以看出确实往队列中插入了两条数据cout:3，因为我们setState了两次<br><img src="/images/react/state_1.jpg" alt=""></p>
+<p>enqueueUpdate包含了React避免重复render的逻辑。<br>mountComponent和updateComponent方法在执行的最开始，会调用到batchedUpdates进行批处理更新，此时会将isBatchingUpdates设置为true，也就是将状态标记为现在正处于更新阶段了。<br>之后React以事务的方式处理组件update，事务处理完后会调用wrapper.close(), 而TRANSACTION_WRAPPERS中包含了RESET_BATCHED_UPDATES这个wrapper，故最终会调用RESET_BATCHED_UPDATES.close(), 它最终会将isBatchingUpdates设置为false。</p>
+<p> 现在来轻松下，走段进入<em>**</em>3的case<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">componentDidMount() &#123;</div><div class="line">    window.setTimeout(()=&gt;&#123;</div><div class="line">    console.log(&apos;did mount set state&apos;)</div><div class="line">    this.setState(&#123;count: 100&#125;)</div><div class="line">    &#125;, 1000)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p> <img src="/images/react/state_2.jpg" alt=""><br> 突然发现我们进入了react真正有意义的地方，这一次意外的setState让react直接去做批量更新了。</p>
+<p> 真的勇士敢于直面真正挑战，那就让我们继续走下去吧。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">batchedUpdates: function (callback, a, b, c, d, e) &#123;</div><div class="line">   var alreadyBatchingUpdates = ReactDefaultBatchingStrategy.isBatchingUpdates;</div><div class="line"></div><div class="line">   ReactDefaultBatchingStrategy.isBatchingUpdates = true;</div><div class="line"></div><div class="line">   // The code is written this way to avoid extra allocations</div><div class="line">   if (alreadyBatchingUpdates) &#123;</div><div class="line">     return callback(a, b, c, d, e);</div><div class="line">   &#125; else &#123;</div><div class="line">   // *******4 目前看来玄机应该就在这里了</div><div class="line">     return transaction.perform(callback, null, a, b, c, d, e);</div><div class="line">   &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h3 id="transaction"><a href="#transaction" class="headerlink" title="transaction"></a>transaction</h3><p> 上一节最后的transaction 到底是什么？先看下上下文代码<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"> // ********6  重置批量更新</div><div class="line"> var RESET_BATCHED_UPDATES = &#123;</div><div class="line">  initialize: emptyFunction,</div><div class="line">  close: function () &#123;</div><div class="line">    ReactDefaultBatchingStrategy.isBatchingUpdates = false;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">// ********7  激发批量更新</div><div class="line">var FLUSH_BATCHED_UPDATES = &#123;</div><div class="line">  initialize: emptyFunction,</div><div class="line">  close: ReactUpdates.flushBatchedUpdates.bind(ReactUpdates)</div><div class="line">&#125;;</div><div class="line"></div><div class="line">var TRANSACTION_WRAPPERS = [FLUSH_BATCHED_UPDATES, RESET_BATCHED_UPDATES];</div><div class="line"></div><div class="line">function ReactDefaultBatchingStrategyTransaction() &#123;</div><div class="line">  this.reinitializeTransaction();</div><div class="line">&#125;</div><div class="line"></div><div class="line">_assign(ReactDefaultBatchingStrategyTransaction.prototype, Transaction, &#123;</div><div class="line">  getTransactionWrappers: function () &#123;</div><div class="line">    return TRANSACTION_WRAPPERS;</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line">// *******5 这个就是给*******4 用的transaction</div><div class="line">var transaction = new ReactDefaultBatchingStrategyTransaction();</div></pre></td></tr></table></figure></p>
+<p> 可以猜测出6，7两个应该是伴随着4 要去做的事情，是不是像redux中间件那样呢？</p>
+<blockquote>
+<p>感悟：猜测是科学发展的必要条件，大量的伟大发现／发明都是先猜测出来的，什么物理学／数学／量子力学的猜想，多年后才验证其正确性。所以我们看代码，写代码也需要伴随大量猜测</p>
+</blockquote>
+<p> <img src="/images/react/state_3.jpg" alt=""><br> 可以看出事务transation 先执行所有的initialize，然后执行真正的事情 enqueueUpdate，最后再执行所有的close；</p>
+<p> 看来没有想象的那么复杂，事务通过wrapper进行封装。一个wrapper包含一对initialize和close方法。比如RESET_BATCHED_UPDATES<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> var RESET_BATCHED_UPDATES = &#123;</div><div class="line">  // 初始化调用</div><div class="line">  initialize: emptyFunction,</div><div class="line">  // 事务执行完成，close时调用</div><div class="line">  close: function () &#123;</div><div class="line">    ReactDefaultBatchingStrategy.isBatchingUpdates = false;</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>transcation被包装在wrapper中，比如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var TRANSACTION_WRAPPERS = [FLUSH_BATCHED_UPDATES, RESET_BATCHED_UPDATES];</div></pre></td></tr></table></figure></p>
+<p>transaction是通过transaction.perform(callback, args…)方法进入的，它会先调用注册好的wrapper中的initialize方法，然后执行perform方法中的callback，最后再执行close方法。<br> 而且transation 代码中用了一幅图说明了事务的执行时序。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">* &lt;pre&gt;</div><div class="line">*                       wrappers (injected at creation time)</div><div class="line">*                                      +        +</div><div class="line">*                                      |        |</div><div class="line">*                    +-----------------|--------|--------------+</div><div class="line">*                    |                 v        |              |</div><div class="line">*                    |      +---------------+   |              |</div><div class="line">*                    |   +--|    wrapper1   |---|----+         |</div><div class="line">*                    |   |  +---------------+   v    |         |</div><div class="line">*                    |   |          +-------------+  |         |</div><div class="line">*                    |   |     +----|   wrapper2  |--------+   |</div><div class="line">*                    |   |     |    +-------------+  |     |   |</div><div class="line">*                    |   |     |                     |     |   |</div><div class="line">*                    |   v     v                     v     v   | wrapper</div><div class="line">*                    | +---+ +---+   +---------+   +---+ +---+ | invariants</div><div class="line">* perform(anyMethod) | |   | |   |   |         |   |   | |   | | maintained</div><div class="line">* +-----------------&gt;|-|---|-|---|--&gt;|anyMethod|---|---|-|---|-|--------&gt;</div><div class="line">*                    | |   | |   |   |         |   |   | |   | |</div><div class="line">*                    | |   | |   |   |         |   |   | |   | |</div><div class="line">*                    | |   | |   |   |         |   |   | |   | |</div><div class="line">*                    | +---+ +---+   +---------+   +---+ +---+ |</div><div class="line">*                    |  initialize                    close    |</div><div class="line">*                    +-----------------------------------------+</div><div class="line">* &lt;/pre&gt;</div><div class="line">*</div></pre></td></tr></table></figure>
+<p> 我们继续沿着执行代码分析</p>
+<ul>
+<li>initializaAll中没有实际操作</li>
+<li>ret = method.call(scope, a, b, c, d, e, f);<br>这行代码又去执行enqueueUpdate了，看来setState 是不执行下面的代码不死心<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">dirtyComponents.push(component);</div><div class="line">if (component._updateBatchNumber == null) &#123;</div><div class="line">  component._updateBatchNumber = updateBatchNumber + 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这段代码应该就是标记下这个组件数据变化了，需要更新。</p>
+<ul>
+<li>this.closeAll(0);<br>这个里面有个flush_batched_updates,可以发现里面又是一个事务。</li>
+</ul>
+<p>我们直接来看setState 中的事务执行流程<br><img src="/images/react/state_11.png" alt=""></p>
+<p>可以发现还是挺绕的，不过真正的更新最后还是走到了runBatchedUpdates</p>
+<h3 id="runBatchedUpdates"><a href="#runBatchedUpdates" class="headerlink" title="runBatchedUpdates"></a>runBatchedUpdates</h3><p>FLUSH_BATCHED_UPDATES会在一个transaction的close阶段运行<code>runBatchedUpdates</code>，从而执行update。</p>
+<p>runBatchedUpdates循环遍历dirtyComponents数组，主要干两件事</p>
+<ul>
+<li>首先执行performUpdateIfNecessary来刷新组件的view</li>
+<li>执行之前阻塞的callback。</li>
+</ul>
+<p>下面来看performUpdateIfNecessary。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">performUpdateIfNecessary: function (transaction) &#123;</div><div class="line">  if (this._pendingElement != null) &#123;</div><div class="line">    // receiveComponent会最终调用到updateComponent，从而刷新View</div><div class="line">    ReactReconciler.receiveComponent(this, this._pendingElement, transaction, this._context);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  if (this._pendingStateQueue !== null || this._pendingForceUpdate) &#123;</div><div class="line">    // 执行updateComponent，从而刷新View。这个流程在React生命周期中讲解过</div><div class="line">    this.updateComponent(transaction, this._currentElement, this._currentElement, this._context, this._context);</div><div class="line">  &#125;</div><div class="line">&#125;,</div></pre></td></tr></table></figure>
+<p>是不是觉得越来越看到庐山真面目了</p>
+<p>updateComponent就是终极boss，他会执行React组件存在期的生命周期方法，如componentWillReceiveProps， shouldComponentUpdate， componentWillUpdate，render, componentDidUpdate。 从而完成组件更新的整套流程。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">_performComponentUpdate: function (nextElement, nextProps, nextState, nextContext, transaction, unmaskedContext) &#123;</div><div class="line">   var _this2 = this;</div><div class="line"></div><div class="line">   var inst = this._instance;</div><div class="line"></div><div class="line">   var hasComponentDidUpdate = Boolean(inst.componentDidUpdate);</div><div class="line">   var prevProps;</div><div class="line">   var prevState;</div><div class="line">   var prevContext;</div><div class="line">   if (hasComponentDidUpdate) &#123;</div><div class="line">     prevProps = inst.props;</div><div class="line">     prevState = inst.state;</div><div class="line">     prevContext = inst.context;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   if (inst.componentWillUpdate) &#123;</div><div class="line">     if (process.env.NODE_ENV !== &apos;production&apos;) &#123;</div><div class="line">       measureLifeCyclePerf(function () &#123;</div><div class="line">         return inst.componentWillUpdate(nextProps, nextState, nextContext);</div><div class="line">       &#125;, this._debugID, &apos;componentWillUpdate&apos;);</div><div class="line">     &#125; else &#123;</div><div class="line">       inst.componentWillUpdate(nextProps, nextState, nextContext);</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   this._currentElement = nextElement;</div><div class="line">   this._context = unmaskedContext;</div><div class="line">   inst.props = nextProps;</div><div class="line">   inst.state = nextState;</div><div class="line">   inst.context = nextContext;</div><div class="line"></div><div class="line">   this._updateRenderedComponent(transaction, unmaskedContext);</div><div class="line"></div><div class="line">   if (hasComponentDidUpdate) &#123;</div><div class="line">     if (process.env.NODE_ENV !== &apos;production&apos;) &#123;</div><div class="line">       transaction.getReactMountReady().enqueue(function () &#123;</div><div class="line">         measureLifeCyclePerf(inst.componentDidUpdate.bind(inst, prevProps, prevState, prevContext), _this2._debugID, &apos;componentDidUpdate&apos;);</div><div class="line">       &#125;);</div><div class="line">     &#125; else &#123;</div><div class="line">       transaction.getReactMountReady().enqueue(inst.componentDidUpdate.bind(inst, prevProps, prevState, prevContext), inst);</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line"> &#125;,</div></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>setState流程还是很复杂的，设计也很精巧，避免了重复无谓的刷新组件。它的主要流程如下</p>
+<ul>
+<li>enqueueSetState将state放入队列中，并调用enqueueUpdate处理要更新的Component</li>
+<li>如果组件当前正处于update事务中，则先将Component存入dirtyComponent中。否则调用batchedUpdates处理。</li>
+<li>batchedUpdates发起一次transaction.perform()事务</li>
+<li>开始执行事务初始化，运行，结束三个阶段<ul>
+<li>初始化：事务初始化阶段没有注册方法，故无方法要执行</li>
+<li>运行：执行setSate时传入的callback方法，一般不会传callback参数</li>
+<li>结束：更新isBatchingUpdates为false，并执行FLUSH_BATCHED_UPDATES这个wrapper中的close方法</li>
+</ul>
+</li>
+<li>FLUSH_BATCHED_UPDATES在close阶段，会循环遍历所有的dirtyComponents，调用updateComponent刷新组件，并执行它的pendingCallbacks, 也就是setState中设置的callback。</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/reactjs/" rel="tag"># reactjs</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/20/react源码4-虚拟dom的diff算法/" rel="next" title="react源码4-虚拟dom的diff算法">
+                <i class="fa fa-chevron-left"></i> react源码4-虚拟dom的diff算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/27/react源码6-合成事件/" rel="prev" title="react源码6-合成事件">
+                react源码6-合成事件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg"
+               alt="suyuan" />
+          <p class="site-author-name" itemprop="name">suyuan</p>
+           
+              <p class="site-description motion-element" itemprop="description">东京下雨，淋湿巴黎</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#时序流程"><span class="nav-number">1.</span> <span class="nav-text">时序流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setState"><span class="nav-number">2.</span> <span class="nav-text">setState</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transaction"><span class="nav-number">3.</span> <span class="nav-text">transaction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#runBatchedUpdates"><span class="nav-number">4.</span> <span class="nav-text">runBatchedUpdates</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suyuan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

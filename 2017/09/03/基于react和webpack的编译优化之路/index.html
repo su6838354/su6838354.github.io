@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="reactjs,项目," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="本文是针对公司项目的一个前端编译方面的迭代记录，主要目的是减少编译时间，优化开发体验 背景最初项目前端工程化比较初级，通过webpack+jsx-loader对jsx进行处理，通过gulp构建clean和build任务；并且他是多页面多入口，每个页面都需要进行webpack编译1234567891011121314151617181920212223242526272829303132333435">
+<meta name="keywords" content="reactjs,项目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于react和webpack的编译优化之路">
+<meta property="og:url" content="http://yoursite.com/2017/09/03/基于react和webpack的编译优化之路/index.html">
+<meta property="og:site_name" content="苏远的博客">
+<meta property="og:description" content="本文是针对公司项目的一个前端编译方面的迭代记录，主要目的是减少编译时间，优化开发体验 背景最初项目前端工程化比较初级，通过webpack+jsx-loader对jsx进行处理，通过gulp构建clean和build任务；并且他是多页面多入口，每个页面都需要进行webpack编译1234567891011121314151617181920212223242526272829303132333435">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-07T14:42:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于react和webpack的编译优化之路">
+<meta name="twitter:description" content="本文是针对公司项目的一个前端编译方面的迭代记录，主要目的是减少编译时间，优化开发体验 背景最初项目前端工程化比较初级，通过webpack+jsx-loader对jsx进行处理，通过gulp构建clean和build任务；并且他是多页面多入口，每个页面都需要进行webpack编译1234567891011121314151617181920212223242526272829303132333435">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/03/基于react和webpack的编译优化之路/"/>
+
+
+
+
+
+  <title>基于react和webpack的编译优化之路 | 苏远的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e56d57ba89bb058da8fdd8841e98770f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">苏远的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/index.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/03/基于react和webpack的编译优化之路/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于react和webpack的编译优化之路</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-03T22:09:29+08:00">
+                2017-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是针对公司项目的一个前端编译方面的迭代记录，主要目的是减少编译时间，优化开发体验</p>
+<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最初项目前端工程化比较初级，通过webpack+jsx-loader对jsx进行处理，通过gulp构建clean和build任务；并且他是多页面多入口，每个页面都需要进行webpack编译<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">gulpfile.js</div><div class="line"></div><div class="line">    gulp.task(&apos;clean&apos;, function (cb) &#123;</div><div class="line">      var rimraf = require(&apos;rimraf&apos;);</div><div class="line">      rimraf(&apos;./build/&apos;, cb);</div><div class="line">    &#125;);</div><div class="line">    </div><div class="line">    gulp.task(&apos;build&apos;,[&apos;clean&apos;], function() &#123;</div><div class="line">        var compSrc = &apos;./src/html/*&apos;,</div><div class="line">            compDst = &apos;./build/html/&apos;;</div><div class="line">    </div><div class="line">        gulp.src(compSrc)</div><div class="line">            .pipe(gulp.dest(compDst));</div><div class="line">    </div><div class="line">        gulp.src(&apos;&apos;)</div><div class="line">            .pipe(webpack(webpackConfig))</div><div class="line">            .pipe(gulp.dest(&apos;&apos;));</div><div class="line">    &#125;);</div><div class="line">    </div><div class="line">webpack.config</div><div class="line"></div><div class="line">    module.exports = &#123;</div><div class="line">        entry: &#123;</div><div class="line">            //&apos;lts-irelease2-nav&apos;:&apos;./src/jsx/lts-irelease2-nav.jsx&apos;,</div><div class="line">            &apos;lts-irelease2-create-project&apos;:&apos;./src/jsx/lts-irelease2-create-devplan.jsx&apos;,</div><div class="line">            &apos;lts-irelease2-list-project&apos;:&apos;./src/jsx/lts-irelease2-list-devplan.jsx&apos;,</div><div class="line">            ...</div><div class="line">        &#125;,</div><div class="line">        output: &#123;</div><div class="line">            filename: &apos;./build/js/[name].js&apos;</div><div class="line">        &#125;,</div><div class="line">        //devtool: &apos;inline-source-map&apos;,</div><div class="line">        module: &#123;</div><div class="line">            loaders: [</div><div class="line">                &#123; test: /\.jsx$/, loader: &apos;jsx-loader&apos; &#125;</div><div class="line">            ]</div><div class="line">        &#125;,</div><div class="line">        resolve: &#123;</div><div class="line">            extensions: [&apos;&apos;, &apos;.js&apos;,&apos;.jsx&apos;]</div><div class="line">        &#125;</div><div class="line">    &#125;;</div></pre></td></tr></table></figure></p>
+<p>问题：</p>
+<ol>
+<li>不支持es6等最新语法</li>
+<li>不支持css,less等编译</li>
+<li>没有实现SPA模式</li>
+<li>前后端没有分离，后端还是通过模板渲染做了一次无用功</li>
+<li>自研的组件库存在一些问题，state 状态管理混乱，使用semantic作为UI层，组件封装成本高，react和semantic 的js事件之间的时序存在问题 等，随着react、webpack等升级，没有精力来维护自研组件</li>
+</ol>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><ul>
+<li><p>打包过程分析<br>我们知道，webpack 在打包过程中会针对不同的资源类型使用不同的loader处理，然后将所有静态资源整合到一个bundle里，以实现所有静态资源的加载。webpack最初的主要目的是在浏览器端复用符合CommonJS规范的代码模块，而CommonJS模块每次修改都需要重新构建(rebuild)后才能在浏览器端使用。<br>那么， webpack是如何进行资源的打包的呢？总结如下：</p>
+<ul>
+<li>对于单入口文件，每个入口文件把自己所依赖的资源全部打包到一起，即使一个资源循环加载的话，也只会打包一份</li>
+<li>对于多入口文件的情况，分别独立执行单个入口的情况，每个入口文件各不相干<br>我们的项目使用的就是多入口文件。在入口文件中，webpack会对每个资源文件进行配置一个id，即使多次加载，它的id也是一样的，因此只会打包一次。<br>但是每个入口都需要做一遍打包流程，本身就很不合适。</li>
+</ul>
+</li>
+<li><p>如何定位webpack打包速度慢的原因<br>首先需要定位webpack打包速度慢的原因，才能因地制宜采取合适的方案。我们可以在终端中输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ webpack --profile --json &gt; stats.json</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>然后将输出的json文件到如下两个网站进行分析<br><a href="https://github.com/webpack/analyse" target="_blank" rel="external">https://github.com/webpack/analyse</a><br><a href="http://alexkuz.github.io/webpack-chart/" target="_blank" rel="external">http://alexkuz.github.io/webpack-chart/</a></p>
+<h3 id="改进路线"><a href="#改进路线" class="headerlink" title="改进路线"></a>改进路线</h3><ul>
+<li><p>nodejs升级到8.3.X</p>
+</li>
+<li><p>使用yarn而不是npm</p>
+</li>
+<li><p>去除gulp,直接采用webpack</p>
+</li>
+<li><p>webpack中有选择的编译</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">include: path.join(__dirname, &apos;src&apos;),</div><div class="line">exclude: /node_modules/,</div></pre></td></tr></table></figure>
+</li>
+<li><p>webpack 编译支持react,es6和一些新语法，比如static class，解构语法<br>其中加入babel编译会增长编译时间</p>
+</li>
+<li><p>eslint开发某些路径下的代码</p>
+</li>
+<li><p>webpack 自动集成html和js<br>自动在html中加入script tag， 增量发版，</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">const HtmlWebpackPlugin = require(&apos;html-webpack-plugin&apos;);</div><div class="line">new HtmlWebpackPlugin(</div><div class="line">&#123;</div><div class="line">  filename: path.join(&apos;html&apos;, `$&#123;realName&#125;.html`),</div><div class="line">  template: path.join(realHtmlPath, `$&#123;name.split(&apos;.&apos;)[0]&#125;.html`),</div><div class="line">  hash: true,</div><div class="line">  inject: true,</div><div class="line">  chunks: [&apos;babel-polyfill&apos;, realName, &apos;common&apos;],</div><div class="line">  chunksSortMode: orderByList([&apos;common&apos;, &apos;babel-polyfill&apos;]),</div><div class="line">&#125;</div><div class="line">);</div></pre></td></tr></table></figure>
+<ul>
+<li>commonjs 提取公共js<br>保证每个jsx里面有公共部分<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">new webpack.optimize.CommonsChunkPlugin(&#123;name: &quot;common&quot;, filename: &quot;js/common.js&quot;&#125;),</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这个改为后，每个js文件会变小，会有个比较大的common.js<br>此时编译可能很慢了</p>
+<ul>
+<li><p>自动入口分析<br>通过js获取html下的入口，自动引入对应的jsx，不需要修改webpack.config.js</p>
+<blockquote>
+<p>增加html后，nodejs自动扫描到对应的jsx文件载入webpack入口，无需再修改webpack.config.js<br>根据编译参数，支持开发环境和生成环境 两种配置<br>指定参数后可以编译单文件，提高开发过程中的编译效率<br>支持版本号更新</p>
+</blockquote>
+</li>
+<li><p>提取css</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const ExtractTextPlugin = require(&quot;extract-text-webpack-plugin&quot;);</div><div class="line">new ExtractTextPlugin(&#123;filename:&quot;styles.css&quot;, allChunks:true&#125;),</div></pre></td></tr></table></figure>
+</li>
+<li><p>spa 单页app模式升级(工作量比较大)<br>只保留一个html,原本的html代码转为jsx<br>react-router管理前端路由，后端路由暂时不去除</p>
+</li>
+<li><p>添加watch,支持修改代码后自动编译</p>
+</li>
+<li><p>webpack添加dashboard 编辑进度和性能可视化分析</p>
+</li>
+<li><p>生产环境优化<br>这个webpack2 的命名参数-p 可以自动实现<br>压缩，去重，treeshark，合并、去错，transform-runtime支持浏览器的模拟es6环境</p>
+</li>
+<li><p>webpack2升级为webpack3，react 升级到15.X</p>
+</li>
+<li><p>CND引入<br>react等基础包不需要编译，通过引入cnd的方式<br>webpack的 externals 特性<br>注意区分开发和线上环境引入不同包</p>
+</li>
+<li><p>支持sourcemap；</p>
+</li>
+<li>sourcemap 建议用轻量级，因为该功能影响编译速度</li>
+</ul>
+<ul>
+<li><p>多线程编译,HappyPack多进程处理loader编译；</p>
+</li>
+<li><p>热加载编译，增量编译；处理好redux 和redux-saga的对应逻辑</p>
+</li>
+<li><p>添加antd组件库，antd按需引入</p>
+</li>
+</ul>
+<p>参考<br><a href="https://github.com/hawx1993/tech-blog/issues/3" target="_blank" rel="external">https://github.com/hawx1993/tech-blog/issues/3</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/reactjs/" rel="tag"># reactjs</a>
+          
+            <a href="/tags/项目/" rel="tag"># 项目</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/03/基于create-react-app-快速搭建react项目/" rel="next" title="基于create-react-app快速搭建react项目">
+                <i class="fa fa-chevron-left"></i> 基于create-react-app快速搭建react项目
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/09/react生命周期/" rel="prev" title="react生命周期">
+                react生命周期 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg"
+               alt="suyuan" />
+          <p class="site-author-name" itemprop="name">suyuan</p>
+           
+              <p class="site-description motion-element" itemprop="description">东京下雨，淋湿巴黎</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改进路线"><span class="nav-number">3.</span> <span class="nav-text">改进路线</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suyuan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

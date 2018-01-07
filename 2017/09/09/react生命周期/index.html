@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="reactjs," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="React生命周期流程 实例化生命周期getDefaultProps在React.creatClass()初始化组件类时，会调用getDefaultProps()，将返回的默认属性挂载到defaultProps变量下。 初始化组件类只运行一次。类对象的初始化不要错误理解成了实例对象的初始化。一个React组件类可能会在JSX中被多次调用，产生多个组件对象，但它只有一个类对象，也就是类加载后getD">
+<meta name="keywords" content="reactjs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="react生命周期">
+<meta property="og:url" content="http://yoursite.com/2017/09/09/react生命周期/index.html">
+<meta property="og:site_name" content="苏远的博客">
+<meta property="og:description" content="React生命周期流程 实例化生命周期getDefaultProps在React.creatClass()初始化组件类时，会调用getDefaultProps()，将返回的默认属性挂载到defaultProps变量下。 初始化组件类只运行一次。类对象的初始化不要错误理解成了实例对象的初始化。一个React组件类可能会在JSX中被多次调用，产生多个组件对象，但它只有一个类对象，也就是类加载后getD">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/react/life_1.png">
+<meta property="og:updated_time" content="2018-01-07T13:36:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="react生命周期">
+<meta name="twitter:description" content="React生命周期流程 实例化生命周期getDefaultProps在React.creatClass()初始化组件类时，会调用getDefaultProps()，将返回的默认属性挂载到defaultProps变量下。 初始化组件类只运行一次。类对象的初始化不要错误理解成了实例对象的初始化。一个React组件类可能会在JSX中被多次调用，产生多个组件对象，但它只有一个类对象，也就是类加载后getD">
+<meta name="twitter:image" content="http://yoursite.com/images/react/life_1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/09/react生命周期/"/>
+
+
+
+
+
+  <title>react生命周期 | 苏远的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e56d57ba89bb058da8fdd8841e98770f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">苏远的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/index.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/09/react生命周期/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苏远的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">react生命周期</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-09T23:33:31+08:00">
+                2017-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="React生命周期流程"><a href="#React生命周期流程" class="headerlink" title="React生命周期流程"></a>React生命周期流程</h3><p><img src="/images/react/life_1.png" alt=""></p>
+<h3 id="实例化生命周期"><a href="#实例化生命周期" class="headerlink" title="实例化生命周期"></a>实例化生命周期</h3><h4 id="getDefaultProps"><a href="#getDefaultProps" class="headerlink" title="getDefaultProps"></a>getDefaultProps</h4><p>在React.creatClass()初始化组件类时，会调用getDefaultProps()，将返回的默认属性挂载到defaultProps变量下。</p>
+<p>初始化组件类只运行一次。类对象的初始化不要错误理解成了实例对象的初始化。一个React组件类可能会在JSX中被多次调用，产生多个组件对象，但它只有一个类对象，也就是类加载后getDefaultProps就不会再调用了。</p>
+<h4 id="getInitialState"><a href="#getInitialState" class="headerlink" title="getInitialState"></a>getInitialState</h4><p>这个方法在创建组件实例对象的时候被调用，具体代码位于React.creatClass()的Constructor函数中。每次创建React实例对象时，它都会被调用。</p>
+<h4 id="mountComponent"><a href="#mountComponent" class="headerlink" title="mountComponent"></a>mountComponent</h4><p>componentWillMount，render，componentDidMount都是在mountComponent中被调用。它是在渲染新的ReactComponent中被调用的。输入ReactComponent，返回组件对应的HTML。把这个HTML插入到DOM中，就可以生成组件对应的DOM对象了。所以mountComponent尤其关键。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">mountComponent: function (transaction, nativeParent, nativeContainerInfo, context) &#123;</div><div class="line">    this._context = context;</div><div class="line">    this._mountOrder = nextMountID++;</div><div class="line">    this._nativeParent = nativeParent;</div><div class="line">    this._nativeContainerInfo = nativeContainerInfo;</div><div class="line"></div><div class="line">    // 做propTypes是否合法的判断，这个只在开发阶段有用</div><div class="line">    var publicProps = this._processProps(this._currentElement.props);</div><div class="line">    var publicContext = this._processContext(context);</div><div class="line"></div><div class="line">    var Component = this._currentElement.type;</div><div class="line"></div><div class="line">    // 初始化公共类</div><div class="line">    var inst = this._constructComponent(publicProps, publicContext);</div><div class="line">    var renderedElement;</div><div class="line"></div><div class="line">    // inst或者inst.render为空对应的是stateless组件，也就是无状态组件</div><div class="line">    // 无状态组件没有实例对象，它本质上只是一个返回JSX的函数而已。是一种轻量级的React组件</div><div class="line">    if (!shouldConstruct(Component) &amp;&amp; (inst == null || inst.render == null)) &#123;</div><div class="line">      renderedElement = inst;</div><div class="line">      warnIfInvalidElement(Component, renderedElement);</div><div class="line">      inst = new StatelessComponent(Component);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 设置变量</div><div class="line">    inst.props = publicProps;</div><div class="line">    inst.context = publicContext;</div><div class="line">    inst.refs = emptyObject;</div><div class="line">    inst.updater = ReactUpdateQueue;</div><div class="line">    this._instance = inst;</div><div class="line"></div><div class="line">    // 存储实例对象的引用到map中，方便以后查找</div><div class="line">    ReactInstanceMap.set(inst, this);</div><div class="line">    </div><div class="line">    // 初始化state，队列等</div><div class="line">    var initialState = inst.state;</div><div class="line">    if (initialState === undefined) &#123;</div><div class="line">      inst.state = initialState = null;</div><div class="line">    &#125;</div><div class="line">    this._pendingStateQueue = null;</div><div class="line">    this._pendingReplaceState = false;</div><div class="line">    this._pendingForceUpdate = false;</div><div class="line"></div><div class="line">    var markup;</div><div class="line">    if (inst.unstable_handleError) &#123;</div><div class="line">      // 挂载时出错，进行一些错误处理，然后performInitialMount，初始化挂载</div><div class="line">      markup = this.performInitialMountWithErrorHandling(renderedElement, nativeParent, nativeContainerInfo, transaction, context);</div><div class="line">    &#125; else &#123;</div><div class="line">      // 初始化挂载</div><div class="line">      markup = this.performInitialMount(renderedElement, nativeParent, nativeContainerInfo, transaction, context);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (inst.componentDidMount) &#123;</div><div class="line">      // 调用componentDidMount，以事务的形式</div><div class="line">      transaction.getReactMountReady().enqueue(inst.componentDidMount, inst);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    return markup;</div><div class="line">  &#125;,</div></pre></td></tr></table></figure>
+<ul>
+<li>mountComponent先做实例对象的props,state等初始化</li>
+<li>然后调用performInitialMount初始化挂载</li>
+<li>完成后调用componentDidMount。</li>
+</ul>
+<p>下面我们重点来分析performInitialMountWithErrorHandling和performInitialMount</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">performInitialMountWithErrorHandling: function (renderedElement, nativeParent, nativeContainerInfo, transaction, context) &#123;</div><div class="line">    var markup;</div><div class="line">    var checkpoint = transaction.checkpoint();</div><div class="line">    try &#123;</div><div class="line">      // 放到try-catch中，如果没有出错则调用performInitialMount初始化挂载。可见这里没有什么特别的操作，也就是做一些错误处理而已</div><div class="line">      markup = this.performInitialMount(renderedElement, nativeParent, nativeContainerInfo, transaction, context);</div><div class="line">    &#125; catch (e) &#123;</div><div class="line">      // handleError，卸载组件，然后重新performInitialMount初始化挂载</div><div class="line">      transaction.rollback(checkpoint);</div><div class="line">      this._instance.unstable_handleError(e);</div><div class="line">      if (this._pendingStateQueue) &#123;</div><div class="line">        this._instance.state = this._processPendingState(this._instance.props, this._instance.context);</div><div class="line">      &#125;</div><div class="line">      checkpoint = transaction.checkpoint();</div><div class="line"></div><div class="line">      this._renderedComponent.unmountComponent(true);</div><div class="line">      transaction.rollback(checkpoint);</div><div class="line">      </div><div class="line">      markup = this.performInitialMount(renderedElement, nativeParent, nativeContainerInfo, transaction, context);</div><div class="line">    &#125;</div><div class="line">    return markup;</div><div class="line">  &#125;,</div></pre></td></tr></table></figure>
+<p>可见performInitialMountWithErrorHandling只是多了一层错误处理而已，关键还是在performInitialMount中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">performInitialMount: function (renderedElement, nativeParent, nativeContainerInfo, transaction, context) &#123;</div><div class="line">  var inst = this._instance;</div><div class="line">  if (inst.componentWillMount) &#123;</div><div class="line">    // render前调用componentWillMount</div><div class="line">    inst.componentWillMount();</div><div class="line">    // 将state提前合并，故在componentWillMount中调用setState不会触发重新render，而是做一次state合并。这样做的目的是减少不必要的重新渲染</div><div class="line">    if (this._pendingStateQueue) &#123;</div><div class="line">      inst.state = this._processPendingState(inst.props, inst.context);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 如果不是stateless，即无状态组件，则调用render，返回ReactElement</div><div class="line">  if (renderedElement === undefined) &#123;</div><div class="line">    renderedElement = this._renderValidatedComponent();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 得到组件类型，如空组件ReactNodeTypes.EMPTY，自定义React组件ReactNodeTypes.COMPOSITE，DOM原生组件ReactNodeTypes.NATIVE</div><div class="line">  this._renderedNodeType = ReactNodeTypes.getType(renderedElement);</div><div class="line">  // 由ReactElement生成ReactComponent，这个方法在之前讲解过。根据不同type创建不同Component对象</div><div class="line">  // 参考 http://blog.csdn.net/u013510838/article/details/55669769</div><div class="line">  this._renderedComponent = this._instantiateReactComponent(renderedElement);</div><div class="line"></div><div class="line">  // 递归渲染，渲染子组件</div><div class="line">  var markup = ReactReconciler.mountComponent(this._renderedComponent, transaction, nativeParent, nativeContainerInfo, this._processChildContext(context));</div><div class="line"></div><div class="line">  return markup;</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>performInitialMount中先调用componentWillMount()，再将setState()产生的state改变进行state合并，然后调用_renderValidatedComponent()返回ReactElement，它会调用render()方法。然后由ReactElement创建ReactComponent。最后进行递归渲染。下面来看renderValidatedComponent()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">_renderValidatedComponent: function () &#123;</div><div class="line">  var renderedComponent;</div><div class="line">  ReactCurrentOwner.current = this;</div><div class="line">  try &#123;</div><div class="line">    renderedComponent = this._renderValidatedComponentWithoutOwnerOrContext();</div><div class="line">  &#125; finally &#123;</div><div class="line">    ReactCurrentOwner.current = null;</div><div class="line">  &#125;</div><div class="line">  !(</div><div class="line">  return renderedComponent;</div><div class="line">&#125;,</div><div class="line">    </div><div class="line">_renderValidatedComponentWithoutOwnerOrContext: function () &#123;</div><div class="line">  var inst = this._instance;</div><div class="line">  // 调用render方法，得到ReactElement。JSX经过babel转译后其实就是createElement()方法。这一点在前面也讲解过</div><div class="line">  var renderedComponent = inst.render();</div><div class="line">  return renderedComponent;</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<h3 id="更新时-生命周期"><a href="#更新时-生命周期" class="headerlink" title="更新时 生命周期"></a>更新时 生命周期</h3><p>  组件实例对象已经生成时，我们可以通过setState()来更新组件。setState机制后面会有单独文章分析，现在只用知道它会调用updateComponent()来完成更新即可。下面来分析updateComponent<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">updateComponent: function(transaction, prevParentElement, nextParentElement, prevUnmaskedContext, nextUnmaskedContext</div><div class="line">  ) &#123;</div><div class="line">    var inst = this._instance;</div><div class="line">    var willReceive = false;</div><div class="line">    var nextContext;</div><div class="line">    var nextProps;</div><div class="line"></div><div class="line">    // context对象如果有改动,则检查propTypes等,这在开发阶段可以报错提醒</div><div class="line">    if (this._context === nextUnmaskedContext) &#123;</div><div class="line">      nextContext = inst.context;</div><div class="line">    &#125; else &#123;</div><div class="line">      nextContext = this._processContext(nextUnmaskedContext);</div><div class="line">      willReceive = true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 如果父元素类型相同,则跳过propTypes类型检查</div><div class="line">    if (prevParentElement === nextParentElement) &#123;</div><div class="line">      nextProps = nextParentElement.props;</div><div class="line">    &#125; else &#123;</div><div class="line">      nextProps = this._processProps(nextParentElement.props);</div><div class="line">      willReceive = true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 调用componentWillReceiveProps,如果通过setState进入的updateComponent，则没有这一步</div><div class="line">    if (willReceive &amp;&amp; inst.componentWillReceiveProps) &#123;</div><div class="line">      inst.componentWillReceiveProps(nextProps, nextContext);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 提前合并state,componentWillReceiveProps中调用setState不会重新渲染,在此处做合并即可,因为后面也是要调用render的</div><div class="line">    // 这样可以避免没必要的渲染</div><div class="line">    var nextState = this._processPendingState(nextProps, nextContext);</div><div class="line">    </div><div class="line">    // 调用shouldComponentUpdate给shouldUpdate赋值</div><div class="line">    // 如果通过forceUpdate进入的updateComponent，即_pendingForceUpdate不为空，则不用判断shouldComponentUpdate.</div><div class="line">    var shouldUpdate = true;</div><div class="line">    if (!this._pendingForceUpdate &amp;&amp; inst.shouldComponentUpdate) &#123;</div><div class="line">      shouldUpdate = inst.shouldComponentUpdate(nextProps, nextState, nextContext);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // 如果shouldUpdate为true,则会执行渲染,否则不会</div><div class="line">    this._updateBatchNumber = null;</div><div class="line">    if (shouldUpdate) &#123;</div><div class="line">      this._pendingForceUpdate = false;</div><div class="line">      // 执行更新渲染,后面详细分析</div><div class="line">      this._performComponentUpdate(</div><div class="line">        nextParentElement,</div><div class="line">        nextProps,</div><div class="line">        nextState,</div><div class="line">        nextContext,</div><div class="line">        transaction,</div><div class="line">        nextUnmaskedContext</div><div class="line">      );</div><div class="line">    &#125; else &#123;</div><div class="line">      // shouldUpdate为false,则不会更新渲染</div><div class="line">      this._currentElement = nextParentElement;</div><div class="line">      this._context = nextUnmaskedContext;</div><div class="line">      inst.props = nextProps;</div><div class="line">      inst.state = nextState;</div><div class="line">      inst.context = nextContext;</div><div class="line">    &#125;</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>updateComponent中，先调用componentWillReceiveProps，然后合并setState导致的state变化。然后调用shouldComponentUpdate判断是否需要更新渲染。如果需要，则调用<code>_performComponentUpdate</code>执行渲染更新，下面接着分析performComponentUpdate。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">_performComponentUpdate: function(nextElement,nextProps,nextState,nextContext,transaction,</div><div class="line">                                     unmaskedContext</div><div class="line">  ) &#123;</div><div class="line">    var inst = this._instance;</div><div class="line"></div><div class="line">    // 判断是否已经update了</div><div class="line">    var hasComponentDidUpdate = Boolean(inst.componentDidUpdate);</div><div class="line">    var prevProps;</div><div class="line">    var prevState;</div><div class="line">    var prevContext;</div><div class="line">    if (hasComponentDidUpdate) &#123;</div><div class="line">      prevProps = inst.props;</div><div class="line">      prevState = inst.state;</div><div class="line">      prevContext = inst.context;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // render前调用componentWillUpdate</div><div class="line">    if (inst.componentWillUpdate) &#123;</div><div class="line">      inst.componentWillUpdate(nextProps, nextState, nextContext);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // state props等属性设置到内部变量inst上</div><div class="line">    this._currentElement = nextElement;</div><div class="line">    this._context = unmaskedContext;</div><div class="line">    inst.props = nextProps;</div><div class="line">    inst.state = nextState;</div><div class="line">    inst.context = nextContext;</div><div class="line"></div><div class="line">    // 内部会调用render方法，重新解析ReactElement并得到HTML</div><div class="line">    this._updateRenderedComponent(transaction, unmaskedContext);</div><div class="line"></div><div class="line">    // render后调用componentDidUpdate</div><div class="line">    if (hasComponentDidUpdate) &#123;</div><div class="line">      transaction.getReactMountReady().enqueue(</div><div class="line">        inst.componentDidUpdate.bind(inst, prevProps, prevState, prevContext),</div><div class="line">        inst</div><div class="line">      );</div><div class="line">    &#125;</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>_performComponentUpdate会调用componentWillUpdate，然后在调用updateRenderedComponent进行更新渲染，最后调用componentDidUpdate。下面来看看updateRenderedComponent中怎么调用render方法的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">_updateRenderedComponent: function(transaction, context) &#123;</div><div class="line">    var prevComponentInstance = this._renderedComponent;</div><div class="line">    var prevRenderedElement = prevComponentInstance._currentElement;</div><div class="line">    </div><div class="line">    // _renderValidatedComponent内部会调用render,得到ReactElement</div><div class="line">    var nextRenderedElement = this._renderValidatedComponent();</div><div class="line">    </div><div class="line">    // 判断是否做DOM diff。React为了简化递归diff,认为组件层级不变,且type和key不变(key用于listView等组件,很多时候我们没有设置type)才update,否则先unmount再重新mount</div><div class="line">    if (shouldUpdateReactComponent(prevRenderedElement, nextRenderedElement)) &#123;</div><div class="line">      // 递归updateComponent,更新子组件的Virtual DOM</div><div class="line">      ReactReconciler.receiveComponent(prevComponentInstance, nextRenderedElement, transaction, this._processChildContext(context));</div><div class="line">    &#125; else &#123;</div><div class="line">      var oldNativeNode = ReactReconciler.getNativeNode(prevComponentInstance);</div><div class="line">      </div><div class="line">      // 不做DOM diff,则先卸载掉,然后再加载。也就是先unMountComponent,再mountComponent</div><div class="line">      ReactReconciler.unmountComponent(prevComponentInstance, false);</div><div class="line"></div><div class="line">      this._renderedNodeType = ReactNodeTypes.getType(nextRenderedElement);</div><div class="line">      </div><div class="line">      // 由ReactElement创建ReactComponent</div><div class="line">      this._renderedComponent = this._instantiateReactComponent(nextRenderedElement);</div><div class="line"></div><div class="line">      // mountComponent挂载组件,得到组件对应HTML</div><div class="line">      var nextMarkup = ReactReconciler.mountComponent(this._renderedComponent, transaction, this._nativeParent, this._nativeContainerInfo, this._processChildContext(context));</div><div class="line"></div><div class="line">      // 将HTML插入DOM中</div><div class="line">      this._replaceNodeWithMarkup(oldNativeNode, nextMarkup, prevComponentInstance);</div><div class="line">    &#125;</div><div class="line">&#125;,</div><div class="line">    </div><div class="line">_renderValidatedComponent: function() &#123;</div><div class="line">    var renderedComponent;</div><div class="line">    ReactCurrentOwner.current = this;</div><div class="line">    try &#123;</div><div class="line">      renderedComponent =</div><div class="line">        this._renderValidatedComponentWithoutOwnerOrContext();</div><div class="line">    &#125; finally &#123;</div><div class="line">      ReactCurrentOwner.current = null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    return renderedComponent;</div><div class="line">&#125;,</div><div class="line"></div><div class="line">_renderValidatedComponentWithoutOwnerOrContext: function() &#123;</div><div class="line">    var inst = this._instance;</div><div class="line">    // 看到render方法了把，应该放心了把~</div><div class="line">    var renderedComponent = inst.render();</div><div class="line"></div><div class="line">    return renderedComponent;</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>和mountComponent中一样，updateComponent也是用递归的方式将各子组件进行update的。这里要特别注意的是DOM diff。DOM diff是React中渲染加速的关键所在，它会帮我们算出virtual DOM中真正变化的部分，并对这部分进行原生DOM操作。</p>
+<blockquote>
+<p>为了避免循环递归对比节点的低效率，React中做了假设，即只对层级不变，type不变，key不变的组件进行Virtual DOM更新。这其中的关键是shouldUpdateReactComponent，下面分析</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">function shouldUpdateReactComponent(prevElement, nextElement) &#123;</div><div class="line">  var prevEmpty = prevElement === null || prevElement === false;</div><div class="line">  var nextEmpty = nextElement === null || nextElement === false;</div><div class="line">  if (prevEmpty || nextEmpty) &#123;</div><div class="line">    return prevEmpty === nextEmpty;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  var prevType = typeof prevElement;</div><div class="line">  var nextType = typeof nextElement;</div><div class="line">  // React DOM diff算法</div><div class="line">  // 如果前后两次为数字或者字符,则认为只需要update(处理文本元素)</div><div class="line">  // 如果前后两次为DOM元素或React元素,则必须在同一层级内,且type和key不变(key用于listView等组件,很多时候我们没有设置type)才update,否则先unmount再重新mount</div><div class="line">  if (prevType === &apos;string&apos; || prevType === &apos;number&apos;) &#123;</div><div class="line">    return (nextType === &apos;string&apos; || nextType === &apos;number&apos;);</div><div class="line">  &#125; else &#123;</div><div class="line">    return (</div><div class="line">      nextType === &apos;object&apos; &amp;&amp;</div><div class="line">      prevElement.type === nextElement.type &amp;&amp;</div><div class="line">      prevElement.key === nextElement.key</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="销毁"><a href="#销毁" class="headerlink" title="销毁"></a>销毁</h3><p>前面提到过，更新组件时，如果不满足DOM diff条件，会先unmountComponent, 然后再mountComponent，下面我们来分析下unmountComponent时都发生了什么事。<br>和mountComponent的多态一样，不同type的ReactComponent也会有不同的unmountComponent行为。我们来分析下React自定义组件，也就是ReactCompositeComponent中的unmountComponent。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">unmountComponent: function(safely) &#123;</div><div class="line">  if (!this._renderedComponent) &#123;</div><div class="line">    return;</div><div class="line">  &#125;</div><div class="line">  var inst = this._instance;</div><div class="line"></div><div class="line">  // 调用componentWillUnmount</div><div class="line">  if (inst.componentWillUnmount &amp;&amp; !inst._calledComponentWillUnmount) &#123;</div><div class="line">    inst._calledComponentWillUnmount = true;</div><div class="line">    // 安全模式下，将componentWillUnmount包在try-catch中。否则直接componentWillUnmount</div><div class="line">    if (safely) &#123;</div><div class="line">      var name = this.getName() + &apos;.componentWillUnmount()&apos;;</div><div class="line">      ReactErrorUtils.invokeGuardedCallback(name, inst.componentWillUnmount.bind(inst));</div><div class="line">    &#125; else &#123;</div><div class="line">      inst.componentWillUnmount();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 递归调用unMountComponent来销毁子组件</div><div class="line">  if (this._renderedComponent) &#123;</div><div class="line">    ReactReconciler.unmountComponent(this._renderedComponent, safely);</div><div class="line">    this._renderedNodeType = null;</div><div class="line">    this._renderedComponent = null;</div><div class="line">    this._instance = null;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // reset等待队列和其他等待状态</div><div class="line">  this._pendingStateQueue = null;</div><div class="line">  this._pendingReplaceState = false;</div><div class="line">  this._pendingForceUpdate = false;</div><div class="line">  this._pendingCallbacks = null;</div><div class="line">  this._pendingElement = null;</div><div class="line"></div><div class="line">  // reset内部变量,防止内存泄漏</div><div class="line">  this._context = null;</div><div class="line">  this._rootNodeID = null;</div><div class="line">  this._topLevelWrapper = null;</div><div class="line"></div><div class="line">  // 将组件从map中移除,还记得我们在mountComponent中将它加入了map中的吧</div><div class="line">  ReactInstanceMap.remove(inst);</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>可见，unmountComponent还是比较简单的，它就做三件事</p>
+<ul>
+<li>调用componentWillUnmount()</li>
+<li>递归调用unmountComponent(),销毁子组件</li>
+<li>将内部变量置空，防止内存泄漏</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>React自定义组件创建期，更新期，销毁期三个阶段的生命周期调用上面都讲完了。三个入口函数mountComponent，updateComponent，unmountComponent尤其关键。大家如果有兴趣，还可以自行分析ReactDOMEmptyComponent，ReactDOMComponent和ReactDOMTextComponent的这三个方法。</p>
+<p>深入学习React生命周期源码可以帮我们理清各个方法的调用顺序，明白它们都是什么时候被调用的，哪些条件下才会被调用等等。阅读源码虽然有点枯燥，但能够大大加深对上层API接口的理解，并体会设计者设计这些API的良苦用心。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://yq.aliyun.com/articles/72330?spm=5176.8091938.0.0.1bb3d8ec8VkI3A" target="_blank" rel="external">https://yq.aliyun.com/articles/72330?spm=5176.8091938.0.0.1bb3d8ec8VkI3A</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/reactjs/" rel="tag"># reactjs</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/03/基于react和webpack的编译优化之路/" rel="next" title="基于react和webpack的编译优化之路">
+                <i class="fa fa-chevron-left"></i> 基于react和webpack的编译优化之路
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/19/huwai-1511105901710/" rel="prev" title="户外项目">
+                户外项目 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://images2015.cnblogs.com/blog/564050/201707/564050-20170723222316963-2073233628.jpg"
+               alt="suyuan" />
+          <p class="site-author-name" itemprop="name">suyuan</p>
+           
+              <p class="site-description motion-element" itemprop="description">东京下雨，淋湿巴黎</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#React生命周期流程"><span class="nav-number">1.</span> <span class="nav-text">React生命周期流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例化生命周期"><span class="nav-number">2.</span> <span class="nav-text">实例化生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#getDefaultProps"><span class="nav-number">2.1.</span> <span class="nav-text">getDefaultProps</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getInitialState"><span class="nav-number">2.2.</span> <span class="nav-text">getInitialState</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mountComponent"><span class="nav-number">2.3.</span> <span class="nav-text">mountComponent</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新时-生命周期"><span class="nav-number">3.</span> <span class="nav-text">更新时 生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#销毁"><span class="nav-number">4.</span> <span class="nav-text">销毁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suyuan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
