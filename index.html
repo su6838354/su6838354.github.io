@@ -542,10 +542,13 @@
 </li>
 <li><p>表情：emoji-mart</p>
 </li>
-<li>文件：<ul>
+<li><p>文件：</p>
+<ul>
 <li>小文件dataUrl传输，存放在indexdb，历史记录会保存；</li>
 <li>大文件通过webrtc传输，建立file blob对象，页面刷新会丢失</li>
 </ul>
+</li>
+<li><p>消息提示：浏览器内置的notication作为弹框<br>后来由于浏览器更新，不能在http下使用，采用chrome 扩展插件解决这个问题</p>
 </li>
 </ul>
 <h4 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h4><ul>
@@ -1099,7 +1102,7 @@ cp dist ../koa2-hw/public
 </li>
 <li><p>webpack2升级为webpack3，react 升级到15.X</p>
 </li>
-<li><p>CND引入<br>react等基础包不需要编译，通过引入cnd的方式<br>webpack的 externals 特性<br>注意区分开发和线上环境引入不同包</p>
+<li><p>cdn引入<br>react等基础包不需要编译，通过引入cnd的方式<br>webpack的 externals 特性<br>注意区分开发和线上环境引入不同包</p>
 </li>
 <li><p>支持sourcemap；</p>
 </li>
@@ -2105,7 +2108,7 @@ yarn add react-router-dom
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">33</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2127,7 +2130,7 @@ yarn add react-router-dom
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
