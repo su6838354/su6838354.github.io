@@ -785,6 +785,560 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/10/javascript原型深入解析2-Object和Function，先有鸡先有蛋/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="suyuan的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/04/10/javascript原型深入解析2-Object和Function，先有鸡先有蛋/" itemprop="url">javascript原型深入解析2--Object和Function，先有鸡先有蛋</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-10T23:53:34+08:00">
+                2017-04-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="提出两个问题："><a href="#提出两个问题：" class="headerlink" title="提出两个问题："></a>提出两个问题：</h3><p>Js 的prototype和<code>__proto__</code>是咋回事？<br>先有function 还是先有object？</p>
+<h3 id="引用《JavaScript权威指南》的一段描述："><a href="#引用《JavaScript权威指南》的一段描述：" class="headerlink" title="引用《JavaScript权威指南》的一段描述："></a>引用《JavaScript权威指南》的一段描述：</h3><p>每个JS对象一定对应一个原型对象(<code>__proto__</code>指向的)，并从原型对象继承属性和方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">function Person()&#123;</div><div class="line">  this.live = true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">var sy = new Person();</div><div class="line">console.info(sy.__proto__ === Person.prototype) // true</div><div class="line"></div><div class="line">Cat = &#123;&#125;;</div><div class="line">console.info(Cat.__proto__ === Object.prototype) // true</div><div class="line"></div><div class="line">Dog = new Object();</div><div class="line">console.info(Dog.__proto__ === Object.prototype) // true</div></pre></td></tr></table></figure>
+<p>又来一个问题：</p>
+<p>Object 是js中的最原始的对象吗？Object.prototype是什么？</p>
+<h3 id="先谈prototype"><a href="#先谈prototype" class="headerlink" title="先谈prototype"></a>先谈prototype</h3><p>只有函数才有prototype属性。</p>
+<p>JS不像其它面向对象的语言，它没有类（class，ES6引进了这个关键字，但更多是语法糖）的概念。JS通过函数来模拟类。</p>
+<p><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321005008408-414149843.png" alt=""></p>
+<p>当你创建（定义）函数Person时，JS会为这个函数自动添加prototype属性，其是Object类型对象，并且包含constructor和<code>__proto__</code>。</p>
+<p>而一旦你把这个函数当作构造函数（constructor）调用（即通过new关键字调用），那么JS就会帮你创建该构造函数的实例sy，实例继承构造函数prototype的所有属性和方法（实例通过设置自己的<code>__proto__</code>指向承构造函数的prototype来实现这种继承）。</p>
+<p>对象的<code>__proto__</code>指向自己构造函数的prototype。<code>sy.__proto__.__proto__...</code>的原型链由此产生，包括我们的操作符instanceof正是通过探测<code>obj.__proto__.__proto__... === Constructor.prototype</code>来验证sy是否是Person或者Object的实例。</p>
+<h3 id="函数和对象之间的关系（重点）"><a href="#函数和对象之间的关系（重点）" class="headerlink" title="函数和对象之间的关系（重点）"></a>函数和对象之间的关系（重点）</h3><p>创建个函数有两种方式：</p>
+<p>(1)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var foo = new Function ([arg1[, arg2[, ...argN]],] functionBody)</div></pre></td></tr></table></figure></p>
+<p>(2)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">function foo() &#123;&#125; // var foo = function()&#123;&#125;</div></pre></td></tr></table></figure></p>
+<p>深入分析函数：</p>
+<p>函数也是对象，是一个Function实例（Function就像是python中的元类的角色），我们称函数是特殊的对象（只有函数有prototype）。</p>
+<p>因此每个函数对象都继承Function的原型对象，<code>Person.__proto__</code>指向Function.prototype。下面两个黑框是同一个内存对象</p>
+<p><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321005156205-2060408384.png" alt=""><br><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321005201815-1791381657.png" alt=""></p>
+<p>给出两个判断：</p>
+<ul>
+<li>Object instanceof Function // true</li>
+<li>Function instanceof Object // true</li>
+</ul>
+<p>Function是函数的起源，那Function本身是什么呢？</p>
+<p>Object又是什么呢，先有Object还是先有Function</p>
+<p>乱了。。。。。</p>
+<p>上关系图来分析吧。</p>
+<p><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321010028877-885116474.png" alt=""></p>
+<p>再来看个js开天劈地的伪代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var ObjectPrototype = create( );   // 开天辟地</div><div class="line"></div><div class="line">var FunctionPrototype = create( ObjectPrototype );  </div><div class="line">//FunctionPrototype（后被赋值给了Function.prototype）是Object类型的</div><div class="line">//因为其原型是ObjectPrototype</div><div class="line"></div><div class="line">var Function = create( FunctionPrototype );</div><div class="line"></div><div class="line">Function.prototype = FunctionPrototype;</div><div class="line">// Function是Function类型的，也是Object类型的</div><div class="line">//言外之意，Function对象 原型链上有Function.prototype和Object.prototype</div><div class="line"></div><div class="line"> </div><div class="line">Object  =  create( FunctionPrototype );</div><div class="line"></div><div class="line">Object.prototype = ObjectPrototype;</div><div class="line">//Object是Function类型的，也是Object类型的</div><div class="line">//言外之意Object对象的原型链上有Function.prototype和Object.prototype</div></pre></td></tr></table></figure></p>
+<ul>
+<li>先有了Object.prototype，</li>
+<li>然后有Function.prototype，</li>
+<li>然后有了Function，</li>
+<li>然后创建了Object，</li>
+<li>Object的原型又指向了Object.prototype，构成了循环指向；</li>
+</ul>
+<p>从而出现了鸡和蛋的问题。</p>
+<p>所以严格来说先有Function再有Object。</p>
+<p>但是又先有的Object原型，再有的Function原型。</p>
+<p><code>Object.prototype.__proto__ === null</code>，说明原型链到Object.prototype终止</p>
+<ul>
+<li>Person是Function创建出来的函数，Person.prototype是个Object对象，<code>Person.proyotype.__proto__</code>指向Object.prototype</li>
+<li>Function是js自带的对象，可以创建函数的函数，所以Function.prototype指向的函数根源，所有创建的函数的<code>__proto__</code>都指向Function.prototype。给Object原型添加方法，Function也会有该方法，因为Function.prototype 指向Object.prototype。</li>
+<li>Object是js自带的对象，算基类； Object本身又是通过Function定义出来的，所以会受到Function影响。</li>
+<li>Function只管函数，Object什么都管。</li>
+</ul>
+<p><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321005525877-900948490.png" alt=""></p>
+<p>可以发现黑框的Object不是普通的Object，而是原始天尊</p>
+<p>来自我的博客（不更新）<br><a href="http://www.cnblogs.com/suyuan1573/p/proto.html" target="_blank" rel="external">http://www.cnblogs.com/suyuan1573/p/proto.html</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/08/javascript原型深入解析1-prototype-和原型链、js面向对象/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="suyuan的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/04/08/javascript原型深入解析1-prototype-和原型链、js面向对象/" itemprop="url">javascript原型深入解析1-prototype 和原型链、js面向对象</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-08T23:42:24+08:00">
+                2017-04-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="用prototype-封装类"><a href="#用prototype-封装类" class="headerlink" title="用prototype 封装类"></a>用prototype 封装类</h3><p>创建的每个函数都有一个prototype(原型属性)，他是个指针，指向的对象，这个对象的用途就是包含了这个类型所有实例共享的属性和方法。</p>
+<p>回味这句，想想java或者C++吧，如果func是class 类，<code>类的类属性和类方法都放在了prototype</code>中了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var func = function (argument) &#123;</div><div class="line">　　// body...</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p> <img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321004553096-1350416176.png" alt=""></p>
+<p>Ok，现在就用c++面向对象的思想建立个Person类，里面有一些类成员<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">function Person()&#123;</div><div class="line"></div><div class="line"> &#125;</div><div class="line"></div><div class="line"> Person.prototype.say = function(first_argument) &#123;</div><div class="line">   // body...</div><div class="line">   console.info(&apos;i say...&apos;)</div><div class="line"></div><div class="line"> &#125;;</div><div class="line"></div><div class="line"> Person.prototype.age = 10;</div><div class="line"> var sy = new Person(); // new 会创建个对象，不加new 就是执行这个函数</div><div class="line"></div><div class="line"></div><div class="line"> console.info(sy.age)</div><div class="line"> sy.say()</div></pre></td></tr></table></figure></p>
+<p>成功实现了面向对象，sy 可以say，还有了age，当然age不应该是类属性，</p>
+<p>Say和age 是所有 Person 所有实例共享的，假如age是数组，sy.age[1] = 10 会导致所有实例的age都变化</p>
+<h3 id="原理：定义Person-function，实例化一个Person，中间有啥奥秘"><a href="#原理：定义Person-function，实例化一个Person，中间有啥奥秘" class="headerlink" title="原理：定义Person function，实例化一个Person，中间有啥奥秘"></a>原理：定义Person function，实例化一个Person，中间有啥奥秘</h3><p>定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">function Person()&#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ul>
+<li>只要创建个新函数，js引擎会根据一组特定的规则为该函数创建一个原型对象， prototype属性指向这个原型对象；</li>
+<li>默认情况下，所有原型对象都会自动获取一个constructor(构造函数)属性，这个constructor指向了prototype属性所在的函数；</li>
+</ul>
+<p>实例化：<br>new的过程拆分成以下三步：</p>
+<ul>
+<li>var p={}; 也就是说，初始化一个对象p</li>
+<li>p.<strong>proto</strong> = Person.prototype;</li>
+<li>Person.call(p); 也就是说构造p，也可以称之为初始化p，过程中关键字 this 被设定为该实例。</li>
+<li>返回实例</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">function New (f) &#123;</div><div class="line"></div><div class="line">    var n = &#123; &apos;__proto__&apos;: f.prototype &#125;; /*第1,2步*/</div><div class="line"></div><div class="line">    return function () &#123;</div><div class="line"></div><div class="line">        f.apply(n, arguments);            /*第3步*/</div><div class="line"></div><div class="line">        return n;                         /*第4步*/</div><div class="line"></div><div class="line">    &#125;;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">var p2 = New (Point)(10, 20);</div><div class="line"></div><div class="line">p2.print(); // 10 20</div><div class="line"></div><div class="line">console.log(p2 instanceof Point); // true</div></pre></td></tr></table></figure>
+<p>sy = new Person()，创建一个新对象sy，sy实例的内部将包含一个Prototype类型的指针<strong>proto</strong>，指向Person函数的原型对象，实例sy和Person没直接关系，和Person.prototype才有直接关系</p>
+<p>这里我们可以发现，prototype太重要了<br><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321004619924-872439005.png" alt=""><br><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170321004612705-1756541328.png" alt=""></p>
+<p>sy.say() 看来是通过查询<strong>proto</strong>指向的原型来调用方法的；访问对象属性时，js会搜索改该属性，从实例sy开始，沿着原型搜索；</p>
+<p>需要注意的是sy.age = 100, 不会修改原型的值，而是给sy添加了个属性age，以后就屏蔽了原型的age，这点和python类似。当然你可以 delete sy.age，就可以重新访问到原型属性了。当然原型的属性age不属于实例，实例也delete不掉。</p>
+<p>有的浏览器无法访问<strong>proto</strong>，可以通过Person.prototype.isPrototypeOf(sy)  等于true，或者Object.getPrototypeOf(sy) == Person.prototype 判断原型和实例之间的关系</p>
+<h3 id="类：现在我们来实现面向对象的封装功能"><a href="#类：现在我们来实现面向对象的封装功能" class="headerlink" title="类：现在我们来实现面向对象的封装功能"></a>类：现在我们来实现面向对象的封装功能</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">function Person(name, age)&#123;</div><div class="line">  this.name = name; // 调用new的时候，创建个新的this指向当前正在构造的新实例，其他时候的this都是指向调用者s</div><div class="line">  this.age = age;</div><div class="line">&#125;</div><div class="line"></div><div class="line">Person.prototype.say = function(first_argument) &#123;</div><div class="line">  console.info(this.name + &apos; say...&apos;)</div><div class="line">&#125;;</div><div class="line"></div><div class="line">var sy = new Person(&apos;suyuan&apos;, 26);</div><div class="line">sy.say()</div><div class="line"></div><div class="line">var zl = new Person(&apos;zhuli&apos;, 27)</div><div class="line">zl.say()</div></pre></td></tr></table></figure>
+<p>一句话，方法用原型链，类属性(数据)用构造函数</p>
+<h3 id="既然面向对象编程了，那么继承呢？"><a href="#既然面向对象编程了，那么继承呢？" class="headerlink" title="既然面向对象编程了，那么继承呢？"></a>既然面向对象编程了，那么继承呢？</h3><p>Js中的函数没有声明，只有定义，所有不支持接口继承，那我们就用原型链来实现定义（实现）继承<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">function Person()&#123;</div><div class="line">  this.live = true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">Person.prototype.say = function(first_argument) &#123;// (4) Person的原型添加函数say</div><div class="line">  console.info(&apos;i am &apos; + this.live)</div><div class="line"></div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">function Man()&#123;</div><div class="line">  this.manLive = true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">var tmp_person = new Person();//(3) 实例tmp_person 的__proto__ 指向Person原型</div><div class="line">Man.prototype = tmp_person //(2) temp_person 这个对象有say方法，Man的原型（也就是temp_person）有say方法，Man实例化出来的对象sy当然有say</div><div class="line"></div><div class="line">var sy = new Man();//(1)</div><div class="line">sy.say()//(5)</div></pre></td></tr></table></figure></p>
+<p>sy是Man实例，</p>
+<ul>
+<li>sy的<strong>proto</strong>指向Man的原型，</li>
+<li>Man原型指向Person的实例tmp_person，</li>
+<li>tmp_person的<strong>proto</strong>指向Person原型,</li>
+<li>Person原型有函数say</li>
+<li>然后sy 就有了say方法。</li>
+</ul>
+<p>在此继承就实现了。</p>
+<p>来自我的博客园(不更新)<br><a href="http://www.cnblogs.com/suyuan1573/p/prototype.html" target="_blank" rel="external">http://www.cnblogs.com/suyuan1573/p/prototype.html</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/09/js模块化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="suyuan的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/03/09/js模块化/" itemprop="url">js模块化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-09T00:08:42+08:00">
+                2017-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="es6"><a href="#es6" class="headerlink" title="es6"></a>es6</h3><p>定义了新的模块标准化，提供了modules<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export xxx;</div><div class="line">import xxx from file</div></pre></td></tr></table></figure></p>
+<p>没有采用nodejs的CommonJS，</p>
+<p>没有实现require，require和module.exports只是node的私有全局方法和对象属性</p>
+<p>建议写法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">export &#123;fun as default,a,b,c&#125;;</div></pre></td></tr></table></figure></p>
+<h3 id="nodejs"><a href="#nodejs" class="headerlink" title="nodejs"></a>nodejs</h3><p>模块的规范是CommonJS<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">module.exports = data;</div><div class="line">var data = require(file)</div></pre></td></tr></table></figure></p>
+<p>commonjs 对应 浏览器，nodejs的概念位置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line"></div><div class="line">|---------------浏览器----- ------------------|        |--------------------------CommonJS----------------------------------|</div><div class="line"></div><div class="line">|  BOM  |       | DOM |        | ECMAScript |         | FS |           | TCP |         | Stream |        | Buffer |   |........|</div><div class="line"></div><div class="line">|-------W3C-----------|       |---------------------------------------Node--------------------------------------------------|</div></pre></td></tr></table></figure></p>
+<h4 id="CommonJS-是同步加载模块"><a href="#CommonJS-是同步加载模块" class="headerlink" title="CommonJS 是同步加载模块"></a>CommonJS 是同步加载模块</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var math = require(&apos;math&apos;); //（同步） math.js 引去进来后，才会执行后面的add，文件都在磁盘上，同步没有任何问题</div><div class="line"></div><div class="line">math.add(2,3); // 5</div></pre></td></tr></table></figure>
+<h4 id="浏览器也能用"><a href="#浏览器也能用" class="headerlink" title="浏览器也能用"></a>浏览器也能用</h4><p>其为nodejs专有，由于浏览器没有全局变量module、require等，不过可以借助一些工具完成浏览器端的实现，</p>
+<p>其原理是现将所有模块都定义好并通过 id 索引，这样就可以方便的在浏览器环境中解析了，</p>
+<p>如：Browserify<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// foo.js</div><div class="line">module.exports = function(x) &#123;</div><div class="line">  console.log(x);</div><div class="line">&#125;;</div><div class="line"> </div><div class="line">// main.js</div><div class="line">var foo = require(&quot;./foo&quot;);</div><div class="line">foo(&quot;Hi&quot;);</div></pre></td></tr></table></figure></p>
+<p>$ browserify main.js &gt; compiled.js<br>$ browser-unpack &lt; compiled.js<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">[</div><div class="line">  &#123;</div><div class="line">    &quot;id&quot;:1,</div><div class="line">    &quot;source&quot;:&quot;module.exports = function(x) &#123;\n  console.log(x);\n&#125;;&quot;,</div><div class="line">    &quot;deps&quot;:&#123;&#125;</div><div class="line">  &#125;,</div><div class="line">  &#123;</div><div class="line">    &quot;id&quot;:2,</div><div class="line">    &quot;source&quot;:&quot;var foo = require(\&quot;./foo\&quot;);\nfoo(\&quot;Hi\&quot;);&quot;,</div><div class="line">    &quot;deps&quot;:&#123;&quot;./foo&quot;:1&#125;,</div><div class="line">    &quot;entry&quot;:true</div><div class="line">  &#125;</div><div class="line">]</div></pre></td></tr></table></figure></p>
+<p>执行的时候，浏览器遇到 require(‘./foo’) 语句，就自动执行1号模块的 source 属性，并将执行后的 module.exports 属性值输出。</p>
+<p>CommonJS 已经过时，Node.js 的内核开发者已经废弃了该规范。</p>
+<h3 id="现在用了webpack和babel编译"><a href="#现在用了webpack和babel编译" class="headerlink" title="现在用了webpack和babel编译"></a>现在用了webpack和babel编译</h3><ul>
+<li><p>es6的import 是编译时的，选择import的内容编译进来，性能更好</p>
+</li>
+<li><p>commonjs的require是运行时的，运行的时候，会执行require 模块后赋值给某个变量</p>
+</li>
+<li><p>目前不管是nodejs中，还是写前端代码，为了支持es6都是用babel编译，babel其实是把把es6转成es5,import编译成require,</p>
+</li>
+<li><p>所以用babel编译的代码可以混搭 import和require</p>
+</li>
+</ul>
+<h3 id="浏览器端"><a href="#浏览器端" class="headerlink" title="浏览器端"></a>浏览器端</h3><h4 id="为什么commonjs-不适合"><a href="#为什么commonjs-不适合" class="headerlink" title="为什么commonjs 不适合"></a>为什么commonjs 不适合</h4><p>CommonJS 是<code>同步</code>加载模块<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var math = require(&apos;math&apos;); //（同步） 等待math.js 引去进来后，才会执行后面的add，文件都在磁盘上，同步没有任何问题</div><div class="line">math.add(2,3); // 5</div></pre></td></tr></table></figure></p>
+<p>这时候浏览器端不适合的，js是通过网络加载的，因为模块都放在服务器端，等待时间取决于网速的快慢，可能要等很长时间，浏览器处于”假死”状态。</p>
+<p>因此，浏览器端的模块，不能采用”同步加载”（synchronous），只能采用”异步加载”（asynchronous）。这就是AMD规范诞生的背景。</p>
+<p>AMD是”Asynchronous Module Definition”的缩写</p>
+<p>它采用异步方式加载模块，模块的加载不影响它后面语句的运行。所有依赖这个模块的语句，都定义在一个回调函数中，等到加载完成之后，这个回调函数才会运行。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">require([&apos;math&apos;], function (math) &#123;</div><div class="line">　　　　math.add(2, 3);// math 加载好了后执行这句</div><div class="line">　　&#125;);</div></pre></td></tr></table></figure>
+<p>math.add()与math模块加载不是同步的，浏览器不会发生假死。</p>
+<p>说白了，js的执行没有提高和改变，主要是不想让加载js影响到代码；所以需要我们换种回调类型的写法，加载好了通过回调执行js，没有谁会因为加载而卡住。</p>
+<blockquote>
+<p>目前，主要有两个Javascript库实现了AMD规范：require.js和curl.js。</p>
+</blockquote>
+<p>最早的时候，所有Javascript代码都写在一个文件里面，只要加载这一个文件就够了。后来，代码越来越多，一个文件不够了，必须分成多个文件，依次加载。下面的网页代码，相信很多人都见过。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">　　&lt;script src=&quot;1.js&quot;&gt;&lt;/script&gt;</div><div class="line">　　&lt;script src=&quot;2.js&quot;&gt;&lt;/script&gt;</div><div class="line">　　&lt;script src=&quot;3.js&quot;&gt;&lt;/script&gt;</div><div class="line">　　&lt;script src=&quot;4.js&quot;&gt;&lt;/script&gt;</div><div class="line">　　&lt;script src=&quot;5.js&quot;&gt;&lt;/script&gt;</div><div class="line">　　&lt;script src=&quot;6.js&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<p>这段代码依次加载多个js文件。</p>
+<p>这样的写法有很大的缺点。首先，加载的时候，浏览器会停止网页渲染，加载文件越多，网页失去响应的时间就会越长；其次，由于js文件之间存在依赖关系，因此必须严格保证加载顺序（比如上例的1.js要在2.js的前面），依赖性最大的模块一定要放到最后加载，当依赖关系很复杂的时候，代码的编写和维护都会变得困难。</p>
+<p>require.js的诞生，就是为了解决这两个问题：</p>
+<ul>
+<li><p>实现js文件的异步加载，避免网页失去响应；</p>
+</li>
+<li><p>管理模块之间的依赖性，便于代码的编写和维护。</p>
+</li>
+</ul>
+<h4 id="浏览器目前模块化方式"><a href="#浏览器目前模块化方式" class="headerlink" title="浏览器目前模块化方式"></a>浏览器目前模块化方式</h4><p>浏览器端有requirejs(AMD)和seajs(CMD)之类的工具包实现模块化,他们写法差不多，执行原理过程有点区别，后面会说</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// ----------- AMD or CMD ----------------</div><div class="line">define(function(require, exports, module)&#123;</div><div class="line">  module.exports = &#123;</div><div class="line">    a : function() &#123;&#125;,</div><div class="line">    b : &apos;xxx&apos;</div><div class="line">  &#125;;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"></div><div class="line">// ------------ AMD or CMD -------------</div><div class="line">define(function(require, exports, module)&#123;</div><div class="line">   var m = require(&apos;./a&apos;);</div><div class="line">   m.a();</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>AMD(异步模块定义)主要为前端js的表现指定规范<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">define(id?: String, dependencies?: String[], factory: Function|Object);</div></pre></td></tr></table></figure></p>
+<p>id 是模块的名字，它是可选的参数。</p>
+<p>dependencies 指定了所要依赖的模块列表，它是一个数组，也是可选的参数，每个依赖的模块的输出将作为参数一次传入 factory 中。如果没有指定 dependencies，那么它的默认值是 [“require”, “exports”, “module”]。</p>
+<p>define(function(require, exports, module) {}）</p>
+<p>factory 是最后一个参数，它包裹了模块的具体实现，它是一个函数或者对象。如果是函数，那么它的返回值就是模块的输出接口或值。</p>
+<p>eg:</p>
+<p>定义一个名为 myModule 的模块，它依赖 jQuery 模块：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">define(&apos;myModule&apos;, [&apos;jquery&apos;], function($) &#123;</div><div class="line">    // $ 是 jquery 模块的输出</div><div class="line">    $(&apos;body&apos;).text(&apos;hello world&apos;);</div><div class="line">&#125;);</div><div class="line">// 使用</div><div class="line">define([&apos;myModule&apos;], function(myModule) &#123;&#125;);</div></pre></td></tr></table></figure>
+<p>在模块定义内部引用依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">define(function(require) &#123;</div><div class="line">    var $ = require(&apos;jquery&apos;);</div><div class="line">    $(&apos;body&apos;).text(&apos;hello world&apos;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>这里有define，把东西包装起来啦，那require.js 和 Node实现中怎么没看到有define关键字呢，它也要把东西包装起来呀，其实吧，只是他们隐式包装了而已</p>
+<h4 id="SeaJs和RequireJs区别"><a href="#SeaJs和RequireJs区别" class="headerlink" title="SeaJs和RequireJs区别"></a>SeaJs和RequireJs区别</h4><blockquote>
+<p>SeaJS对模块的态度是懒执行, 而RequireJS对模块的态度是预执行</p>
+</blockquote>
+<p>如下模块通过SeaJS/RequireJS来加载, 执行结果会是怎样?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">define(function(require, exports, module) &#123;</div><div class="line">    console.log(&apos;require module: main&apos;);</div><div class="line"></div><div class="line">    var mod1 = require(&apos;./mod1&apos;);</div><div class="line">    mod1.hello();</div><div class="line">    var mod2 = require(&apos;./mod2&apos;);</div><div class="line">    mod2.hello();</div><div class="line"></div><div class="line">    return &#123;</div><div class="line">        hello: function() &#123;</div><div class="line">            console.log(&apos;hello main&apos;);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>先试试SeaJS的执行结果，他是需要的时候执行依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">require module: main</div><div class="line"></div><div class="line">require module: mod1</div><div class="line"></div><div class="line">hello mod1</div><div class="line"></div><div class="line">require module: mod2</div><div class="line"></div><div class="line">hello mod2</div><div class="line"></div><div class="line">hello main</div></pre></td></tr></table></figure></p>
+<p>再来是RequireJS的执行结果，他是 所有的依赖提前执行好了，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">require module: mod1</div><div class="line"></div><div class="line">require module: mod2</div><div class="line"></div><div class="line">require module: main</div><div class="line"></div><div class="line">hello mod1</div><div class="line"></div><div class="line">hello mod2</div><div class="line"></div><div class="line">hello main</div></pre></td></tr></table></figure></p>
+<p> 参考： </p>
+<p>AMD <a href="http://www.cnblogs.com/chenguangliang/p/5856701.html" target="_blank" rel="external">http://www.cnblogs.com/chenguangliang/p/5856701.html</a><br>Commonjs <a href="http://www.cnblogs.com/skylar/p/4065455.html" target="_blank" rel="external">http://www.cnblogs.com/skylar/p/4065455.html</a></p>
+<p>参考： </p>
+<p>AMD <a href="http://www.cnblogs.com/chenguangliang/p/5856701.html" target="_blank" rel="external">http://www.cnblogs.com/chenguangliang/p/5856701.html</a></p>
+<p>Commonjs <a href="http://www.cnblogs.com/skylar/p/4065455.html" target="_blank" rel="external">http://www.cnblogs.com/skylar/p/4065455.html</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/09/react-使用的小建议-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1412,7 +1966,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/02/08/语音对话管理和对话引擎/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/25/React生命周期中应该做什么事/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -1431,7 +1985,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/02/08/语音对话管理和对话引擎/" itemprop="url">语音对话管理和对话引擎</a></h1>
+                <a class="post-title-link" href="/2016/10/25/React生命周期中应该做什么事/" itemprop="url">React生命周期中应该做什么事</a></h1>
         
 
         <div class="post-meta">
@@ -1443,8 +1997,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-08T23:20:54+08:00">
-                2016-02-08
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-25T01:29:35+08:00">
+                2016-10-25
               </time>
             
 
@@ -1466,8 +2020,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/个人项目/" itemprop="url" rel="index">
-                    <span itemprop="name">个人项目</span>
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
                   </a>
                 </span>
 
@@ -1502,523 +2056,16 @@
       
         
           
-            <h3 id="语音对话模块组成"><a href="#语音对话模块组成" class="headerlink" title="语音对话模块组成"></a>语音对话模块组成</h3><p>语音对话属于比较负责的模块，主要包括语音对话管理DialogManager(DM)和语音对话引擎DialogEngine(DE)。<br>DM负责整个DE的生命周期已经和外部服务的交互，他属于业务模块，采用protobuf和外部服务进行大量的通信；同时会在往感兴趣的服务中注册事件，保证对外部系统对信息感知。<br>DE负责语音执行流程和语音识别，是语音对话的大脑。</p>
-<p><img src="/images/uscxml_1.png" alt=""></p>
-<h3 id="DE"><a href="#DE" class="headerlink" title="DE"></a>DE</h3><ul>
-<li><p>DE整个模块由scxml脚步和解释器引擎构成，scxml控制业务逻辑，引擎负责解析并执行scxml语言，以驱动外部接入的模块，数据以xpath形式存取。</p>
-</li>
-<li><p>特点：可以通过修改scxml脚本语言来实现业务逻辑的变更；解释器引擎具有一定的扩展性，除了目前支持的xpath数据模型，还可以增加lua，js等其他类型的数据模型；并且解释器与外部服务的交互具有较低的藕和度。</p>
-</li>
-</ul>
-<p><img src="/images/uscxml_2.png" alt=""></p>
-<h3 id="uscxml"><a href="#uscxml" class="headerlink" title="uscxml"></a>uscxml</h3><p>我们选择scxml为执行引擎对脚本语言，uscxml为解释器原型。</p>
-<p>SCXML（State Chart XML），简单地说就是状态图的xml描述文件。这里的状态图和UML里面的状态图是基本一致的，都是继承自Harel Start Chart。</p>
-<p>标准就是W3C制定的的标准：<a href="http://www.w3.org/TR/scxml/" target="_blank" rel="external">State Chart XML(SCXML):State Machine Notation for Control Abstraction</a>下面我简要的介绍一下这个标准，如下<br>图所示：红框里面的标签，每一个链接里面都有标签的具体介绍（子标签和属性值等）。就是这个标准。<br><img src="http://img.blog.csdn.net/20151126102750992" alt=""></p>
-<p>都有哪些实现？看下表</p>
-<pre><code>名字                描述
-scxmlcc    用于将SCXML图生成c++代码
-Apache Commons SCXML    一个基于java语言的解析和执行SCXML图的标准类库
-Legian    一个java语言实现的SCXML引擎，使用Rhino作为javascript引擎，它还支持其他的特性，和W3C的标准并不完全一致
-Qt SCXML    Qt里面的状态机，将信号和槽与状态机紧密的结合起来了
-PySCXML    一个Python的实现，支持多种通信，包括的WebSockets和SOAP。兼容性好。还支持ECMAScript的数据模型。 （最后发布日期2013年）
-The PySCXML Console    一个基于web的交互式SCXML控制台，可以运行SCXML文档。支持ECMAScript datamodel。
-SCXML4Flex    ActionScript的实现
-SCXMLgui    java实现的SCXML图可视化编辑器.
-SCION    javascript实现
-JSSCxml    这是一个基于Web浏览器的实现，目前还处于开发阶段。和标准高度一致,良好的支持DOM事件，目前只支持ECMAScript datamodel。
-uSCXML    Standard-compliant SCXML implementation in C/C++ with language bindings for Java and C#. Full ECMAScript support (all tests passed) via JavaScriptCore or Google’s v8, additional LUA and Prolog datamodels, only rudimentary support for XPath datamodel.
-ECMAScript就是javascript语言的标准。
-</code></pre><p>这里给出uscxml的结构图<br><img src="/images/uscxml_3.png" alt=""></p>
-<ul>
-<li>uscxml执行速度比较慢，主要是采用来arabica为xml工具，内部包含大量的强制类型转换；</li>
-<li>以空间换取时间的方式，在启动后，将脚本中对xpath语句解析后，指针地址存储在hashmap中，同时state，data，transition，等都实现构建好，存储在map中</li>
-<li>采用其他效率更高的xml工具，pugixml，libxml，TinyXML都可以，我们采用arabica转为pugixml</li>
-<li>源码已经将arabica转为Xerces-C  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Replaced Arabica DOM implementation with Xerces-C</div></pre></td></tr></table></figure>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/15/shared-ptr线程安全性分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="suyuan的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/10/15/shared-ptr线程安全性分析/" itemprop="url">shared_ptr线程安全性分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-15T01:49:52+08:00">
-                2015-10-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="shared-ptr的线程安全性"><a href="#shared-ptr的线程安全性" class="headerlink" title="shared_ptr的线程安全性"></a>shared_ptr的线程安全性</h3><p>boost官方文档对shared_ptr线程安全性的正式表述是：shared_ptr对象提供与内置类型相同级别的线程安全性。【shared_ptrobjects offer the same level of thread safety as built-in types.】具体是以下三点。</p>
-<pre><code>- 同一个shared_ptr对象可以被多线程同时读取。【A shared_ptrinstance can be &quot;read&quot; (accessed using only const operations)simultaneously by multiple threads.】
-- 不同的shared_ptr对象可以被多线程同时修改（即使这些shared_ptr对象管理着同一个对象的指针）。【Different shared_ptr instances can be &quot;written to&quot;(accessed using mutable operations such as operator= or reset) simultaneouslyby multiple threads (even when these instances are copies, and share the samereference count underneath.) 】
-- 任何其他并发访问的结果都是无定义的。【Any other simultaneous accesses result in undefined behavior.】
-</code></pre><p>第一种情况是对对象的并发读，自然是线程安全的。<br>第二种情况下，如果两个shared_ptr对象A和B管理的是不同对象的指针，则这两个对象完全不相关，支持并发写也容易理解。但如果A和B管理的是同一个对象P的指针，则A和B需要维护一块共享的内存区域，该区域记录P指针当前的引用计数。对A和B的并发写必然涉及对该引用计数内存区的并发修改，这需要boost做额外的工作，也是本文分析的重点。</p>
-<p>另外weak_ptr和shared_ptr紧密相关，用户可以从weak_ptr构造出shared_ptr，也可以从shared_ptr构造weak_ptr，但是weak_ptr不涉及到对象的生命周期。由于shared_ptr的线程安全性是和weak_ptr耦合在一起的，本文的分析也涉及到weak_ptr。</p>
-<p>下面先从总体上看一下shared_ptr和weak_ptr的实现。</p>
-<h3 id="shared-ptr的结构图"><a href="#shared-ptr的结构图" class="headerlink" title="shared_ptr的结构图"></a>shared_ptr的结构图</h3><p>以下是从boost源码提取出的shared_ptr和weak_ptr的类图。<br><img src="/images/cpp/ptr_1.png" alt=""></p>
-<p>我们首先忽略虚线框内的weak_ptr部分。最高层的shared_ptr就是用户直接使用的类，它提供shared_ptr的构造、复制、重置(reset函数）、解引用、比较、隐式转换为bool等功能。它包含一个指向被管理对象的指针，用来实现解引用操作，并且组合了一个shared_count对象，用来操作引用计数。<br>但shared_count类还不是引用计数类，它只是包含了一个指向引用计数类sp_counted_base的指针，功能上是对sp_counted_base操作的封装。shared_count对象的创建、复制和删除等操作，包含着对sp_counted_base的增加和减小引用计数的操作。<br>最后sp_counted_base类才保存了引用计数，并且对引用计数字段提供无锁保护。它也包含了一个指向被管理对象的指针，是用来删除被管理的对象的。sp_counted_base有三个派生类，分别处理用户指定Deleter和Allocator的情况：</p>
-<ol>
-<li>sp_counted_impl_p：用户没有指定Deleter和Allocator</li>
-<li>sp_counted_impl_pd：用户指定了Deleter，没有指定Allocator</li>
-<li>sp_counted_impl_pda：用户指定了Deleter和 Allocator<br>创建指针P的第一个shared_ptr对象的时候，子对象shared_count同时被建立， shared_count根据用户提供的参数选择创建一个特定的sp_counted_base派生类对象X。之后创建的所有管理P的shared_ptr对象都指向了这个独一无二的X。<br>然后再看虚线框内的weak_ptr就清楚了。weak_ptr和shared_ptr基本上类似，只不过weak_ptr包含的是weak_count子对象，但weak_count和shared_count也都指向了sp_counted_base。<br>如果上面的文字还不够清楚，下面的代码就能说明问题。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">shared_ptr&lt;SomeObject&gt; SP1(new SomeObject());</div><div class="line">shared_ptr&lt;SomeObject&gt; SP2=SP1;</div><div class="line">weak_ptr&lt;SomeObject&gt; WP1=SP1;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>执行完以上代码后，内存中会创建以下对象实例，其中红色箭头表示指向引用计数对象的指针，黑色箭头表示指向被管理对象的指针。<br><img src="/images/cpp/ptr_2.png" alt=""></p>
-<p>从上面可以清楚的看出，SP1、SP2和WP1指向了同一个sp_counted_impl_p对象，这个sp_counted_impl_p对象保存引用计数，是SP1、SP2和WP1等三个对象共同操作的内存区。多线程并发修改SP1、SP2和WP1，有且只有sp_counted_impl_p对象会被并发修改，因此sp_counted_impl_p的线程安全性是shared_ptr以及weak_ptr线程安全性的关键问题。而sp_counted_impl_p的线程安全性是在其基类sp_counted_base中实现的。下面将着重分析sp_counted_base的代码。</p>
-<h3 id="引用计数类sp-counted-base"><a href="#引用计数类sp-counted-base" class="headerlink" title="引用计数类sp_counted_base"></a>引用计数类sp_counted_base</h3><p>幸运的是，sp_counted_base的代码量很小，下面全文列出来，并添加有注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line">class sp_counted_base</div><div class="line">&#123;</div><div class="line">private:</div><div class="line">     // 禁止复制</div><div class="line">    sp_counted_base( sp_counted_base const &amp; );</div><div class="line">    sp_counted_base &amp; operator= ( sp_counted_baseconst &amp; );</div><div class="line"> </div><div class="line">     // shared_ptr的数量</div><div class="line">    long use_count_;  </div><div class="line">     // weak_ptr的数量+1</div><div class="line">    long weak_count_;      </div><div class="line"> </div><div class="line">public:</div><div class="line">     // 唯一的一个构造函数，注意这里把两个计数都置为1</div><div class="line">    sp_counted_base(): use_count_( 1 ), weak_count_( 1 )&#123;    &#125;</div><div class="line"> </div><div class="line">     // 虚基类，因此可以作为基类</div><div class="line">    virtual ~sp_counted_base()&#123;    &#125;</div><div class="line"> </div><div class="line">     // 子类需要重载，用operator delete或者Deleter删除被管理的对象</div><div class="line">    virtual void dispose() = 0;</div><div class="line"> </div><div class="line">     // 子类可以重载，用Allocator等删除当前对象</div><div class="line">    virtual void destroy()&#123;</div><div class="line">        delete this;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    virtual void * get_deleter( sp_typeinfo const &amp; ti ) = 0;</div><div class="line"> </div><div class="line">     // 这个函数在根据shared_count复制shared_count的时候用到</div><div class="line">     // 既然存在一个shared_count作为源，记为A，则只要A不释放，</div><div class="line">     // use_count_就不会被另一个线程release()为1。</div><div class="line">     // 另外，如果一个线程把A作为复制源，另一个线程释放A，执行结果是未定义的。</div><div class="line">     void add_ref_copy()&#123;</div><div class="line">        _InterlockedIncrement( &amp;use_count_ );</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 这个函数在根据weak_count构造shared_count的时候用到</div><div class="line">     // 这是为了避免通过weak_count增加引用计数的时候，</div><div class="line">     // 另外的线程却调用了release函数，清零use_count_并释放了指向的对象</div><div class="line">    bool add_ref_lock()&#123;</div><div class="line">        for( ;; )</div><div class="line">        &#123;</div><div class="line">            long tmp = static_cast&lt; long const volatile&amp; &gt;( use_count_ );</div><div class="line">            if( tmp == 0 ) return false;</div><div class="line"> </div><div class="line">            if( _InterlockedCompareExchange( &amp;use_count_, tmp + 1, tmp ) == tmp )return true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    void release()&#123;</div><div class="line">        if( _InterlockedDecrement( &amp;use_count_ ) == 0 )</div><div class="line">        &#123;</div><div class="line">              // use_count_从1变成0的时候，</div><div class="line">              // 1. 释放对象</div><div class="line">              // 2. 对weak_count_执行一次递减操作。这是因为在初始化的时候（use_count_从0变1时），weak_count初始值为1</div><div class="line">            dispose();</div><div class="line">            weak_release();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    void weak_add_ref()&#123;</div><div class="line">        _InterlockedIncrement( &amp;weak_count_ );</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 递减weak_count_；且在weak_count为0的时候，把自己删除</div><div class="line">    void weak_release()&#123;</div><div class="line">        if( _InterlockedDecrement( &amp;weak_count_ ) == 0 )</div><div class="line">        &#123;</div><div class="line">            destroy();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 返回引用计数。注意如果用户没有额外加锁，引用计数完全可能同时被另外的线程修改掉。</div><div class="line">    long use_count() const&#123;</div><div class="line">        return static_cast&lt;long const volatile &amp;&gt;( use_count_ );</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>代码中的注释已经说明了一些问题，这里再重复一点：use<em>count</em>字段等于当前shared_ptr对象的数量，weak<em>count</em>字段等于当前weak_ptr对象的数量加1。<br>首先不考虑weak_ptr的情况。根据对shared_ptr类的代码分析（代码没有列出来，但很容易找到），shared_ptr之间的复制都是调用add_ref_copy和release函数进行的。假设两个线程分别对SP1和SP2进行操作，操作的过程无非是以下三种情况：</p>
-<ol>
-<li>SP1和SP2都递增引用计数，即add_ref_copy被并发调用，也就是两个_InterlockedIncrement（&amp;use<em>count</em>)并发执行，这是线程安全的。</li>
-<li>SP1和SP2都递减引用计数，即release被并发调用，也就是_InterlockedDecrement(&amp;use<em>count</em> )并发执行，这也是线程安全的。只不过后执行的线程负责删除对象。</li>
-<li>SP1递增引用计数，调用add_ref_copy；SP2递减引用计数，调用release。由于SP1的存在，SP2的release操作无论如何都不会导致use<em>count</em>变为零，也就是说release中if语句的body永远不会被执行。因此，这种情况就化简为_InterlockedIncrement（&amp;use<em>count</em>)和_InterlockedDecrement( &amp;use<em>count</em> )的并发执行，仍然是线程安全的。</li>
-</ol>
-<p>然后考虑weak_ptr。如果是weak_ptr之间的操作，或者从shared_ptr构造weak_ptr，都不涉及到use<em>count</em>的操作，只需要调用weak_add_ref和weak_release来操作weak<em>count</em>。与上面的分析相同，<code>_InterlockedIncrement和_InterlockedDecrement</code>保证了weak_add_ref和weak_release并发操作的线程安全性。但如果存在从weak_ptr构造shared_ptr的操作，则需要考虑在构造weak_ptr的过程中，被管理的对象已经被其他线程被释放的情况。如果从weak_ptr构造shared_ptr仍然是通过add_ref_copy函数完成的，则可能发生以下错误情况：<br> <table><br> <tr><br> <td></td><br> <td>线程1，从weak_ptr创建shared_ptr</td><br> <td>线程2，释放目前唯一存在的shared_ptr</td><br> </tr><br> <tr><br> <td>1</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> <td></td><br> </tr><br>  <tr><br> <td>2</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> </tr><br>   <tr><br> <td>3</td><br> <td><br>开始执行add_ref_copy，导致 use_count递增。<br>发生错误,use_count==1，但是对象已经被删除了</td><br> <td></td><br> </tr><br> </table></p>
-<p>我们自然会想，线程1在第三行结束后，再判断一次use_count是否为1，如果是1，认为对象已经删除，判断失败不就可以了吗。其实是行不通的，下面是一个反例。</p>
-<table><br> <tr><br> <td></td><br> <td>线程1，从weak_ptr创建shared_ptr</td><br> <td>线程2，释放目前唯一存在的shared_ptr</td><br> <td>线程3，从weak_ptr创建shared_ptr</td><br> </tr><br> <tr><br> <td>1</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> <td></td><br>  <td></td><br> </tr><br>  <tr><br> <td>2</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> </tr><br>   <tr><br> <td>3</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> <td></td><br> </tr><br> <tr><br> <td>4</td><br> <td>开始执行add_ref_copy，导致 use_count递增。</td><br> <td></td><br> <td></td><br> </tr><br> <tr><br> <td>5</td><br> <td></td><br> <td></td><br> <td>执行add_ref_copy，导致 use_count递增。</td><br> </tr><br> <tr><br> <td>6</td><br> <td>发现use<em>count</em> != 1，判断执行成功。<br>发生错误,use_count==2，但是对象已经被删除了</td><br> <td></td><br> <td>发现use<em>count</em> != 1，判断执行成功。<br>发生错误,use_count==2，但是对象已经被删除了</td><br> </tr><br><br> </table>
-
-<p>实际上，boost从weak_ptr构造shared_ptr不是调用add_ref_copy，而是调用add_ref_lock函数。add_ref_lock是典型的无锁修改共享变量的代码，下面再把它的代码复制一遍，并添加证明注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">bool add_ref_lock()&#123;</div><div class="line">    for( ;; )</div><div class="line">    &#123;</div><div class="line">        // 第一步，记录下use_count_</div><div class="line">        long tmp = static_cast&lt; long const volatile&amp; &gt;( use_count_ );</div><div class="line">        // 第二步，如果已经被别的线程抢先清0了，则被管理的对象已经或者将要被释放，返回false</div><div class="line">        if( tmp == 0 ) return false;</div><div class="line">        // 第三步，如果if条件执行成功，</div><div class="line">     // 说明在修改use_count_之前,use_count仍然是tmp，大于0</div><div class="line">        // 也就是说use_count_在第一步和第三步之间，从来没有变为0过。</div><div class="line">        // 这是因为use_count一旦变为0，就不可能再次累加为大于0</div><div class="line">        // 因此，第一步和第三步之间，被管理的对象不可能被释放，返回true。</div><div class="line">        if( _InterlockedCompareExchange( &amp;use_count_, tmp + 1, tmp ) == tmp )return true;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在上面的注释中，用到了一个没有被证明的结论，“use_count一旦变为0，就不可能再次累加为大于0”。下面四条可以证明它。</p>
-<ol>
-<li>use<em>count</em>是sp_counted_base类的private对象，sp_counted_base也没有友元函数，因此use<em>count</em>不会被对象外的代码修改。</li>
-<li>成员函数add_ref_copy可以递增use<em>count</em>，但是所有对add_ref_copy函数的调用都是通过一个shared_ptr对象执行的。既然存在shared_ptr对象，use_count在递增之前一定不是0。</li>
-<li>成员函数add_ref_lock可以递增use<em>count</em>，但正如add_ref_lock代码所示，执行第三步的时候，tmp都是大于0的，因此add_ref_lock不会使use<em>count</em>从0递增到1</li>
-<li>其它成员函数从来不会递增use<em>count</em><br>至此，我们可以放下心来，只要add_ref_lock返回true，递增引用计数的行为就是成功的。因此从weak_ptr构造shared_ptr的行为也是完全确定的，要么add_ref_lock返回true，构造成功，要么add_ref_lock返回false，构造失败。<br>综上所述，多线程通过不同的shared_ptr或者weak_ptr对象并发修改同一个引用计数对象sp_counted_base是线程安全的。而sp_counted_base对象是这些智能指针唯一操作的共享内存区，因此最终的结果就是线程安全的。<br>其它操作<br>前面我们分析了，不同的shared_ptr对象可以被多线程同时修改。那其它的问题呢，同一个shared_ptr对象可以对多线程同时修改吗？我们必须要注意到，前面所有的同步都是针对引用计数类sp_counted_base进行的，shared_ptr本身并没有任何同步保护。我们看下面boost文档举出来的非线程安全的例子</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// thread A</div><div class="line">p3.reset(new int(1));</div><div class="line">// thread B</div><div class="line">p3.reset(new int(2)); // undefined, multiple writes</div></pre></td></tr></table></figure>
-<p>下面是shared_ptr类相关的代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">template&lt;class Y&gt;</div><div class="line">void reset(Y * p)</div><div class="line">&#123;</div><div class="line">     this_type(p).swap(*this);</div><div class="line">&#125;</div><div class="line"> </div><div class="line">void swap(shared_ptr&lt;T&gt; &amp; other)</div><div class="line">&#123;</div><div class="line">     std::swap(px, other.px);</div><div class="line">     pn.swap(other.pn);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>可以看到，reset执行了两个修改成员变量的操作，thread A和thread B的执行结果可能是非法的。。<br>但是仿照内置对象的语义，boost提供了若干个原子函数，支持通过这些函数并发修改同一个shared_ptr对象。这包括atomic_store、atomic_exchange、atomic_compare_exchange等。以下是实现的代码，不再详细分析。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">template&lt;class T&gt;</div><div class="line">void atomic_store( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; r )&#123;</div><div class="line">    boost::detail::spinlock_pool&lt;2&gt;::scoped_lock lock( p );</div><div class="line">    p-&gt;swap( r );</div><div class="line">&#125;</div><div class="line"> </div><div class="line">template&lt;class T&gt;</div><div class="line">shared_ptr&lt;T&gt; atomic_exchange( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; r )&#123;</div><div class="line">    boost::detail::spinlock &amp; sp = boost::detail::spinlock_pool&lt;2&gt;::spinlock_for( p );</div><div class="line"> </div><div class="line">    sp.lock();</div><div class="line">    p-&gt;swap( r );</div><div class="line">    sp.unlock();</div><div class="line"> </div><div class="line">    return r;</div><div class="line">&#125;</div><div class="line"> </div><div class="line">template&lt;class T&gt;</div><div class="line">bool atomic_compare_exchange( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; * v, shared_ptr&lt;T&gt; w )&#123;</div><div class="line"> </div><div class="line">    boost::detail::spinlock &amp; sp = boost::detail::spinlock_pool&lt;2&gt;::spinlock_for( p );</div><div class="line">    sp.lock();</div><div class="line">    if( p-&gt;_internal_equiv( *v ) )&#123;</div><div class="line">        p-&gt;swap( w );</div><div class="line">        sp.unlock();</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">    else&#123;</div><div class="line">        shared_ptr&lt;T&gt; tmp( *p );</div><div class="line">        sp.unlock();</div><div class="line">        tmp.swap( *v );</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>总结<br>正如boost文档所宣称的，boost为shared_ptr提供了<code>与内置类型同级别的线程安全性</code>。这包括：</p>
-<ol>
-<li>同一个shared_ptr对象可以被多线程同时读取。</li>
-<li>不同的shared_ptr对象可以被多线程同时修改。</li>
-<li>同一个shared_ptr对象不能被多线程直接修改，但可以通过原子函数完成。</li>
-</ol>
-<p>如果把上面的表述中的”shared_ptr”替换为“内置类型”也完全成立。<br>最后，整理这个东西的时候我也发现有些关键点很难表述清楚，这也是由于线程安全性本身比较难严格证明。如果想要完全理解，还是建议阅读shared_ptr完整的代码。shared_ptr在windows下的源代码我已经单独从boost中提取了出来，整理成了单独的文件，且去掉了不相关的条件编译指令。</p>
-<p>参考 <a href="http://blog.csdn.net/jiangfuqiang/article/details/8292906" target="_blank" rel="external">http://blog.csdn.net/jiangfuqiang/article/details/8292906</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/11/std-shared-ptr-和-std-weak-ptr的循环引用问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="suyuan的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/10/11/std-shared-ptr-和-std-weak-ptr的循环引用问题/" itemprop="url">std::shared_ptr 和 std::weak_ptr的循环引用问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-11T00:12:01+08:00">
-                2015-10-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在std::shared_ptr被引入之前，C++标准库中实现的用于管理资源的智能指针只有std::auto_ptr一个而已。std::auto_ptr的作用非常有限，因为它存在被管理资源的所有权转移问题。</p>
-<p>这导致多个std::auto_ptr类型的局部变量不能共享同一个资源，这个问题是非常严重。<br>智能指针内存管理要解决的根本问题是：一个堆对象（或则资源，比如文件句柄）在被多个对象引用的情况下，何时释放资源的问题。</p>
-<p>何时释放很简单，就是在最后一个引用它的对象被释放的时候释放它。关键的问题在于无法确定哪个引用它的对象是被最后释放的。</p>
-<p>std::shared_ptr确定最后一个引用它的对象何时被释放的基本想法是：对被管理的资源进行引用计数，当一个shared_ptr对象要共享这个资源的时候，该资源的引用计数加1，当这个对象生命期结束的时候，再把该引用技术减少1。这样当最后一个引用它的对象被释放的时候，资源的引用计数减少到0，此时释放该资源。下边是一个shared_ptr的用法例子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;memory&gt;</div><div class="line"></div><div class="line">class Woman;</div><div class="line">class Man&#123;</div><div class="line">private:</div><div class="line">	std::weak_ptr&lt;Woman&gt; _wife;</div><div class="line">	//std::shared_ptr&lt;Woman&gt; _wife;</div><div class="line">public:</div><div class="line">	void setWife(std::shared_ptr&lt;Woman&gt; woman)&#123;</div><div class="line">		_wife = woman;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	void doSomthing()&#123;</div><div class="line">		if(_wife.lock())&#123;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	~Man()&#123;</div><div class="line">		std::cout &lt;&lt; &quot;kill man\n&quot;;</div><div class="line">	&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class Woman&#123;</div><div class="line">private:</div><div class="line">	//std::weak_ptr&lt;Man&gt; _husband;</div><div class="line">	std::shared_ptr&lt;Man&gt; _husband;</div><div class="line">public:</div><div class="line">	void setHusband(std::shared_ptr&lt;Man&gt; man)&#123;</div><div class="line">		_husband = man;</div><div class="line">	&#125;</div><div class="line">	~Woman()&#123;</div><div class="line">		std::cout &lt;&lt;&quot;kill woman\n&quot;;</div><div class="line">	&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line">int main(int argc, char** argv)&#123;</div><div class="line">	std::shared_ptr&lt;Man&gt; m(new Man());</div><div class="line">	std::shared_ptr&lt;Woman&gt; w(new Woman());</div><div class="line">	if(m &amp;&amp; w) &#123;</div><div class="line">		m-&gt;setWife(w);</div><div class="line">		w-&gt;setHusband(m);</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在Man类内部会引用一个Woman，Woman类内部也引用一个Man。当一个man和一个woman是夫妻的时候，他们直接就存在了<code>相互引用</code>问题。</p>
-<p>man内部有个用于管理wife生命期的shared_ptr变量，也就是说wife必定是在husband去世之后才能去世。同样的，woman内部也有一个管理husband生命期的shared_ptr变量，也就是说husband必须在wife去世之后才能去世。这就是循环引用存在的问题：husband的生命期由wife的生命期决定，wife的生命期由husband的生命期决定，最后两人都死不掉，违反了自然规律，<code>导致了内存泄漏</code>。</p>
-<p>解决std::shared_ptr循环引用问题的钥匙在<code>weak_ptr</code>手上。<br>weak_ptr对象引用资源时不会增加引用计数，但是它能够通过lock()方法来判断它所管理的资源是否被释放。另外很自然地一个问题是：既然weak_ptr不增加资源的引用计数，那么在使用weak_ptr对象的时候，资源被突然释放了怎么办呢？答案是你根本不能直接通过weak_ptr来访问资源。那么如何通过weak_ptr来间接访问资源呢？答案是：在需要访问资源的时候weak_ptr为你生成一个shared_ptr，shared_ptr能够保证在shared_ptr没有被释放之前，其所管理的资源是不会被释放的。创建shared_ptr的方法就是lock()方法。</p>
-<p>细节：shared_ptr实现了operator bool() const方法来判断一个管理的资源是否被释放。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/07/11/libevent学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="suyuan的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/07/11/libevent学习/" itemprop="url">libevent学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-07-11T23:12:55+08:00">
-                2015-07-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>uscxml基于libevent库，使用到了里面到定时器，socket等功能</p>
-<h3 id="Libevent-亮点："><a href="#Libevent-亮点：" class="headerlink" title="Libevent 亮点："></a>Libevent 亮点：</h3><p>事件驱动（event-driven），高性能;<br>轻量级，专注于网络，不如ACE那么臃肿庞大；<br>跨平台，支持Windows、Linux、*BSD和Mac Os；<br>支持多种I/O多路复用技术， epoll、poll、dev/poll、select和kqueue等；<br>支持I/O，定时器和信号等事件；<br>注册事件优先级；</p>
-<h3 id="Reactor的事件处理机制"><a href="#Reactor的事件处理机制" class="headerlink" title="Reactor的事件处理机制"></a>Reactor的事件处理机制</h3><h4 id="反应机制原理"><a href="#反应机制原理" class="headerlink" title="反应机制原理"></a>反应机制原理</h4><p>首先来回想一下普通函数调用的机制：程序调用某函数?函数执行，程序等待?函数将结果和控制权返回给程序?程序继续处理。</p>
-<p>Reactor释义“反应堆”，是一种事件驱动机制。和普通函数调用的不同之处在于：应用程序不是主动的调用某个API完成处理，而是恰恰相反，Reactor逆置了事件处理流程，<code>应用程序需要提供相应的接口并注册到Reactor上，如果相应的时间发生，Reactor将主动调用应用程序注册的接口</code>，这些接口又称为“回调函数”。使用Libevent也是想Libevent框架注册相应的事件和回调函数；当这些时间发声时，Libevent会调用这些回调函数处理相应的事件（I/O读写、定时和信号）。</p>
-<p> 这个概念非常常见，nodejs的事件机制，python等事件机制（tornado ioloop）c#等委托事件，linux的epoll机制</p>
-<h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><p>1）响应快，不必为单个同步时间所阻塞，虽然Reactor本身依然是同步的；<br>2）编程相对简单，可以最大程度的避免复杂的多线程及同步问题，并且避免了多线程/进程的切换开销；<br>3）可扩展性，可以方便的通过增加Reactor实例个数来充分利用CPU资源；<br>4）可复用性，reactor框架本身与具体事件处理逻辑无关，具有很高的复用性；</p>
-<h3 id="使用libevent"><a href="#使用libevent" class="headerlink" title="使用libevent"></a>使用libevent</h3><h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><p>1）首先初始化libevent库，并保存返回的指针<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">struct event_base * base = event_init();</div></pre></td></tr></table></figure></p>
-<p>实际上这一步相当于初始化一个Reactor实例；在初始化libevent后，就可以注册事件了。</p>
-<p>2）初始化事件event，设置回调函数和关注的事件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">evtimer_set(&amp;ev, timer_cb, NULL);</div></pre></td></tr></table></figure></p>
-<p>事实上这等价于调用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_set(&amp;ev, -1, 0, timer_cb, NULL);</div></pre></td></tr></table></figure></p>
-<p>3）设置event从属的event_base</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_base_set(base, &amp;ev);</div></pre></td></tr></table></figure>
-<p>这一步相当于指明event要注册到哪个event_base实例上；</p>
-<p>4）是正式的添加事件的时候了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_add(&amp;ev, timeout);</div></pre></td></tr></table></figure></p>
-<p>基本信息都已设置完成，只要简单的调用event_add()函数即可完成，其中timeout是定时值；<br>这一步相当于调用Reactor::register_handler()函数注册事件。</p>
-<p>5）程序进入无限循环，等待就绪事件并执行事件处理<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_base_dispatch(base);</div></pre></td></tr></table></figure></p>
-<p>代码实例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">struct event ev;</div><div class="line">struct timeval tv;</div><div class="line">void time_cb(int fd, short event, void *argc)</div><div class="line">&#123;</div><div class="line">    printf(&quot;timer wakeup/n&quot;);</div><div class="line">    event_add(&amp;ev, &amp;tv); // reschedule timer</div><div class="line">&#125;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    struct event_base *base = event_init();</div><div class="line">    tv.tv_sec = 10; // 10s period</div><div class="line">    tv.tv_usec = 0;</div><div class="line">    evtimer_set(&amp;ev, time_cb, NULL);</div><div class="line">    event_add(&amp;ev, &amp;tv);</div><div class="line">    event_base_dispatch(base);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="事件处理流程"><a href="#事件处理流程" class="headerlink" title="事件处理流程"></a>事件处理流程</h4><p>当应用程序向libevent注册一个事件后，libevent内部是怎么样进行处理的呢？下面就给出了这一基本流程。</p>
-<ul>
-<li>首先应用程序准备并初始化event，设置好事件类型和回调函数；这对应于前面第步骤2和3；</li>
-<li>向libevent添加该事件event。对于定时事件，libevent使用一个<code>最小根堆管理</code>，key为超时时间；对于Signal和I/O事件，libevent将其放入到等待链表（wait list）中，这是一个双向链表结构；</li>
-<li>程序调用event_base_dispatch()系列函数进入无限循环，等待事件。</li>
-</ul>
-<p> 以select()函数为例；每次循环前libevent会检查定时事件的最小超时时间tv，根据tv设置select()的最大等待时间，以便于后面及时处理超时事件；</p>
-<p>当select()返回后，首先检查超时事件，然后检查I/O事件；<br>Libevent将所有的就绪事件，放入到激活链表中；<br>然后对激活链表中的事件，调用事件的回调函数执行事件处理；<br><img src="/images/cpp/libevent_1.jpg" alt=""></p>
-<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p>1）头文件<br>主要就是event.h：事件宏定义、接口函数声明，主要结构体event的声明；<br>2）内部头文件<br>xxx-internal.h：内部数据结构和函数，对外不可见，以达到信息隐藏的目的；<br>3）libevent框架<br>event.c：event整体框架的代码实现；<br>4）对系统I/O多路复用机制的封装<br>epoll.c：对epoll的封装；<br>select.c：对select的封装；<br>devpoll.c：对dev/poll的封装;<br>kqueue.c：对kqueue的封装；<br>5）定时事件管理<br>min-heap.h：其实就是一个以时间作为key的小根堆结构；<br>6）信号管理<br>signal.c：对信号事件的处理；<br>7）辅助功能函数<br>evutil.h 和evutil.c：一些辅助功能函数，包括创建socket pair和一些时间操作函数：加、减和比较等。<br>8）日志<br>log.h和log.c：log日志函数<br>9）缓冲区管理<br>evbuffer.c和buffer.c：libevent对缓冲区的封装；<br>10）基本数据结构<br>compat/sys下的两个源文件：queue.h是libevent基本数据结构的实现，包括链表，双向链表，队列等；_libevent_time.h：一些用于时间操作的结构体定义、函数和宏定义；<br>11）实用网络库<br>http和evdns：是基于libevent实现的http服务器和异步dns查询库；</p>
-<h3 id="Timer小根堆"><a href="#Timer小根堆" class="headerlink" title="Timer小根堆"></a>Timer小根堆</h3><p> Libevent使用堆来管理Timer事件，其key值就是事件的超时时间，源代码位于文件min_heap.h中。<br>所有的数据结构书中都有关于堆的详细介绍，向堆中插入、删除元素时间复杂度都是O(lgN)，N为堆中元素的个数，而获取最小key值（小根堆）的复杂度为O(1)。堆是一个完全二叉树，基本存储方式是一个数组。</p>
-<p>学习资料：<br><a href="http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod" target="_blank" rel="external">http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod</a><br><a href="http://libevent.org/" target="_blank" rel="external">http://libevent.org/</a><br><a href="https://www.cnblogs.com/lfsblack/p/5498556.html" target="_blank" rel="external">https://www.cnblogs.com/lfsblack/p/5498556.html</a> （推荐）<br><a href="http://blog.chinaunix.net/uid-8048969-id-5008922.html" target="_blank" rel="external">http://blog.chinaunix.net/uid-8048969-id-5008922.html</a></p>
+            <p>React生命周期函数<br><img src="https://images2015.cnblogs.com/blog/564050/201703/564050-20170301005923235-1884053087.png" alt=""></p>
+<h3 id="装载组件触发"><a href="#装载组件触发" class="headerlink" title="装载组件触发"></a>装载组件触发</h3><h4 id="0-construct-props-用来-props—-gt-state"><a href="#0-construct-props-用来-props—-gt-state" class="headerlink" title="0.construct(props) 用来 props—&gt;state"></a>0.construct(props) 用来 props—&gt;state</h4><p>初始化state，并且把props转化为state</p>
+<h4 id="1-componentWillMount-用来-props—-gt-state，用构造函数就可以了，这个我们一般不用"><a href="#1-componentWillMount-用来-props—-gt-state，用构造函数就可以了，这个我们一般不用" class="headerlink" title="1.componentWillMount   用来 props—&gt;state，用构造函数就可以了，这个我们一般不用"></a>1.componentWillMount   用来 props—&gt;state，用构造函数就可以了，这个我们一般不用</h4><p>只会在装载之前调用一次，在render之前调用，你可以在这个方法里面调用setState 改变状态，并且不会导致额外调用一次render，不能有副作用在里面</p>
+<h4 id="2-componentDidMount-页面初次加载好后，发送网络请求，获取数据后setState-data-触发重新渲染-or-操作DOM改变样式"><a href="#2-componentDidMount-页面初次加载好后，发送网络请求，获取数据后setState-data-触发重新渲染-or-操作DOM改变样式" class="headerlink" title="2.componentDidMount    页面初次加载好后，发送网络请求，获取数据后setState(data) 触发重新渲染 or 操作DOM改变样式"></a>2.componentDidMount    页面初次加载好后，发送网络请求，获取数据后setState(data) 触发重新渲染 or 操作DOM改变样式</h4><p>只会在装载完成之后调用一次，在render之后调用，从这里开始可以通过 ReactDOM.findDOMNode(this)获取到组件的DOM节点。</p>
+<h3 id="更新组件触发"><a href="#更新组件触发" class="headerlink" title="更新组件触发"></a>更新组件触发</h3><h4 id="1-componentWillReceiveProps-nextProps-用来props—-gt-state-setState不会重新渲染"><a href="#1-componentWillReceiveProps-nextProps-用来props—-gt-state-setState不会重新渲染" class="headerlink" title="1.componentWillReceiveProps(nextProps)  用来props—&gt;state,setState不会重新渲染"></a>1.componentWillReceiveProps(nextProps)  用来props—&gt;state,setState不会重新渲染</h4><p>有可能props没有改变的时候也触发，比如父组件更新导致的触发，有时候可能需要比较props是否发生了改变</p>
+<h4 id="2-shouldComponentUpdate-nextProps-nextState-判断新的props或者state是否需要重新渲染"><a href="#2-shouldComponentUpdate-nextProps-nextState-判断新的props或者state是否需要重新渲染" class="headerlink" title="2.shouldComponentUpdate(nextProps, nextState)  判断新的props或者state是否需要重新渲染"></a>2.shouldComponentUpdate(nextProps, nextState)  判断新的props或者state是否需要重新渲染</h4><p>更新前所有的setState已经完成，forceUpdate()会强刷</p>
+<h4 id="3-componentWillUpdate-nextProps-nextState-可以执行一些预备操作在更新前，-基本不用"><a href="#3-componentWillUpdate-nextProps-nextState-可以执行一些预备操作在更新前，-基本不用" class="headerlink" title="3.componentWillUpdate(nextProps, nextState)  可以执行一些预备操作在更新前， 基本不用"></a>3.componentWillUpdate(nextProps, nextState)  可以执行一些预备操作在更新前， 基本不用</h4><p>此时已经不能调用setState了，</p>
+<h4 id="4-componentDidUpdate-页面加载好后，发送网络请求，获取数据后setState-data-触发重新渲染-or操作DOM改变样式"><a href="#4-componentDidUpdate-页面加载好后，发送网络请求，获取数据后setState-data-触发重新渲染-or操作DOM改变样式" class="headerlink" title="4.componentDidUpdate()  页面加载好后，发送网络请求，获取数据后setState(data) 触发重新渲染 or操作DOM改变样式"></a>4.componentDidUpdate()  页面加载好后，发送网络请求，获取数据后setState(data) 触发重新渲染 or操作DOM改变样式</h4><h3 id="给出一个疑问："><a href="#给出一个疑问：" class="headerlink" title="给出一个疑问："></a>给出一个疑问：</h3><p>官网说可以再componenDidUpdate 中做一些网络请求，然后setState的事情</p>
+<p>componentDidUpdate() is invoked immediately after updating occurs. This method is not called for the initial render.</p>
+<p>Use this as an opportunity to operate on the DOM when the component has been updated. This is also a good place to do network requests as long as you compare the current props to previous props (e.g. a network request may not be necessary if the props have not changed).</p>
 
           
         
@@ -2103,7 +2150,7 @@ ECMAScript就是javascript语言的标准。
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">33</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2114,7 +2161,7 @@ ECMAScript就是javascript语言的标准。
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2125,7 +2172,7 @@ ECMAScript就是javascript语言的标准。
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
