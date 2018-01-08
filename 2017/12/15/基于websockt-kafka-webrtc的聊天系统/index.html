@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="reactjs,项目,project," />
+  <meta name="keywords" content="reactjs,project,项目," />
 
 
 
@@ -93,19 +93,19 @@
 
 
 
-<meta name="description" content="功能要求web端的聊天系统非常多，本系统的初哀是在项目协作平台中方便项目经理、产品、开发、测试、运维之间端沟通。  建立在企业员工体系基础上，有角色、部门的概念 相互之间能够实时传输文本、图片、表情 能够传输文件，包括大型文件 能够感知对方在线状况 离线状态下能够缓存消息 能够拉出历史记录，清空、删除历史记录  整体架构 前端 页面展示：页面基于react开发，redux做逻辑计算  服务通信：w">
-<meta name="keywords" content="reactjs,项目,project">
+<meta name="description" content="功能要求web端的聊天系统非常多，本系统的初哀是在项目协作平台中方便项目经理、产品、开发、测试、运维之间端沟通。  建立在企业员工体系基础上，有角色、部门的概念 相互之间能够实时传输文本、图片、表情 能够传输文件，包括大型文件 能够感知对方在线状况 离线状态下能够缓存消息 能够拉出历史记录，清空、删除历史记录  整体架构 前端 页面展示：页面基于react开发，redux做逻辑计算 服务通信：we">
+<meta name="keywords" content="reactjs,project,项目">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于websockt+kafka+webrtc的聊天系统">
 <meta property="og:url" content="http://yoursite.com/2017/12/15/基于websockt-kafka-webrtc的聊天系统/index.html">
 <meta property="og:site_name" content="苏远的博客">
-<meta property="og:description" content="功能要求web端的聊天系统非常多，本系统的初哀是在项目协作平台中方便项目经理、产品、开发、测试、运维之间端沟通。  建立在企业员工体系基础上，有角色、部门的概念 相互之间能够实时传输文本、图片、表情 能够传输文件，包括大型文件 能够感知对方在线状况 离线状态下能够缓存消息 能够拉出历史记录，清空、删除历史记录  整体架构 前端 页面展示：页面基于react开发，redux做逻辑计算  服务通信：w">
+<meta property="og:description" content="功能要求web端的聊天系统非常多，本系统的初哀是在项目协作平台中方便项目经理、产品、开发、测试、运维之间端沟通。  建立在企业员工体系基础上，有角色、部门的概念 相互之间能够实时传输文本、图片、表情 能够传输文件，包括大型文件 能够感知对方在线状况 离线状态下能够缓存消息 能够拉出历史记录，清空、删除历史记录  整体架构 前端 页面展示：页面基于react开发，redux做逻辑计算 服务通信：we">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/images/chat_1.png">
-<meta property="og:updated_time" content="2018-01-08T13:53:21.000Z">
+<meta property="og:updated_time" content="2018-01-08T14:03:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于websockt+kafka+webrtc的聊天系统">
-<meta name="twitter:description" content="功能要求web端的聊天系统非常多，本系统的初哀是在项目协作平台中方便项目经理、产品、开发、测试、运维之间端沟通。  建立在企业员工体系基础上，有角色、部门的概念 相互之间能够实时传输文本、图片、表情 能够传输文件，包括大型文件 能够感知对方在线状况 离线状态下能够缓存消息 能够拉出历史记录，清空、删除历史记录  整体架构 前端 页面展示：页面基于react开发，redux做逻辑计算  服务通信：w">
+<meta name="twitter:description" content="功能要求web端的聊天系统非常多，本系统的初哀是在项目协作平台中方便项目经理、产品、开发、测试、运维之间端沟通。  建立在企业员工体系基础上，有角色、部门的概念 相互之间能够实时传输文本、图片、表情 能够传输文件，包括大型文件 能够感知对方在线状况 离线状态下能够缓存消息 能够拉出历史记录，清空、删除历史记录  整体架构 前端 页面展示：页面基于react开发，redux做逻辑计算 服务通信：we">
 <meta name="twitter:image" content="http://yoursite.com/images/chat_1.png">
 
 
@@ -376,57 +376,41 @@
 </ul>
 <h3 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h3><p><img src="/images/chat_1.png" alt=""></p>
 <h4 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h4><ul>
-<li><p>页面展示：页面基于react开发，redux做逻辑计算</p>
-</li>
-<li><p>服务通信：websocket做通信协议，直接采用的socket.io</p>
-</li>
-<li><p>历史记录：indexdb做历史数据存储，会对不同的聊天对象建立索引，以便于拉去数据<br>里面会涉及到的细节问题（浏览器版本会受限制）</p>
-<ul>
+<li>页面展示：页面基于react开发，redux做逻辑计算</li>
+<li>服务通信：websocket做通信协议，直接采用的socket.io</li>
+<li>历史记录：indexdb做历史数据存储，会对不同的聊天对象建立索引，以便于拉去数据<br>里面会涉及到的细节问题（浏览器版本会受限制）<ul>
 <li>打开页面拉去10条历史</li>
 <li>鼠标上滚动对历史数据翻页拉去</li>
 <li>及时聊天记录到插入</li>
 <li>翻页过程中收到新消息可能导致的拉取数据重复</li>
 </ul>
 </li>
-<li><p>表情：emoji-mart</p>
-</li>
-<li><p>文件：</p>
-<ul>
+<li>表情：emoji-mart</li>
+<li>文件：<ul>
 <li>小文件dataUrl传输，存放在indexdb，历史记录会保存；</li>
 <li>大文件通过webrtc传输，建立file blob对象，页面刷新会丢失</li>
 </ul>
 </li>
-<li><p>消息提示：浏览器内置的notication作为弹框<br>后来由于浏览器更新，不能在http下使用，采用chrome 扩展插件解决这个问题</p>
-</li>
+<li>消息提示：浏览器内置的notication作为弹框<br>后来由于浏览器更新，不能在http下使用，采用chrome 扩展插件解决这个问题</li>
 </ul>
 <h4 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h4><ul>
-<li><p>服务端采用nodejs开发</p>
-</li>
-<li><p>redis做在线状态存储，每个人的上下线状态聚合到redis中，有个定时进程每个3s 检查下redis数据是否update，以便及时通过websocket更新给client<br>因此人员状态实时性要求不是很高</p>
-</li>
-<li><p>kafka存放消息，</p>
-<ul>
+<li>服务端采用nodejs开发</li>
+<li>redis做在线状态存储，每个人的上下线状态聚合到redis中，有个定时进程每个3s 检查下redis数据是否update，以便及时通过websocket更新给client<br>因此人员状态实时性要求不是很高</li>
+<li>kafka存放消息，<ul>
 <li>消费者：每个人都定位成消费者，其对应一个topic（这个可能不合理）；<br>离线状态时候，消息来个各方的消息会缓存在kafka中，一旦上线后就消费这些缓存消息</li>
 <li>生产者：每个人都可以是生产者，当然系统消息、管理员消息 等这些高级等生产者也是存在的</li>
 </ul>
 </li>
-<li><p>zookeeper代理3个kafka</p>
-</li>
-<li><p>haproxy做负载均衡<br>cookie serverid insert 保持http连接的持续性</p>
-</li>
-<li><p>docker 支撑后端部署</p>
-</li>
+<li>zookeeper代理3个kafka</li>
+<li>haproxy做负载均衡<br>cookie serverid insert 保持http连接的持续性</li>
+<li>docker 支撑后端部署</li>
 </ul>
 <h4 id="p2p通信"><a href="#p2p通信" class="headerlink" title="p2p通信"></a>p2p通信</h4><p>在传输大文件的时候，通过websocket已经显得力不从心，还到kafka中绕一圈，着实多走弯路来。</p>
 <ul>
-<li><p>小于100kb到采用websocket，保证数据到缓存性质。</p>
-</li>
-<li><p>超过的切换成使用webrtc技术，他属于较新的点对点通信模式，为语音和视频而生，用来传输文件非常靠谱。</p>
-</li>
-<li><p>依赖NAT穿透技术，采用了peerjs-server；他本身基于TURN协议，就是用一个server来管理大家的的详细地址。<br><a href="https://www.jianshu.com/p/84e8c78ca61d" target="_blank" rel="external">ICE协议下NAT穿越的实现（STUN&amp;TURN）</a></p>
-</li>
-<li><p>限制：要求对方必须在线</p>
-</li>
+<li>小于100kb到采用websocket，保证数据到缓存性质。</li>
+<li>超过的切换成使用webrtc技术，他属于较新的点对点通信模式，为语音和视频而生，用来传输文件非常靠谱。</li>
+<li>依赖NAT穿透技术，采用了peerjs-server；他本身基于TURN协议，就是用一个server来管理大家的的详细地址。<br><a href="https://www.jianshu.com/p/84e8c78ca61d" target="_blank" rel="external">ICE协议下NAT穿越的实现（STUN&amp;TURN）</a></li>
+<li>限制：要求对方必须在线</li>
 </ul>
 
       
@@ -459,9 +443,9 @@
           
             <a href="/tags/reactjs/" rel="tag"># reactjs</a>
           
-            <a href="/tags/项目/" rel="tag"># 项目</a>
-          
             <a href="/tags/project/" rel="tag"># project</a>
+          
+            <a href="/tags/项目/" rel="tag"># 项目</a>
           
         </div>
       
