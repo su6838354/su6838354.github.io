@@ -638,7 +638,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/02/08/语音对话管理和对话引擎/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/06/09/HashTable-简述/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -657,7 +657,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/02/08/语音对话管理和对话引擎/" itemprop="url">语音对话管理和对话引擎</a></h1>
+                <a class="post-title-link" href="/2016/06/09/HashTable-简述/" itemprop="url">HashTable 简述</a></h1>
         
 
         <div class="post-meta">
@@ -669,8 +669,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-08T23:20:54+08:00">
-                2016-02-08
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-09T00:47:39+08:00">
+                2016-06-09
               </time>
             
 
@@ -692,8 +692,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/个人项目/" itemprop="url" rel="index">
-                    <span itemprop="name">个人项目</span>
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
                   </a>
                 </span>
 
@@ -728,40 +728,12 @@
       
         
           
-            <h3 id="语音对话模块组成"><a href="#语音对话模块组成" class="headerlink" title="语音对话模块组成"></a>语音对话模块组成</h3><p>语音对话属于比较负责的模块，主要包括语音对话管理DialogManager(DM)和语音对话引擎DialogEngine(DE)。<br>DM负责整个DE的生命周期已经和外部服务的交互，他属于业务模块，采用protobuf和外部服务进行大量的通信；同时会在往感兴趣的服务中注册事件，保证对外部系统对信息感知。<br>DE负责语音执行流程和语音识别，是语音对话的大脑。</p>
-<p><img src="/images/uscxml_1.png" alt=""></p>
-<h3 id="DE"><a href="#DE" class="headerlink" title="DE"></a>DE</h3><ul>
-<li><p>DE整个模块由scxml脚步和解释器引擎构成，scxml控制业务逻辑，引擎负责解析并执行scxml语言，以驱动外部接入的模块，数据以xpath形式存取。</p>
-</li>
-<li><p>特点：可以通过修改scxml脚本语言来实现业务逻辑的变更；解释器引擎具有一定的扩展性，除了目前支持的xpath数据模型，还可以增加lua，js等其他类型的数据模型；并且解释器与外部服务的交互具有较低的藕和度。</p>
-</li>
-</ul>
-<p><img src="/images/uscxml_2.png" alt=""></p>
-<h3 id="uscxml"><a href="#uscxml" class="headerlink" title="uscxml"></a>uscxml</h3><p>我们选择scxml为执行引擎对脚本语言，uscxml为解释器原型。</p>
-<p>SCXML（State Chart XML），简单地说就是状态图的xml描述文件。这里的状态图和UML里面的状态图是基本一致的，都是继承自Harel Start Chart。</p>
-<p>标准就是W3C制定的的标准：<a href="http://www.w3.org/TR/scxml/" target="_blank" rel="external">State Chart XML(SCXML):State Machine Notation for Control Abstraction</a>下面我简要的介绍一下这个标准，如下<br>图所示：红框里面的标签，每一个链接里面都有标签的具体介绍（子标签和属性值等）。就是这个标准。<br><img src="http://img.blog.csdn.net/20151126102750992" alt=""></p>
-<p>都有哪些实现？看下表</p>
-<pre><code>名字                描述
-scxmlcc    用于将SCXML图生成c++代码
-Apache Commons SCXML    一个基于java语言的解析和执行SCXML图的标准类库
-Legian    一个java语言实现的SCXML引擎，使用Rhino作为javascript引擎，它还支持其他的特性，和W3C的标准并不完全一致
-Qt SCXML    Qt里面的状态机，将信号和槽与状态机紧密的结合起来了
-PySCXML    一个Python的实现，支持多种通信，包括的WebSockets和SOAP。兼容性好。还支持ECMAScript的数据模型。 （最后发布日期2013年）
-The PySCXML Console    一个基于web的交互式SCXML控制台，可以运行SCXML文档。支持ECMAScript datamodel。
-SCXML4Flex    ActionScript的实现
-SCXMLgui    java实现的SCXML图可视化编辑器.
-SCION    javascript实现
-JSSCxml    这是一个基于Web浏览器的实现，目前还处于开发阶段。和标准高度一致,良好的支持DOM事件，目前只支持ECMAScript datamodel。
-uSCXML    Standard-compliant SCXML implementation in C/C++ with language bindings for Java and C#. Full ECMAScript support (all tests passed) via JavaScriptCore or Google’s v8, additional LUA and Prolog datamodels, only rudimentary support for XPath datamodel.
-ECMAScript就是javascript语言的标准。
-</code></pre><p>这里给出uscxml的结构图<br><img src="/images/uscxml_3.png" alt=""></p>
-<ul>
-<li>uscxml执行速度比较慢，主要是采用来arabica为xml工具，内部包含大量的强制类型转换；</li>
-<li>以空间换取时间的方式，在启动后，将脚本中对xpath语句解析后，指针地址存储在hashmap中，同时state，data，transition，等都实现构建好，存储在map中</li>
-<li>采用其他效率更高的xml工具，pugixml，libxml，TinyXML都可以，我们采用arabica转为pugixml</li>
-<li>源码已经将arabica转为Xerces-C  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Replaced Arabica DOM implementation with Xerces-C</div></pre></td></tr></table></figure>
-</li>
-</ul>
+            <h3 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h3><p>使用了映射函数，把值映射到对应的位置，key－&gt; address， address是表中的存储位置，不是实际的地址；</p>
+<h3 id="Hash-函数设计"><a href="#Hash-函数设计" class="headerlink" title="Hash 函数设计"></a>Hash 函数设计</h3><p>分布合理，冲突少，利用率平衡，利用率高了，冲突多，利用率低了，冲突小点；<br>(1)直接定址发：<br>address(key) = key -2000<br>(2)平方取中法， 对关键字进行平方运算，然后取中间的几个数字做为hash地址<br>address(key) =str( math.pow(key, 2) )[2, -2]<br>(3)折叠法， 关键的字做一个运算<br>address(key) = key[0] + key[1] + key[2]<br>(4)除留取余<br>知道hash表带最大长度m， 取不大于m的质数p，对关键字进行取余运算<br>address(key) = key%p<br>p的选取很重要，因为p选择的好，可以最大限度降低冲突，p一般选择小于m的最大质数</p>
+<h3 id="Hash表的大小选择；"><a href="#Hash表的大小选择；" class="headerlink" title="Hash表的大小选择；"></a>Hash表的大小选择；</h3><p>(1)根据存储的数量和分布来选择；<br>(2)动态分配，这时候需要重新计算hash地址；redis 中就有这种模式</p>
+<h3 id="冲突解决；"><a href="#冲突解决；" class="headerlink" title="冲突解决；"></a>冲突解决；</h3><p>(1)开发定址法：冲突后按照一定的策略需要寻找空位<br>(2)链地址法：链地址法</p>
+<h3 id="hashtable-的桶数选择质数的原因"><a href="#hashtable-的桶数选择质数的原因" class="headerlink" title="hashtable 的桶数选择质数的原因"></a>hashtable 的桶数选择质数的原因</h3><p>该段摘自<a href="http://blog.csdn.net/liuqiyao_01/article/details/14475159" target="_blank" rel="external">http://blog.csdn.net/liuqiyao_01/article/details/14475159</a><br>设有一个哈希函数<br>H( c ) = c % N;<br>当N取一个合数时，最简单的例子是取2^n，比如说取2^3=8,这时候<br>H( 11100(二进制） ) = H( 28 ) = 4<br>H( 10100(二进制) ) = H( 20 ）= 4<br>这时候c的二进制第4位（从右向左数）就”失效”了，也就是说，无论第c的4位取什么值，都会导致H( c )的值一样．这时候c的第四位就根本不参与H( c )的运算，这样H( c )就无法完整地反映c的特性，增大了导致冲突的几率．<br>取其他合数时，都会不同程度的导致c的某些位”失效”，从而在一些常见应用中导致冲突．<br>但是取质数，基本可以保证c的每一位都参与H( c )的运算，从而在常见应用中减小冲突几率．</p>
+<p>下面是自己实现的一个简单的hashTable， 很多问题没有考虑进去，也没有编译测试，仅作为理解<br>如果想看C++ STL源码，可以参考<br><a href="https://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.1/hashtable-source.html" target="_blank" rel="external">https://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.1/hashtable-source.html</a><br><a href="http://blog.csdn.net/KangRoger/article/details/38640943" target="_blank" rel="external">http://blog.csdn.net/KangRoger/article/details/38640943</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">#include &lt;stdio.h&gt;</div><div class="line"> </div><div class="line">#define M 100</div><div class="line">#define Hash_key = 29</div><div class="line"> </div><div class="line">template &lt;class T&gt;</div><div class="line">struct HashNode</div><div class="line">&#123;</div><div class="line">    T data;</div><div class="line">    int key;</div><div class="line">    int isNull;</div><div class="line">    HashNode&lt;T&gt;* pNext;</div><div class="line"> </div><div class="line">    HashNode()&#123;</div><div class="line">        pNext = NULL;</div><div class="line">        isNull = 1;</div><div class="line">    &#125;</div><div class="line">&#125;; </div><div class="line"> </div><div class="line"> </div><div class="line">template &lt;class T&gt;</div><div class="line">class HashTable</div><div class="line">&#123;</div><div class="line">private:</div><div class="line">    HashNode&lt;T&gt; m_HashNodes[M];</div><div class="line"> </div><div class="line">    int getHashAddress(int key) &#123;</div><div class="line">        return key % Hash_key;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line"> </div><div class="line">public:</div><div class="line">    HashTable()&#123;</div><div class="line">        // for (i=0; i&lt;M; i++) &#123;</div><div class="line">        //     m_HashNodes[i].isNull = 0;    </div><div class="line">        // &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line"> </div><div class="line">    bool insert(int key,T data) &#123;</div><div class="line">        int address = this.getHashAddress(key);</div><div class="line">        if (m_HashNodes[address].isNull == 1) &#123;</div><div class="line">            m_HashNodes[address].data = data;</div><div class="line">            m_HashNodes[address].isNull == 0;</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            // while (m_HashNodes[address].isNull == 0 &amp;&amp; address &lt;M) &#123; // 线性探测法， 开发地址法</div><div class="line">            //     address++；</div><div class="line">            // &#125;</div><div class="line">            // if (address == M) &#123;</div><div class="line">            //     return false;</div><div class="line">            // &#125;</div><div class="line">            // </div><div class="line">            HashNode&lt;T&gt;* pTmpNode = m_HashNodes[address].pNext; // 链地址法</div><div class="line">            HashNode&lt;T&gt;* pCurNode = NULL</div><div class="line">            while (pTmpNode != NULL) &#123;</div><div class="line">                pCurNode = pTmpNode;</div><div class="line">                pTmpNode = pTmpNode-&gt;pNext;</div><div class="line">            &#125;</div><div class="line">            pCurNode-&gt;pNext = new HashNode&lt;T&gt;();</div><div class="line">            pCurNode-&gt;pNext-&gt;data = data;</div><div class="line">            pCurNode-&gt;pNext-&gt;key = key;</div><div class="line">            pCurNode-&gt;pNext-&gt;isNull = 0;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    HashNode&lt;T&gt; find(int key) &#123;</div><div class="line">        int address = this.getHashAddress(key);</div><div class="line">        HashNode&lt;T&gt; node = m_HashNodes[address];</div><div class="line">        if (node.key == key)&#123;</div><div class="line">            return &amp;node.data;</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            pCur = m_HashNodes[address].pNext;</div><div class="line">            while (pCur != NULL)&#123;</div><div class="line">                if (pCur-&gt;key == key) &#123;</div><div class="line">                    return pCur;</div><div class="line">                &#125;</div><div class="line">                else &#123;</div><div class="line">                    pCur = pCur-&gt;pNext;</div><div class="line">                &#125;    </div><div class="line">            &#125;</div><div class="line">            return NULL</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 
           
         
@@ -805,7 +777,7 @@ ECMAScript就是javascript语言的标准。
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/15/shared-ptr线程安全性分析/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/06/03/python学习笔记-functools-wraps-装饰器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -824,7 +796,7 @@ ECMAScript就是javascript语言的标准。
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/10/15/shared-ptr线程安全性分析/" itemprop="url">shared_ptr线程安全性分析</a></h1>
+                <a class="post-title-link" href="/2016/06/03/python学习笔记-functools-wraps-装饰器/" itemprop="url">python学习笔记-functools.wraps 装饰器</a></h1>
         
 
         <div class="post-meta">
@@ -836,8 +808,8 @@ ECMAScript就是javascript语言的标准。
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-15T01:49:52+08:00">
-                2015-10-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-03T23:51:58+08:00">
+                2016-06-03
               </time>
             
 
@@ -859,8 +831,8 @@ ECMAScript就是javascript语言的标准。
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
                   </a>
                 </span>
 
@@ -895,53 +867,14 @@ ECMAScript就是javascript语言的标准。
       
         
           
-            <h3 id="shared-ptr的线程安全性"><a href="#shared-ptr的线程安全性" class="headerlink" title="shared_ptr的线程安全性"></a>shared_ptr的线程安全性</h3><p>boost官方文档对shared_ptr线程安全性的正式表述是：shared_ptr对象提供与内置类型相同级别的线程安全性。【shared_ptrobjects offer the same level of thread safety as built-in types.】具体是以下三点。</p>
-<pre><code>- 同一个shared_ptr对象可以被多线程同时读取。【A shared_ptrinstance can be &quot;read&quot; (accessed using only const operations)simultaneously by multiple threads.】
-- 不同的shared_ptr对象可以被多线程同时修改（即使这些shared_ptr对象管理着同一个对象的指针）。【Different shared_ptr instances can be &quot;written to&quot;(accessed using mutable operations such as operator= or reset) simultaneouslyby multiple threads (even when these instances are copies, and share the samereference count underneath.) 】
-- 任何其他并发访问的结果都是无定义的。【Any other simultaneous accesses result in undefined behavior.】
-</code></pre><p>第一种情况是对对象的并发读，自然是线程安全的。<br>第二种情况下，如果两个shared_ptr对象A和B管理的是不同对象的指针，则这两个对象完全不相关，支持并发写也容易理解。但如果A和B管理的是同一个对象P的指针，则A和B需要维护一块共享的内存区域，该区域记录P指针当前的引用计数。对A和B的并发写必然涉及对该引用计数内存区的并发修改，这需要boost做额外的工作，也是本文分析的重点。</p>
-<p>另外weak_ptr和shared_ptr紧密相关，用户可以从weak_ptr构造出shared_ptr，也可以从shared_ptr构造weak_ptr，但是weak_ptr不涉及到对象的生命周期。由于shared_ptr的线程安全性是和weak_ptr耦合在一起的，本文的分析也涉及到weak_ptr。</p>
-<p>下面先从总体上看一下shared_ptr和weak_ptr的实现。</p>
-<h3 id="shared-ptr的结构图"><a href="#shared-ptr的结构图" class="headerlink" title="shared_ptr的结构图"></a>shared_ptr的结构图</h3><p>以下是从boost源码提取出的shared_ptr和weak_ptr的类图。<br><img src="/images/cpp/ptr_1.png" alt=""></p>
-<p>我们首先忽略虚线框内的weak_ptr部分。最高层的shared_ptr就是用户直接使用的类，它提供shared_ptr的构造、复制、重置(reset函数）、解引用、比较、隐式转换为bool等功能。它包含一个指向被管理对象的指针，用来实现解引用操作，并且组合了一个shared_count对象，用来操作引用计数。<br>但shared_count类还不是引用计数类，它只是包含了一个指向引用计数类sp_counted_base的指针，功能上是对sp_counted_base操作的封装。shared_count对象的创建、复制和删除等操作，包含着对sp_counted_base的增加和减小引用计数的操作。<br>最后sp_counted_base类才保存了引用计数，并且对引用计数字段提供无锁保护。它也包含了一个指向被管理对象的指针，是用来删除被管理的对象的。sp_counted_base有三个派生类，分别处理用户指定Deleter和Allocator的情况：</p>
-<ol>
-<li>sp_counted_impl_p：用户没有指定Deleter和Allocator</li>
-<li>sp_counted_impl_pd：用户指定了Deleter，没有指定Allocator</li>
-<li>sp_counted_impl_pda：用户指定了Deleter和 Allocator<br>创建指针P的第一个shared_ptr对象的时候，子对象shared_count同时被建立， shared_count根据用户提供的参数选择创建一个特定的sp_counted_base派生类对象X。之后创建的所有管理P的shared_ptr对象都指向了这个独一无二的X。<br>然后再看虚线框内的weak_ptr就清楚了。weak_ptr和shared_ptr基本上类似，只不过weak_ptr包含的是weak_count子对象，但weak_count和shared_count也都指向了sp_counted_base。<br>如果上面的文字还不够清楚，下面的代码就能说明问题。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">shared_ptr&lt;SomeObject&gt; SP1(new SomeObject());</div><div class="line">shared_ptr&lt;SomeObject&gt; SP2=SP1;</div><div class="line">weak_ptr&lt;SomeObject&gt; WP1=SP1;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>执行完以上代码后，内存中会创建以下对象实例，其中红色箭头表示指向引用计数对象的指针，黑色箭头表示指向被管理对象的指针。<br><img src="/images/cpp/ptr_2.png" alt=""></p>
-<p>从上面可以清楚的看出，SP1、SP2和WP1指向了同一个sp_counted_impl_p对象，这个sp_counted_impl_p对象保存引用计数，是SP1、SP2和WP1等三个对象共同操作的内存区。多线程并发修改SP1、SP2和WP1，有且只有sp_counted_impl_p对象会被并发修改，因此sp_counted_impl_p的线程安全性是shared_ptr以及weak_ptr线程安全性的关键问题。而sp_counted_impl_p的线程安全性是在其基类sp_counted_base中实现的。下面将着重分析sp_counted_base的代码。</p>
-<h3 id="引用计数类sp-counted-base"><a href="#引用计数类sp-counted-base" class="headerlink" title="引用计数类sp_counted_base"></a>引用计数类sp_counted_base</h3><p>幸运的是，sp_counted_base的代码量很小，下面全文列出来，并添加有注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line">class sp_counted_base</div><div class="line">&#123;</div><div class="line">private:</div><div class="line">     // 禁止复制</div><div class="line">    sp_counted_base( sp_counted_base const &amp; );</div><div class="line">    sp_counted_base &amp; operator= ( sp_counted_baseconst &amp; );</div><div class="line"> </div><div class="line">     // shared_ptr的数量</div><div class="line">    long use_count_;  </div><div class="line">     // weak_ptr的数量+1</div><div class="line">    long weak_count_;      </div><div class="line"> </div><div class="line">public:</div><div class="line">     // 唯一的一个构造函数，注意这里把两个计数都置为1</div><div class="line">    sp_counted_base(): use_count_( 1 ), weak_count_( 1 )&#123;    &#125;</div><div class="line"> </div><div class="line">     // 虚基类，因此可以作为基类</div><div class="line">    virtual ~sp_counted_base()&#123;    &#125;</div><div class="line"> </div><div class="line">     // 子类需要重载，用operator delete或者Deleter删除被管理的对象</div><div class="line">    virtual void dispose() = 0;</div><div class="line"> </div><div class="line">     // 子类可以重载，用Allocator等删除当前对象</div><div class="line">    virtual void destroy()&#123;</div><div class="line">        delete this;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    virtual void * get_deleter( sp_typeinfo const &amp; ti ) = 0;</div><div class="line"> </div><div class="line">     // 这个函数在根据shared_count复制shared_count的时候用到</div><div class="line">     // 既然存在一个shared_count作为源，记为A，则只要A不释放，</div><div class="line">     // use_count_就不会被另一个线程release()为1。</div><div class="line">     // 另外，如果一个线程把A作为复制源，另一个线程释放A，执行结果是未定义的。</div><div class="line">     void add_ref_copy()&#123;</div><div class="line">        _InterlockedIncrement( &amp;use_count_ );</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 这个函数在根据weak_count构造shared_count的时候用到</div><div class="line">     // 这是为了避免通过weak_count增加引用计数的时候，</div><div class="line">     // 另外的线程却调用了release函数，清零use_count_并释放了指向的对象</div><div class="line">    bool add_ref_lock()&#123;</div><div class="line">        for( ;; )</div><div class="line">        &#123;</div><div class="line">            long tmp = static_cast&lt; long const volatile&amp; &gt;( use_count_ );</div><div class="line">            if( tmp == 0 ) return false;</div><div class="line"> </div><div class="line">            if( _InterlockedCompareExchange( &amp;use_count_, tmp + 1, tmp ) == tmp )return true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    void release()&#123;</div><div class="line">        if( _InterlockedDecrement( &amp;use_count_ ) == 0 )</div><div class="line">        &#123;</div><div class="line">              // use_count_从1变成0的时候，</div><div class="line">              // 1. 释放对象</div><div class="line">              // 2. 对weak_count_执行一次递减操作。这是因为在初始化的时候（use_count_从0变1时），weak_count初始值为1</div><div class="line">            dispose();</div><div class="line">            weak_release();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    void weak_add_ref()&#123;</div><div class="line">        _InterlockedIncrement( &amp;weak_count_ );</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 递减weak_count_；且在weak_count为0的时候，把自己删除</div><div class="line">    void weak_release()&#123;</div><div class="line">        if( _InterlockedDecrement( &amp;weak_count_ ) == 0 )</div><div class="line">        &#123;</div><div class="line">            destroy();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">     // 返回引用计数。注意如果用户没有额外加锁，引用计数完全可能同时被另外的线程修改掉。</div><div class="line">    long use_count() const&#123;</div><div class="line">        return static_cast&lt;long const volatile &amp;&gt;( use_count_ );</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>代码中的注释已经说明了一些问题，这里再重复一点：use<em>count</em>字段等于当前shared_ptr对象的数量，weak<em>count</em>字段等于当前weak_ptr对象的数量加1。<br>首先不考虑weak_ptr的情况。根据对shared_ptr类的代码分析（代码没有列出来，但很容易找到），shared_ptr之间的复制都是调用add_ref_copy和release函数进行的。假设两个线程分别对SP1和SP2进行操作，操作的过程无非是以下三种情况：</p>
-<ol>
-<li>SP1和SP2都递增引用计数，即add_ref_copy被并发调用，也就是两个_InterlockedIncrement（&amp;use<em>count</em>)并发执行，这是线程安全的。</li>
-<li>SP1和SP2都递减引用计数，即release被并发调用，也就是_InterlockedDecrement(&amp;use<em>count</em> )并发执行，这也是线程安全的。只不过后执行的线程负责删除对象。</li>
-<li>SP1递增引用计数，调用add_ref_copy；SP2递减引用计数，调用release。由于SP1的存在，SP2的release操作无论如何都不会导致use<em>count</em>变为零，也就是说release中if语句的body永远不会被执行。因此，这种情况就化简为_InterlockedIncrement（&amp;use<em>count</em>)和_InterlockedDecrement( &amp;use<em>count</em> )的并发执行，仍然是线程安全的。</li>
-</ol>
-<p>然后考虑weak_ptr。如果是weak_ptr之间的操作，或者从shared_ptr构造weak_ptr，都不涉及到use<em>count</em>的操作，只需要调用weak_add_ref和weak_release来操作weak<em>count</em>。与上面的分析相同，<code>_InterlockedIncrement和_InterlockedDecrement</code>保证了weak_add_ref和weak_release并发操作的线程安全性。但如果存在从weak_ptr构造shared_ptr的操作，则需要考虑在构造weak_ptr的过程中，被管理的对象已经被其他线程被释放的情况。如果从weak_ptr构造shared_ptr仍然是通过add_ref_copy函数完成的，则可能发生以下错误情况：<br> <table><br> <tr><br> <td></td><br> <td>线程1，从weak_ptr创建shared_ptr</td><br> <td>线程2，释放目前唯一存在的shared_ptr</td><br> </tr><br> <tr><br> <td>1</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> <td></td><br> </tr><br>  <tr><br> <td>2</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> </tr><br>   <tr><br> <td>3</td><br> <td><br>开始执行add_ref_copy，导致 use_count递增。<br>发生错误,use_count==1，但是对象已经被删除了</td><br> <td></td><br> </tr><br> </table></p>
-<p>我们自然会想，线程1在第三行结束后，再判断一次use_count是否为1，如果是1，认为对象已经删除，判断失败不就可以了吗。其实是行不通的，下面是一个反例。</p>
-<table><br> <tr><br> <td></td><br> <td>线程1，从weak_ptr创建shared_ptr</td><br> <td>线程2，释放目前唯一存在的shared_ptr</td><br> <td>线程3，从weak_ptr创建shared_ptr</td><br> </tr><br> <tr><br> <td>1</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> <td></td><br>  <td></td><br> </tr><br>  <tr><br> <td>2</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> <td>判断use<em>count</em>大于0，等待执行add_ref_copy</td><br> </tr><br>   <tr><br> <td>3</td><br> <td></td><br> <td>调用release，use_count–。发现use_count为0，删除被管理的对象</td><br> <td></td><br> </tr><br> <tr><br> <td>4</td><br> <td>开始执行add_ref_copy，导致 use_count递增。</td><br> <td></td><br> <td></td><br> </tr><br> <tr><br> <td>5</td><br> <td></td><br> <td></td><br> <td>执行add_ref_copy，导致 use_count递增。</td><br> </tr><br> <tr><br> <td>6</td><br> <td>发现use<em>count</em> != 1，判断执行成功。<br>发生错误,use_count==2，但是对象已经被删除了</td><br> <td></td><br> <td>发现use<em>count</em> != 1，判断执行成功。<br>发生错误,use_count==2，但是对象已经被删除了</td><br> </tr><br><br> </table>
-
-<p>实际上，boost从weak_ptr构造shared_ptr不是调用add_ref_copy，而是调用add_ref_lock函数。add_ref_lock是典型的无锁修改共享变量的代码，下面再把它的代码复制一遍，并添加证明注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">bool add_ref_lock()&#123;</div><div class="line">    for( ;; )</div><div class="line">    &#123;</div><div class="line">        // 第一步，记录下use_count_</div><div class="line">        long tmp = static_cast&lt; long const volatile&amp; &gt;( use_count_ );</div><div class="line">        // 第二步，如果已经被别的线程抢先清0了，则被管理的对象已经或者将要被释放，返回false</div><div class="line">        if( tmp == 0 ) return false;</div><div class="line">        // 第三步，如果if条件执行成功，</div><div class="line">     // 说明在修改use_count_之前,use_count仍然是tmp，大于0</div><div class="line">        // 也就是说use_count_在第一步和第三步之间，从来没有变为0过。</div><div class="line">        // 这是因为use_count一旦变为0，就不可能再次累加为大于0</div><div class="line">        // 因此，第一步和第三步之间，被管理的对象不可能被释放，返回true。</div><div class="line">        if( _InterlockedCompareExchange( &amp;use_count_, tmp + 1, tmp ) == tmp )return true;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在上面的注释中，用到了一个没有被证明的结论，“use_count一旦变为0，就不可能再次累加为大于0”。下面四条可以证明它。</p>
-<ol>
-<li>use<em>count</em>是sp_counted_base类的private对象，sp_counted_base也没有友元函数，因此use<em>count</em>不会被对象外的代码修改。</li>
-<li>成员函数add_ref_copy可以递增use<em>count</em>，但是所有对add_ref_copy函数的调用都是通过一个shared_ptr对象执行的。既然存在shared_ptr对象，use_count在递增之前一定不是0。</li>
-<li>成员函数add_ref_lock可以递增use<em>count</em>，但正如add_ref_lock代码所示，执行第三步的时候，tmp都是大于0的，因此add_ref_lock不会使use<em>count</em>从0递增到1</li>
-<li>其它成员函数从来不会递增use<em>count</em><br>至此，我们可以放下心来，只要add_ref_lock返回true，递增引用计数的行为就是成功的。因此从weak_ptr构造shared_ptr的行为也是完全确定的，要么add_ref_lock返回true，构造成功，要么add_ref_lock返回false，构造失败。<br>综上所述，多线程通过不同的shared_ptr或者weak_ptr对象并发修改同一个引用计数对象sp_counted_base是线程安全的。而sp_counted_base对象是这些智能指针唯一操作的共享内存区，因此最终的结果就是线程安全的。<br>其它操作<br>前面我们分析了，不同的shared_ptr对象可以被多线程同时修改。那其它的问题呢，同一个shared_ptr对象可以对多线程同时修改吗？我们必须要注意到，前面所有的同步都是针对引用计数类sp_counted_base进行的，shared_ptr本身并没有任何同步保护。我们看下面boost文档举出来的非线程安全的例子</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// thread A</div><div class="line">p3.reset(new int(1));</div><div class="line">// thread B</div><div class="line">p3.reset(new int(2)); // undefined, multiple writes</div></pre></td></tr></table></figure>
-<p>下面是shared_ptr类相关的代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">template&lt;class Y&gt;</div><div class="line">void reset(Y * p)</div><div class="line">&#123;</div><div class="line">     this_type(p).swap(*this);</div><div class="line">&#125;</div><div class="line"> </div><div class="line">void swap(shared_ptr&lt;T&gt; &amp; other)</div><div class="line">&#123;</div><div class="line">     std::swap(px, other.px);</div><div class="line">     pn.swap(other.pn);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>可以看到，reset执行了两个修改成员变量的操作，thread A和thread B的执行结果可能是非法的。。<br>但是仿照内置对象的语义，boost提供了若干个原子函数，支持通过这些函数并发修改同一个shared_ptr对象。这包括atomic_store、atomic_exchange、atomic_compare_exchange等。以下是实现的代码，不再详细分析。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">template&lt;class T&gt;</div><div class="line">void atomic_store( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; r )&#123;</div><div class="line">    boost::detail::spinlock_pool&lt;2&gt;::scoped_lock lock( p );</div><div class="line">    p-&gt;swap( r );</div><div class="line">&#125;</div><div class="line"> </div><div class="line">template&lt;class T&gt;</div><div class="line">shared_ptr&lt;T&gt; atomic_exchange( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; r )&#123;</div><div class="line">    boost::detail::spinlock &amp; sp = boost::detail::spinlock_pool&lt;2&gt;::spinlock_for( p );</div><div class="line"> </div><div class="line">    sp.lock();</div><div class="line">    p-&gt;swap( r );</div><div class="line">    sp.unlock();</div><div class="line"> </div><div class="line">    return r;</div><div class="line">&#125;</div><div class="line"> </div><div class="line">template&lt;class T&gt;</div><div class="line">bool atomic_compare_exchange( shared_ptr&lt;T&gt; * p, shared_ptr&lt;T&gt; * v, shared_ptr&lt;T&gt; w )&#123;</div><div class="line"> </div><div class="line">    boost::detail::spinlock &amp; sp = boost::detail::spinlock_pool&lt;2&gt;::spinlock_for( p );</div><div class="line">    sp.lock();</div><div class="line">    if( p-&gt;_internal_equiv( *v ) )&#123;</div><div class="line">        p-&gt;swap( w );</div><div class="line">        sp.unlock();</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">    else&#123;</div><div class="line">        shared_ptr&lt;T&gt; tmp( *p );</div><div class="line">        sp.unlock();</div><div class="line">        tmp.swap( *v );</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>总结<br>正如boost文档所宣称的，boost为shared_ptr提供了<code>与内置类型同级别的线程安全性</code>。这包括：</p>
-<ol>
-<li>同一个shared_ptr对象可以被多线程同时读取。</li>
-<li>不同的shared_ptr对象可以被多线程同时修改。</li>
-<li>同一个shared_ptr对象不能被多线程直接修改，但可以通过原子函数完成。</li>
-</ol>
-<p>如果把上面的表述中的”shared_ptr”替换为“内置类型”也完全成立。<br>最后，整理这个东西的时候我也发现有些关键点很难表述清楚，这也是由于线程安全性本身比较难严格证明。如果想要完全理解，还是建议阅读shared_ptr完整的代码。shared_ptr在windows下的源代码我已经单独从boost中提取了出来，整理成了单独的文件，且去掉了不相关的条件编译指令。</p>
-<p>参考 <a href="http://blog.csdn.net/jiangfuqiang/article/details/8292906" target="_blank" rel="external">http://blog.csdn.net/jiangfuqiang/article/details/8292906</a></p>
+            <p>wraps其实没有实际的大用处， 就是用来解决装饰器导致的原函数名指向的函数 的属性发生变化的问题；<br>装饰器装饰过函数func， 此时func不是指向真正的func，而是指向装饰器中的装饰过的函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">import sys</div><div class="line"></div><div class="line">debug_log = sys.stderr</div><div class="line"></div><div class="line">def trace(func):</div><div class="line">        if debug_log:</div><div class="line">                def callf(*args, **kwargs):</div><div class="line">                        &quot;&quot;&quot;A wrapper function.&quot;&quot;&quot;</div><div class="line">                        debug_log.write(&apos;Calling function: &#123;&#125;\n&apos;.format(func.__name__))</div><div class="line">                        res = func(*args, **kwargs)</div><div class="line">                        debug_log.write(&apos;Return value: &#123;&#125;\n&apos;.format(res))</div><div class="line">                        return res</div><div class="line">                return callf</div><div class="line">        else:</div><div class="line">                return func</div><div class="line"></div><div class="line">@trace</div><div class="line">def square(x):</div><div class="line">        &quot;&quot;&quot;Calculate the square of the given number.&quot;&quot;&quot;</div><div class="line">        return x * x</div></pre></td></tr></table></figure>
+<p>这里的 square 其实指向的是 calls， 可以用help(square)或者 <code>square.__name__</code>看下。<br>square 被装饰后的函数其实已经是另外一个函数了（函数名等函数属性会发生改变）</p>
+<p>如果使用wraps进行修饰<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">def trace(func):</div><div class="line">        if debug_log:</div><div class="line">          @functools.wraps(func)</div><div class="line">                def callf(*args, **kwargs):</div><div class="line">                        &quot;&quot;&quot;A wrapper function.&quot;&quot;&quot;</div><div class="line">                        debug_log.write(&apos;Calling function: &#123;&#125;\n&apos;.format(func.__name__))</div><div class="line">                        res = func(*args, **kwargs)</div><div class="line">                        debug_log.write(&apos;Return value: &#123;&#125;\n&apos;.format(res))</div><div class="line">                        return res</div><div class="line">                return callf</div><div class="line">        else:</div><div class="line">                return func</div></pre></td></tr></table></figure></p>
+<p>此时 用trace 装饰的 square 的属性就不会变化了，可以help(square) 看看</p>
+<p>原因：我们把wraps的装饰的代码翻译如下，其等价为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">def trace(func):</div><div class="line">        if debug_log:</div><div class="line">                def _callf(*args, **kwargs):</div><div class="line">                        &quot;&quot;&quot;A wrapper function.&quot;&quot;&quot;</div><div class="line">                        debug_log.write(&apos;Calling function: &#123;&#125;\n&apos;.format(func.__name__))</div><div class="line">                        res = func(*args, **kwargs)</div><div class="line">                        debug_log.write(&apos;Return value: &#123;&#125;\n&apos;.format(res))</div><div class="line">                        return res</div><div class="line"></div><div class="line">                callf = functools.update_wrapper(_callf, wrapped = func,assigned = functools.WRAPPER_ASSIGNMENTS,updated = functools.WRAPPER_UPDATES)</div><div class="line"></div><div class="line">                return callf</div><div class="line">        else:</div><div class="line">                return func</div></pre></td></tr></table></figure></p>
+<p>update_wrapper做的工作很简单，就是用参数wrapped表示的函数对象（例如：square）的一些属性（如：<code>__name__、 __doc__</code>）覆盖参数wrapper表示的函数对象（例如：callf，这里callf只是简单地调用square函数，因此可以说callf是 square的一个wrapper function）的这些相应属性。</p>
+<p>因此，本例中使用wraps装饰器“装饰”过callf后，callf的<code>__doc__、__name__</code>等属性和trace要“装饰”的函数square的这些属性完全一样。</p>
 
           
         
@@ -985,7 +918,7 @@ ECMAScript就是javascript语言的标准。
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/11/std-shared-ptr-和-std-weak-ptr的循环引用问题/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/29/python学习笔记－celery分布式任务处理器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -1004,7 +937,7 @@ ECMAScript就是javascript语言的标准。
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/10/11/std-shared-ptr-和-std-weak-ptr的循环引用问题/" itemprop="url">std::shared_ptr 和 std::weak_ptr的循环引用问题</a></h1>
+                <a class="post-title-link" href="/2016/05/29/python学习笔记－celery分布式任务处理器/" itemprop="url">python学习笔记－celery分布式任务处理器</a></h1>
         
 
         <div class="post-meta">
@@ -1016,8 +949,8 @@ ECMAScript就是javascript语言的标准。
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-11T00:12:01+08:00">
-                2015-10-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-29T00:05:36+08:00">
+                2016-05-29
               </time>
             
 
@@ -1039,8 +972,8 @@ ECMAScript就是javascript语言的标准。
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
                   </a>
                 </span>
 
@@ -1075,15 +1008,15 @@ ECMAScript就是javascript语言的标准。
       
         
           
-            <p>在std::shared_ptr被引入之前，C++标准库中实现的用于管理资源的智能指针只有std::auto_ptr一个而已。std::auto_ptr的作用非常有限，因为它存在被管理资源的所有权转移问题。</p>
-<p>这导致多个std::auto_ptr类型的局部变量不能共享同一个资源，这个问题是非常严重。<br>智能指针内存管理要解决的根本问题是：一个堆对象（或则资源，比如文件句柄）在被多个对象引用的情况下，何时释放资源的问题。</p>
-<p>何时释放很简单，就是在最后一个引用它的对象被释放的时候释放它。关键的问题在于无法确定哪个引用它的对象是被最后释放的。</p>
-<p>std::shared_ptr确定最后一个引用它的对象何时被释放的基本想法是：对被管理的资源进行引用计数，当一个shared_ptr对象要共享这个资源的时候，该资源的引用计数加1，当这个对象生命期结束的时候，再把该引用技术减少1。这样当最后一个引用它的对象被释放的时候，资源的引用计数减少到0，此时释放该资源。下边是一个shared_ptr的用法例子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;memory&gt;</div><div class="line"></div><div class="line">class Woman;</div><div class="line">class Man&#123;</div><div class="line">private:</div><div class="line">	std::weak_ptr&lt;Woman&gt; _wife;</div><div class="line">	//std::shared_ptr&lt;Woman&gt; _wife;</div><div class="line">public:</div><div class="line">	void setWife(std::shared_ptr&lt;Woman&gt; woman)&#123;</div><div class="line">		_wife = woman;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	void doSomthing()&#123;</div><div class="line">		if(_wife.lock())&#123;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	~Man()&#123;</div><div class="line">		std::cout &lt;&lt; &quot;kill man\n&quot;;</div><div class="line">	&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class Woman&#123;</div><div class="line">private:</div><div class="line">	//std::weak_ptr&lt;Man&gt; _husband;</div><div class="line">	std::shared_ptr&lt;Man&gt; _husband;</div><div class="line">public:</div><div class="line">	void setHusband(std::shared_ptr&lt;Man&gt; man)&#123;</div><div class="line">		_husband = man;</div><div class="line">	&#125;</div><div class="line">	~Woman()&#123;</div><div class="line">		std::cout &lt;&lt;&quot;kill woman\n&quot;;</div><div class="line">	&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line">int main(int argc, char** argv)&#123;</div><div class="line">	std::shared_ptr&lt;Man&gt; m(new Man());</div><div class="line">	std::shared_ptr&lt;Woman&gt; w(new Woman());</div><div class="line">	if(m &amp;&amp; w) &#123;</div><div class="line">		m-&gt;setWife(w);</div><div class="line">		w-&gt;setHusband(m);</div><div class="line">	&#125;</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在Man类内部会引用一个Woman，Woman类内部也引用一个Man。当一个man和一个woman是夫妻的时候，他们直接就存在了<code>相互引用</code>问题。</p>
-<p>man内部有个用于管理wife生命期的shared_ptr变量，也就是说wife必定是在husband去世之后才能去世。同样的，woman内部也有一个管理husband生命期的shared_ptr变量，也就是说husband必须在wife去世之后才能去世。这就是循环引用存在的问题：husband的生命期由wife的生命期决定，wife的生命期由husband的生命期决定，最后两人都死不掉，违反了自然规律，<code>导致了内存泄漏</code>。</p>
-<p>解决std::shared_ptr循环引用问题的钥匙在<code>weak_ptr</code>手上。<br>weak_ptr对象引用资源时不会增加引用计数，但是它能够通过lock()方法来判断它所管理的资源是否被释放。另外很自然地一个问题是：既然weak_ptr不增加资源的引用计数，那么在使用weak_ptr对象的时候，资源被突然释放了怎么办呢？答案是你根本不能直接通过weak_ptr来访问资源。那么如何通过weak_ptr来间接访问资源呢？答案是：在需要访问资源的时候weak_ptr为你生成一个shared_ptr，shared_ptr能够保证在shared_ptr没有被释放之前，其所管理的资源是不会被释放的。创建shared_ptr的方法就是lock()方法。</p>
-<p>细节：shared_ptr实现了operator bool() const方法来判断一个管理的资源是否被释放。</p>
+            <p>celery是用python写的一个异步的任务框架，功能非常强大，具体的说明可以查看官网，这里主要提供点demo让你迅速使用该框架</p>
+<h3 id="环境安装"><a href="#环境安装" class="headerlink" title="环境安装"></a>环境安装</h3><p>默认安装好了redis<br>pip install celery<br>redis 用来作为任务消息的载体</p>
+<h3 id="tasks-py"><a href="#tasks-py" class="headerlink" title="tasks.py"></a>tasks.py</h3> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">import sys</div><div class="line">reload(sys)</div><div class="line">sys.setdefaultencoding(&apos;utf-8’)  # 不加这句话，打印中文log会出错</div><div class="line"> </div><div class="line">from celery import Celery</div><div class="line"> </div><div class="line">celery = Celery(&apos;tasks&apos;, broker=&apos;redis://127.0.0.1:6379/0&apos;) ＃选择本地redis db＝0 作为消息载体, 第一个参数为任务名称</div><div class="line">from celery.utils.log import get_task_logger # 倒入celery 中的log模块</div><div class="line">logger = get_task_logger(__name__)</div><div class="line"> </div><div class="line">@celery.task(bind=True, max_retries=10,</div><div class="line">             default_retry_delay=1 * 6)  # bind 表示开启, max_retries 是重新尝试的次数,default_retry_delay 是默认的间隔时间，尝试的时间</div><div class="line">def exec_task_order_overtime(self, order_id):  # 订单到期后,执行订单失效的任务 </div><div class="line">    try:</div><div class="line">        logger.info(&apos;===================&gt; exec_task_order_overtime order_id=%s&apos; % order_id)</div><div class="line">        success = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)</div><div class="line">        if success is False:</div><div class="line">            logger.error(</div><div class="line">                &apos;&lt;================order_overtime_task_service.process_over_time Failed, order_id=%s&apos; % order_id)</div><div class="line">            raise Return(False)</div><div class="line">        else:</div><div class="line">            logger.info(</div><div class="line">                &apos;&lt;=================order_overtime_task_service.process_over_time Success, order_id=%s&apos; % order_id)</div><div class="line">    except Exception as exc:</div><div class="line">        logger.info(&apos;exec_task_order_overtime retry, order_id=%s&apos; % order_id)</div><div class="line">        raise self.retry(exc=exc, countdown=3)  # 3 秒后继续尝试, 此处的countdown 优先级高于装饰器中的default_retry_delay</div></pre></td></tr></table></figure>
+<p>该文件路径下执行命令， 此后celery 开始作为消费之执行任务<br>$celery worker -A tasks –loglevel=info</p>
+<p>生产者呢？执行下面语句后，redis中的db=0 的 celery key是一个 list 类型， 里面存放着执行任务，如果celery没有开启可以清晰看到；开启了celery可能已经被执行了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">from celery import Celery</div><div class="line"> </div><div class="line">celery = Celery(&apos;tasks&apos;, broker=&apos;redis://127.0.0.1:6379/0&apos;) #消息载体</div><div class="line">push_task_id = celery.send_task(&apos;tasks.exec_task_order_overtime&apos;</div><div class="line">                                , [order_id] # 参数，必须为list，具体可见源码，第三个可以为dict，我们这里没有使用</div><div class="line">                                , countdown=10)  #延时多久执行 推送消息</div></pre></td></tr></table></figure></p>
+<p>疑问1:</p>
+<p>　　有的人会奇怪为什么exec_task_order_overtime有self， 有时候发现没有，区别在与装饰器task，如果@celery.task， 不是装饰器函数调用，则没有self，The bind argument to the task decorator will give access to self (the task type instance)</p>
+<p>疑问2:<br>　　celery 的构造函数的参数，第一个为模块名，也就是本文件名称， 第二个为redis载体地址，看官网介绍<br>The first argument to Celery is the name of the current module, this only needed so names can be automatically generated when the tasks are defined in the <strong>main</strong>module.<br>The second argument is the broker keyword argument, specifying the URL of the message broker you want to use. Here using RabbitMQ (also the default option).</p>
+<p>疑问3：<br>　　celery内存不足时，没有反馈机制：<br>我们知道socket网络传输中，当接受端来不及处理的时候，发送端会阻塞；celery 完全没有相关机制；<br>我们不需要发送端阻塞，当然也不能，但是我们的celery来不及处理时，应该缓存一些在redis中，虽然会造成消息处理不及时，但是也不至于内存不足的问题出现，这里可能需要自己做一些处理；<br>例如：retry次数控制尽可能少，任务执行失败后记录下来，根据业务需要比如10分钟后再次抛入redis消息队列中</p>
 
           
         
@@ -1127,7 +1060,7 @@ ECMAScript就是javascript语言的标准。
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/07/11/libevent学习/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/11/python学习笔记-redis-multi-watch实现锁库存/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -1146,7 +1079,7 @@ ECMAScript就是javascript语言的标准。
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/07/11/libevent学习/" itemprop="url">libevent学习</a></h1>
+                <a class="post-title-link" href="/2016/05/11/python学习笔记-redis-multi-watch实现锁库存/" itemprop="url">python学习笔记-redis multi watch实现锁库存</a></h1>
         
 
         <div class="post-meta">
@@ -1158,8 +1091,8 @@ ECMAScript就是javascript语言的标准。
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-07-11T23:12:55+08:00">
-                2015-07-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-11T00:52:32+08:00">
+                2016-05-11
               </time>
             
 
@@ -1181,8 +1114,8 @@ ECMAScript就是javascript语言的标准。
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
                   </a>
                 </span>
 
@@ -1217,34 +1150,14 @@ ECMAScript就是javascript语言的标准。
       
         
           
-            <p>uscxml基于libevent库，使用到了里面到定时器，socket等功能</p>
-<h3 id="Libevent-亮点："><a href="#Libevent-亮点：" class="headerlink" title="Libevent 亮点："></a>Libevent 亮点：</h3><p>事件驱动（event-driven），高性能;<br>轻量级，专注于网络，不如ACE那么臃肿庞大；<br>跨平台，支持Windows、Linux、*BSD和Mac Os；<br>支持多种I/O多路复用技术， epoll、poll、dev/poll、select和kqueue等；<br>支持I/O，定时器和信号等事件；<br>注册事件优先级；</p>
-<h3 id="Reactor的事件处理机制"><a href="#Reactor的事件处理机制" class="headerlink" title="Reactor的事件处理机制"></a>Reactor的事件处理机制</h3><h4 id="反应机制原理"><a href="#反应机制原理" class="headerlink" title="反应机制原理"></a>反应机制原理</h4><p>首先来回想一下普通函数调用的机制：程序调用某函数?函数执行，程序等待?函数将结果和控制权返回给程序?程序继续处理。</p>
-<p>Reactor释义“反应堆”，是一种事件驱动机制。和普通函数调用的不同之处在于：应用程序不是主动的调用某个API完成处理，而是恰恰相反，Reactor逆置了事件处理流程，<code>应用程序需要提供相应的接口并注册到Reactor上，如果相应的时间发生，Reactor将主动调用应用程序注册的接口</code>，这些接口又称为“回调函数”。使用Libevent也是想Libevent框架注册相应的事件和回调函数；当这些时间发声时，Libevent会调用这些回调函数处理相应的事件（I/O读写、定时和信号）。</p>
-<p> 这个概念非常常见，nodejs的事件机制，python等事件机制（tornado ioloop）c#等委托事件，linux的epoll机制</p>
-<h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><p>1）响应快，不必为单个同步时间所阻塞，虽然Reactor本身依然是同步的；<br>2）编程相对简单，可以最大程度的避免复杂的多线程及同步问题，并且避免了多线程/进程的切换开销；<br>3）可扩展性，可以方便的通过增加Reactor实例个数来充分利用CPU资源；<br>4）可复用性，reactor框架本身与具体事件处理逻辑无关，具有很高的复用性；</p>
-<h3 id="使用libevent"><a href="#使用libevent" class="headerlink" title="使用libevent"></a>使用libevent</h3><h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><p>1）首先初始化libevent库，并保存返回的指针<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">struct event_base * base = event_init();</div></pre></td></tr></table></figure></p>
-<p>实际上这一步相当于初始化一个Reactor实例；在初始化libevent后，就可以注册事件了。</p>
-<p>2）初始化事件event，设置回调函数和关注的事件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">evtimer_set(&amp;ev, timer_cb, NULL);</div></pre></td></tr></table></figure></p>
-<p>事实上这等价于调用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_set(&amp;ev, -1, 0, timer_cb, NULL);</div></pre></td></tr></table></figure></p>
-<p>3）设置event从属的event_base</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_base_set(base, &amp;ev);</div></pre></td></tr></table></figure>
-<p>这一步相当于指明event要注册到哪个event_base实例上；</p>
-<p>4）是正式的添加事件的时候了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_add(&amp;ev, timeout);</div></pre></td></tr></table></figure></p>
-<p>基本信息都已设置完成，只要简单的调用event_add()函数即可完成，其中timeout是定时值；<br>这一步相当于调用Reactor::register_handler()函数注册事件。</p>
-<p>5）程序进入无限循环，等待就绪事件并执行事件处理<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_base_dispatch(base);</div></pre></td></tr></table></figure></p>
-<p>代码实例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">struct event ev;</div><div class="line">struct timeval tv;</div><div class="line">void time_cb(int fd, short event, void *argc)</div><div class="line">&#123;</div><div class="line">    printf(&quot;timer wakeup/n&quot;);</div><div class="line">    event_add(&amp;ev, &amp;tv); // reschedule timer</div><div class="line">&#125;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    struct event_base *base = event_init();</div><div class="line">    tv.tv_sec = 10; // 10s period</div><div class="line">    tv.tv_usec = 0;</div><div class="line">    evtimer_set(&amp;ev, time_cb, NULL);</div><div class="line">    event_add(&amp;ev, &amp;tv);</div><div class="line">    event_base_dispatch(base);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="事件处理流程"><a href="#事件处理流程" class="headerlink" title="事件处理流程"></a>事件处理流程</h4><p>当应用程序向libevent注册一个事件后，libevent内部是怎么样进行处理的呢？下面就给出了这一基本流程。</p>
-<ul>
-<li>首先应用程序准备并初始化event，设置好事件类型和回调函数；这对应于前面第步骤2和3；</li>
-<li>向libevent添加该事件event。对于定时事件，libevent使用一个<code>最小根堆管理</code>，key为超时时间；对于Signal和I/O事件，libevent将其放入到等待链表（wait list）中，这是一个双向链表结构；</li>
-<li>程序调用event_base_dispatch()系列函数进入无限循环，等待事件。</li>
-</ul>
-<p> 以select()函数为例；每次循环前libevent会检查定时事件的最小超时时间tv，根据tv设置select()的最大等待时间，以便于后面及时处理超时事件；</p>
-<p>当select()返回后，首先检查超时事件，然后检查I/O事件；<br>Libevent将所有的就绪事件，放入到激活链表中；<br>然后对激活链表中的事件，调用事件的回调函数执行事件处理；<br><img src="/images/cpp/libevent_1.jpg" alt=""></p>
-<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p>1）头文件<br>主要就是event.h：事件宏定义、接口函数声明，主要结构体event的声明；<br>2）内部头文件<br>xxx-internal.h：内部数据结构和函数，对外不可见，以达到信息隐藏的目的；<br>3）libevent框架<br>event.c：event整体框架的代码实现；<br>4）对系统I/O多路复用机制的封装<br>epoll.c：对epoll的封装；<br>select.c：对select的封装；<br>devpoll.c：对dev/poll的封装;<br>kqueue.c：对kqueue的封装；<br>5）定时事件管理<br>min-heap.h：其实就是一个以时间作为key的小根堆结构；<br>6）信号管理<br>signal.c：对信号事件的处理；<br>7）辅助功能函数<br>evutil.h 和evutil.c：一些辅助功能函数，包括创建socket pair和一些时间操作函数：加、减和比较等。<br>8）日志<br>log.h和log.c：log日志函数<br>9）缓冲区管理<br>evbuffer.c和buffer.c：libevent对缓冲区的封装；<br>10）基本数据结构<br>compat/sys下的两个源文件：queue.h是libevent基本数据结构的实现，包括链表，双向链表，队列等；_libevent_time.h：一些用于时间操作的结构体定义、函数和宏定义；<br>11）实用网络库<br>http和evdns：是基于libevent实现的http服务器和异步dns查询库；</p>
-<h3 id="Timer小根堆"><a href="#Timer小根堆" class="headerlink" title="Timer小根堆"></a>Timer小根堆</h3><p> Libevent使用堆来管理Timer事件，其key值就是事件的超时时间，源代码位于文件min_heap.h中。<br>所有的数据结构书中都有关于堆的详细介绍，向堆中插入、删除元素时间复杂度都是O(lgN)，N为堆中元素的个数，而获取最小key值（小根堆）的复杂度为O(1)。堆是一个完全二叉树，基本存储方式是一个数组。</p>
-<p>学习资料：<br><a href="http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod" target="_blank" rel="external">http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod</a><br><a href="http://libevent.org/" target="_blank" rel="external">http://libevent.org/</a><br><a href="https://www.cnblogs.com/lfsblack/p/5498556.html" target="_blank" rel="external">https://www.cnblogs.com/lfsblack/p/5498556.html</a> （推荐）<br><a href="http://blog.chinaunix.net/uid-8048969-id-5008922.html" target="_blank" rel="external">http://blog.chinaunix.net/uid-8048969-id-5008922.html</a></p>
+            <p>python 关于redis的基本操作网上已经很多了，这里主要介绍点个人觉得有意思的内容1.redis的事务操作以及watch 乐观锁；后面描述2.tornado下异步使用redis的方式</p>
+<p>redis是单进程单线程模型，本身应对外部请求的是单任务的，也是多线程安全的，这个大家都应该知道的， 所以才会经常有人用redis做计数服务。</p>
+<p>首先redis 的事务处理只能使用pipeline：In redis-py MULTI and EXEC can only be used through a Pipeline object.<br><a href="http://stackoverflow.com/questions/31769163/what-are-equivalent-functions-of-multi-and-exec-commands-in-redis-py" target="_blank" rel="external">http://stackoverflow.com/questions/31769163/what-are-equivalent-functions-of-multi-and-exec-commands-in-redis-py</a><br> 　　<br>很多人喜欢在处理电商库存，例如秒杀活动的时候用redis做计数器，不过下面这段代码采用了事务来控制库存，是不是有点问题呢？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">if __name__ == &quot;__main__&quot;:</div><div class="line">    with sms_redis.pipeline() as pipe:</div><div class="line">        while 1:</div><div class="line">            try:</div><div class="line">                # 事务开始</div><div class="line">                pipe.multi()</div><div class="line">                count = int(sms_redis.get(&apos;stock_count&apos;))</div><div class="line">                if count &gt; 0:  # 有库存</div><div class="line">                    pipe.set(&apos;stock_count&apos;, count - 1)</div><div class="line">                # 事务结束</div><div class="line">                pipe.execute()</div><div class="line">                # 把命令推送过去</div><div class="line">                break</div><div class="line">            except Exception:</div><div class="line">                traceback.print_exc()</div><div class="line">                continue</div></pre></td></tr></table></figure></p>
+<p>问题在于误以为pipe.multi() 事务处理执行后，就可以锁住该库存，这里强调下：<br>redis 本身没有悲观锁的概念，也就是说对于客户的是无法锁住redis中的值的，当然你可以通过其它曲径实现，比如SETNX， 这里先不谈；<br>redis 的事务可以认为是一段命令的批量执行和执行结果一次性返还，事务操作本身没有问题，执行过程不会中断，但是在pipe.execute() 的时候事务才真正向redis_server 提交，但是很遗憾在redis_server 执行之前库存都有机会被其它客户端修改，完全起不到锁库存概念；</p>
+<p>那么如何才能实现锁库存呢？watch是一个很好的解决方案：</p>
+<p>watch 字面就是监视的意思，这里可以看做为数据库中乐观锁的概念，谁都可以读，谁都可以修改，但是修改的人必须保证自己watch的数据没有被别人修改过，否则就修改失败了；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">if __name__ == &quot;__main__&quot;:</div><div class="line">    with sms_redis.pipeline() as pipe:</div><div class="line">        while 1:</div><div class="line">            try:</div><div class="line">                #关注一个key</div><div class="line">                pipe.watch(&apos;stock_count’)</div><div class="line">                count = int(pipe.get(&apos;stock_count&apos;))</div><div class="line">                if count &gt; 0:  # 有库存</div><div class="line">                    # 事务开始</div><div class="line">                    pipe.multi()</div><div class="line">                    pipe.set(&apos;stock_count&apos;, count - 1)</div><div class="line">                    # 事务结束</div><div class="line">                    pipe.execute()</div><div class="line">                    # 把命令推送过去</div><div class="line">                break</div><div class="line">            except Exception:</div><div class="line">                traceback.print_exc()</div><div class="line">                continue</div></pre></td></tr></table></figure>
+<p>　<br>如果在watch后值被修改，在执行pipe.execute()的时候会报异常WatchError: Watched variable changed.<br>这里可以简单的实现基于redis中的锁库存的逻辑。</p>
 
           
         
@@ -1288,7 +1201,7 @@ ECMAScript就是javascript语言的标准。
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/07/03/站在对象模型的类端/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/04/11/redis原理分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -1307,7 +1220,7 @@ ECMAScript就是javascript语言的标准。
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/07/03/站在对象模型的类端/" itemprop="url">站在对象模型的类端</a></h1>
+                <a class="post-title-link" href="/2016/04/11/redis原理分析/" itemprop="url">redis原理分析</a></h1>
         
 
         <div class="post-meta">
@@ -1319,8 +1232,8 @@ ECMAScript就是javascript语言的标准。
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-07-03T23:47:56+08:00">
-                2015-07-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-11T23:43:08+08:00">
+                2016-04-11
               </time>
             
 
@@ -1342,8 +1255,8 @@ ECMAScript就是javascript语言的标准。
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
+                  <a href="/categories/运维/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
                   </a>
                 </span>
 
@@ -1378,54 +1291,28 @@ ECMAScript就是javascript语言的标准。
       
         
           
-            <h2 id="模板的实例化"><a href="#模板的实例化" class="headerlink" title="模板的实例化"></a>模板的实例化</h2><p>一个模板只有被使用到，才会被实例化，否则不会被实例化。对于一个实例化后的模板来说，未被调用的成员函数将不会被实例化，只有成员函数被使用时，C++标准才要求实例化他们。其原因，有两点：</p>
+            <p>edis的使用大家都很熟悉，可能除了watch 锁，pipeline，订阅发布用的少点，不过网上也有大量的教材和例子，这里想聊聊redis中的一些原理。</p>
+<h3 id="redis-提供了两种持久化方式，一种是RDB，一种是AOF；"><a href="#redis-提供了两种持久化方式，一种是RDB，一种是AOF；" class="headerlink" title="redis 提供了两种持久化方式，一种是RDB，一种是AOF；"></a>redis 提供了两种持久化方式，一种是RDB，一种是AOF；</h3><p>RDB 是指在制定的时间间隔生成数据集的快照，<br>AOF持久化记录服务器执行的所有写命令，并在服务器重启时，重新执行这些命令来恢复数据</p>
+<h3 id="redis-启动过程"><a href="#redis-启动过程" class="headerlink" title="redis 启动过程"></a>redis 启动过程</h3><p>-（1）初始化服务器变量，设置服务器默认配置<br>-（2）读取配置文件的配置，覆盖默认配置<br>-（3）初始化服务器功能模块<br>-（4）从RDB或者AOF中重载数据<br>-（5）网络监听前的准备工作<br>-（6）开启事件监听，循环接受客户端请求</p>
+<p><img src="https://images2015.cnblogs.com/blog/564050/201611/564050-20161120194610342-913835037.png" alt=""></p>
+<h3 id="redis持久化方案分析"><a href="#redis持久化方案分析" class="headerlink" title="redis持久化方案分析"></a>redis持久化方案分析</h3><h4 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h4><p>将内存中的数据快照保持到磁盘中，redis重启的时候重新载入RDB文件来还原数据库。<br>a）RDB 保存<br> 如果已经存在RDB文件，会用新文件替换旧文件， 在保存RDB的过程中，redis主进程阻塞，无法响应客户端请求。<br>为了避免阻塞主线程，redis提供了rdbSaveBackground函数，新建子进程调用RDB save，完成RDB保存后再发生消息通知主进程。在此期间主进程可以继续处理新的客户端请求。<br>b）RDB读取<br>redis启动的时候会根据配置的持久化模式，决定是否读取RDB文件，并将其保存到内存中。<br>在此过程中，每载入1000个key，就处理一次已经等待处理的客户端请求，不过目前只能处理订阅功能的命令， 其他一律返回错误信息。因为发布订阅功能不需要写入数据，不需要保存在redis数据库中</p>
+<p>缺点：<br>1.保存频率过低，宕机时会导致数据丢失<br>2.保存频率过高，可能由于数据集过大导致操作耗时，短时间无法处理客户端请求</p>
+<h4 id="AOF持久化"><a href="#AOF持久化" class="headerlink" title="AOF持久化"></a>AOF持久化</h4><p>将所有的写命令记录下来，达到记录数据库状态的目的</p>
 <ul>
-<li>空间和时间效率的考虑，如果模板类中有100个成员函数，对某个特定类型只有2个函数会被使用，针对另一个特定类型只会使用3个，那么如果将剩余的195个函数实例化将浪费大量的时间和空间。</li>
-<li>使模板有最大的适用性。并不是实例化出来的每个类型都支持所有模板的全部成员函数所需要的运算符。如果只实例化那些真正被使用的成员函数的话，那么原本在编译期有错误的类型也能够得到支持。</li>
+<li>保存<br>（1）将客户端请求的命令转化为网络协议格式<br>（2）将协议内容字符串追加到变量server.aof_buf 中<br>（3）当AOF系统达到设定的条件时，会调用aof_fsync将数据写入磁盘<pre><code> 这里的设定的条件，就是AOF性能的关键，其主要有3种类型
+1.AOF_FSYNC_NO:不保存
+     该过程中命令只会追加到server.aof_buf中，但是不会执行写入磁盘，当redis被正常关闭，AOF功能关闭，或者buf 缓存写满了，或者定时保存操作执行，这3种情况下都会阻塞主进程，导致客户端请求失败。
+2.AOF_FSYNC_EVERYSECS 每秒保存一次
+     后台子进程调用写入保存，不会阻塞主进程，发送宕机最大丢失数据2s内
+3.AOF_FSYNC_ALWAYS 没执行一个命令保存一次
+     保证每条命令都保存，数据不丢失，但是会影响性能，因为每一次操作都会阻塞主进程
+</code></pre></li>
 </ul>
-<p>可以明确的要求在一个文件中将整个类模板实例化：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">template class Point3d&lt;float&gt;;</div></pre></td></tr></table></figure>
-<p>也可以显示指定实例化一个模板类的成员函数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">template float Point3d&lt;float&gt;::X() const;</div></pre></td></tr></table></figure>
-<p>或是针对一个模板函数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">template Point3d&lt;float&gt; operator+(</div><div class="line">    const Point3d&lt;float&gt;&amp;, const Point3d&lt;float&gt;&amp; );</div></pre></td></tr></table></figure>
-<p>模板的错误报告，使用模板并遇到错误的大概都深有体会，那就是一个灾难。</p>
-<p>模板的名称决议</p>
-<p>一开始先要区分两种意义,一种是C++ 标准所谓的“scope of the template definition”，直译就是“定义模板的范围”。另一种是C++标准所谓的“scope of the temlate instantiation”，可以直译为“实例化模板的范围”。</p>
-<p>第一种情况：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// scope of the template definition</div><div class="line">extern double foo ( double );  </div><div class="line">    </div><div class="line">template &lt; class type &gt;  </div><div class="line">class ScopeRules  </div><div class="line">&#123;  </div><div class="line">public:  </div><div class="line">    void invariant() &#123;  </div><div class="line">        _member = foo( _val );  </div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">    type type_dependent() &#123;  </div><div class="line">        return foo( _member );  </div><div class="line">    &#125;  </div><div class="line">    // ...  </div><div class="line">private:  </div><div class="line">    int _val;  </div><div class="line">    type _member;  </div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>第二种情况:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//scope of the template instantiation  </div><div class="line">extern int foo( int );  </div><div class="line">// ...  </div><div class="line">ScopeRules&lt; int &gt; sr0;  </div><div class="line">sr0.invariant();</div><div class="line">sr0.type_dependent();</div></pre></td></tr></table></figure>
-<p>在“scope of the template instantiation ”中 两个foo()都声明在此 scope中。猜猜sr0.invariant() 中调用的是哪个foo()函数，出乎意料，实际调用的是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern double foo ( double );</div></pre></td></tr></table></figure></p>
-<p>看上去，应该调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern int foo( int );</div></pre></td></tr></table></figure></p>
-<p>毕竟，_val 的类型是 int 类型，它们才完全匹配。而 sr0.type_dependent()中调用的却在我们意料之中，调用的是:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern int foo( int );</div></pre></td></tr></table></figure></p>
-<p>诸上所述,看上去或合理或不合理的选择，原因在于:</p>
-<blockquote>
-<p>template 之中， 对于一个非成员名字的决议结果是根据这个 name的使用是否与“用以实例化该模板的参数类型”有关来决定name。如果其使用互不相干，那么就以“scope of the template dclaration”来决定name。如果其使用的互相关联，那么就以“scope of the template instantiation”来决定name.</p>
-</blockquote>
-<p>对于上面这一段话我的理解比较粗鲁且直接：在模板中，一个非成员名字的决议在于它适不适合在当前决议，当它完全与实例化模板的参数的类型无关的时候，就可以在当前决议下来；如果有关的话，则认为不适合在当前决议下来，将被推迟到实例化这个模板实例化的时候来决议。为什么以与实例化的类型相关不相关来区别适不适合当前决议？一个与实例化类型无关的名字，如果推迟到实例化的时候来决议，将使模板的设计者无所适从，一个模板的设计者能容忍一个与实例化类型无关的名字在他的模板中表现出当前不具有的含义吗？当然不行，那种场面，估计没有一个模板设计者能够hold住。相反，对于一个与实例化类型有关的名字，天生就应该可以根据实例化模板的不同类型表现出不同含义，如果其名字早在模板定义时被决议出来，那就该轮到模板的使用者hold不住了。当然所上完全属一家之言，呸，连一家之言都不算，怎么敢自称“家”。如有不同理解，可当我一派胡言，如果你聊发善心，可以对我赐教一二，当聆听受教。</p>
-<h2 id="异常处理-Exception-Handling"><a href="#异常处理-Exception-Handling" class="headerlink" title="异常处理(Exception Handling)"></a>异常处理(Exception Handling)</h2><p>C++的 exception handling 有三个主要的子句组成：</p>
-<ul>
-<li>一个throw子句。它在程序的某处丢出一个exception，被丢出的exception可以是内建类型，也可以是自定义类型。——抛出exception组件。</li>
-<li>一个或多个 catch 子句。 每一个 catch 子句都是一个 exception handler。每个子句可以处理一种类型(也包括其继承类)的exception，在大括号中包含处理代码。——专治各种不服组件。每一个catch子句都可以用来处理某种exception。</li>
-<li>一个 try 区段。用大括号包围一系列语句，这些语句有可能抛出exception，从而引发catch 子句的作用。——逮捕各种 exception 组件。</li>
-</ul>
-<p>当一个 exception 被抛出后，控制权从函数调用中被释放，寻找一个吻合的catch子句，如果各层调用都没有吻合的catch子句，terminate()将被调用。在控制权被放弃后，堆栈中的每一个函数调用也被出栈，这个过程称为unwinding the stack(关于 stack unwinding ,可以参考《C++ Primer》第四版之 17.1.2 Stack Unwinding)，在每一个函数被出栈之前,其局部变量会被摧毁。</p>
-<p>异常抛出有可能带来一些问题，比方在一块内存的lock和unlock内存之间，或是在new和delete之间的代码抛出了异常，那么将导致本该进行的unlock或delete操作不能进行。解决方法之一是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">void  mumble( void *arena )  </div><div class="line">&#123;  </div><div class="line">    Point *p;  </div><div class="line">    p = new Point;  </div><div class="line">    try &#123;  </div><div class="line">        smLock( arena );  </div><div class="line">        // ...  </div><div class="line">    &#125;  </div><div class="line">    catch ( ... ) &#123;  </div><div class="line">        smUnLock( arena );  </div><div class="line">        delete p;  </div><div class="line">        throw;  </div><div class="line">    &#125;  </div><div class="line">    smUnLock( arena );  </div><div class="line">    delete p;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在函数被出栈之前，先截住异常，在unlock和delete之后再将异常原样抛出。new expression的调用不用包括在try块之内是因为，不论在new operator调用时还是构造函数调用时抛出异常，都会在抛出异常之前释放已分配好的资源，所以不用再调用delete 。</p>
-<p>另一个办法是，将这些资源管理的问题，封装在一个类对象中，由析构函数释放资源，这样就不需要对代码进行上面那样的处理——利用函数释放控制权之前会析构所有局部对象的原理。</p>
-<p>在对单个对象构造过程中抛出异常，会只调用已经构造好的base class object或member class object的析构函数。同样的道理，适用于数组身上，如果在调用构造函数过程中抛出异常，那么之前所有被构造好的元素的析构函数被调用，对于抛出异常的该元素，则遵循关于单个对象构造的原则，然后释放已经分配好的内存。</p>
-<p>只有在一个catch子句评估完毕并且知道它不会再抛出exception后，真正的exception object才会被释放。关于 catch子句使用引用还是使用对象来捕获异常，省略。</p>
-<h2 id="执行期类型识别（Runtime-Type-Identification-RTTI）"><a href="#执行期类型识别（Runtime-Type-Identification-RTTI）" class="headerlink" title="执行期类型识别（Runtime Type Identification RTTI）"></a>执行期类型识别（Runtime Type Identification RTTI）</h2><ul>
-<li>RTTI 只支持多态类，也就是说没有定义虚函数是的类是不能进行 RTTI的。</li>
-<li><p>对指针进行dynamic_cast失败会返回NULL ,而对引用的话，识别会抛出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bad_cast exception。</div></pre></td></tr></table></figure>
-</li>
-<li><p>typeid 可以返回const type_info&amp;，用以获取类型信息。<br>关于1是因为RTTI的实现是通过vptr来获取存储在虚函数表中的type_info* ，事实上为非多态类提供RTTI,也没有多大意义。 2的原因在于指针可以被赋值为0，以表示 no object，但是引用不行。关于3，虽然第一点指出RTTI只支持多态类，但typeid和type_info同样可用于内建类型及所有非多态类。与多态类的差别在于，非多态类的type_info对象是静态取得(所以不能叫“执行期类型识别”)，而多态类的是在执行期获得。</p>
-</li>
-</ul>
-<p>参考：深度探索C++对象模型</p>
+<p>AOF提供了重写机制，可以减少命令</p>
+<h3 id="redis-rehash"><a href="#redis-rehash" class="headerlink" title="redis rehash"></a>redis rehash</h3><p>redis 的rehash机制和php的rehash机制不相同；<br>php使用阻塞型rehash，在此期间不能对hash 表做任何操作，而redis不能，redis操作频繁，对性能要求高。</p>
+<p>redis 采用渐进式rehash方式<br>redis中会保存两个hash数组，正常的操作只会针对h[0],h[1]做rehash之用；<br>在rehash过程中，所有的写都切换到h[1],读操作先针对h[0],都去不到再去都去h[1],</p>
+<p><img src="https://images2015.cnblogs.com/blog/564050/201611/564050-20161120194646263-783016722.png" alt=""></p>
+<p>参考<a href="http://blog.csdn.net/a600423444/article/details/8944601" target="_blank" rel="external">http://blog.csdn.net/a600423444/article/details/8944601</a></p>
 
           
         
@@ -1469,7 +1356,7 @@ ECMAScript就是javascript语言的标准。
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/04/22/构造、解构、拷贝 语意学/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/04/09/react-js-生命周期浅读/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -1488,7 +1375,7 @@ ECMAScript就是javascript语言的标准。
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/04/22/构造、解构、拷贝 语意学/" itemprop="url">构造、解构、拷贝 语意学</a></h1>
+                <a class="post-title-link" href="/2016/04/09/react-js-生命周期浅读/" itemprop="url">react js 生命周期浅读</a></h1>
         
 
         <div class="post-meta">
@@ -1500,8 +1387,8 @@ ECMAScript就是javascript语言的标准。
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-04-22T23:41:22+08:00">
-                2015-04-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-09T00:32:32+08:00">
+                2016-04-09
               </time>
             
 
@@ -1523,8 +1410,8 @@ ECMAScript就是javascript语言的标准。
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
                   </a>
                 </span>
 
@@ -1559,83 +1446,150 @@ ECMAScript就是javascript语言的标准。
       
         
           
-            <h2 id="几点类设计原则"><a href="#几点类设计原则" class="headerlink" title="几点类设计原则"></a>几点类设计原则</h2><ul>
-<li><p>即使是一个抽象基类，如果它有非静态数据成员，也应该给它提供一个带参数的构造函数，来初始化它的数据成员。或许你可以通过其派生类来初始化它的数据成员（假如nostatic data member为publish或protected）,但这样做的后果则是破坏了数据的封装性，使类的维护和修改更加困难。由此引申，类的data member应当被初始化，且只在其构造函数或其member function中初始化。</p>
-</li>
-<li><p>不要将析构函数设计为纯虚的，这不是一个好的设计。将析构函数设计为纯虚函数意味着，即使纯虚函数在语法上允许我们只声明而不定义纯虚函数，但还是必须实现该纯虚析构函数，否则它所有的继承类都将遇到链接错误。一个不能派生继承类的抽象类有什么存在的意义？必须定义纯虚析构函数，而不能仅仅声明它的原因在于：每一个继承类的析构函数会被编译器加以扩展，以静态调用方式其每一个基类的析构函数（假如有的话，不论是显示的还是编译器合成的），所以只要任何一个基类的析构函数缺乏定义，就会导致链接失败。矛盾就在这里，纯虚函数的语法，允许只声明而不定义纯虚析构函数，而编译器则死脑筋的看到一个其基类的析构函数声明，则去调用它的实体，而不管它有没有被定义。</p>
-</li>
-<li><p>真的必要的时候才使用虚函数，不要滥用虚函数。虚函数意味着不小的成本，编译很可能给你的类带来膨胀效应：</p>
+            <p>react  redux 结合是目前比较流行的前端开发框架，主要基于react 中的state 树为数据模型，借助redux 来控制 state 数据；下面直接从代码层面解析该框架中一个react 组件 成员函数的生命周期；</p>
+<p>先给出一个redux 的数据流 模型图， 只关心react 生命周期的可以忽略；<br><img src="https://images2015.cnblogs.com/blog/564050/201611/564050-20161109010159092-764916187.png" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Created by suyuan on 16/4/9.</div><div class="line"> */</div><div class="line"></div><div class="line">import &apos;style/page/PostPage.scss&apos;</div><div class="line">import &#123;dispatch, changePostDataAction, getPostsData, updatePostsData&#125; from &apos;action&apos; // 定义了所有的action</div><div class="line">import Button from &apos;component/Button&apos; // 组件</div><div class="line">import Post from &apos;component/Post&apos; // 单片帖子组件</div><div class="line"></div><div class="line">// 定义自己的页面,或者组件 PostPage, 下面安装调用次序给出了每个成员函数的解释,</div><div class="line">class PostsPage extends React.Component &#123; //继承后必须实现父类的方法 render</div><div class="line"></div><div class="line">    //--------------Mounting(理解为第一次调用组件渲染)方法，目前有4个 constructor, componentWillMount, render, componentDidMount，</div><div class="line"></div><div class="line">    // 1.1 构造</div><div class="line">    // 在第一次构造组件时调用，继承父类，所以必须有第一句super(props),否则props不会传入父类，可能引起bug</div><div class="line">    // 用途:一般用来初始化状态和绑定函数, 每个组件自己拥有一个state，不同的组件之间互相不影响；</div><div class="line">    // 这里我们没有在构造函数中初始化 state,是因为用了redux 框架,真正的state 在外围的store中管理,传入的数据都在props中</div><div class="line">    constructor(props) &#123;</div><div class="line">        super(props);</div><div class="line">    &#125;</div><div class="line">    // 1.2 将要组装(翻译不准确)</div><div class="line">    // 在render 之前调用，在这个方法中调用setState()不会重新渲染组建;</div><div class="line">    // 一般不需要在该方法中做做操，用constrcutor的功能就可以了, 此方法中避免引入任何的副作用</div><div class="line">    componentWillMount() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 1.3 渲染</div><div class="line">    // 检查 props 或者state， 然后返回一个react对象,或者又其它组件组成的对象；也可以返回 null 或者false 表明不做渲染；</div><div class="line">    // 该函数不可以有副作用，意思就是不能修改state,即不可以调用setState()，</div><div class="line">    // 不可以和浏览器进行交互, 如果需要和浏览器交互，比如获取cookie 数据，应该在其它的函数中，比如componentWillMount 或者componentDidMount</div><div class="line">    render()&#123;</div><div class="line">        return (&lt;div className=&quot;post-parent&quot;&gt;</div><div class="line">                    &lt;h2&gt;帖子&lt;/h2&gt;</div><div class="line">                    &#123;this.props.posts_data.map((item, index, items)=&gt;&#123;</div><div class="line">                        return (&lt;Post index=&#123;index&#125; title=&#123;item.title&#125; uri=&#123;item.uri&#125; image=&#123;item.image&#125; type=&#123;item.type&#125; onDataChange=&#123;(post)=&gt;this.onChange(index,post)&#125; /&gt;)</div><div class="line">                    &#125;)&#125;</div><div class="line">                    &lt;div className=&quot;btn&quot;&gt;</div><div class="line">                        &lt;Button type=&quot;secondary&quot; onClick=&#123;this.onUpdate&#125;&gt;更新&lt;/Button&gt;</div><div class="line">                    &lt;/div&gt;</div><div class="line">                &lt;/div&gt;)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 自定义的内部函数,当页面的数据被用户修改后,发送changeIconDataAction, 在reducer 中更新状态,这里不是本节重点,暂时略过</div><div class="line">    onChange=(i, post)=&gt;&#123;</div><div class="line">        dispatch(changePostDataAction(i, post));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 自定义内部函数, 当需要保存修改过的信息时,调用</div><div class="line">    onUpdate=()=&gt;&#123;</div><div class="line">        dispatch(updatePostsData(this.props.posts_data));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 1.4 完成组装后</div><div class="line">    // 初始化后,渲染后才触发, react 中继承的方法有一个特点，Did是表示在动作完成后执行的函数， will是指在动作完成前执行的函数</div><div class="line">    // 这个方法很有用， 一般进行网络请求获取数据在这里进行，里面的setState 会导致render 重新执行</div><div class="line">    componentDidMount() &#123;</div><div class="line">        dispatch(getPostsData()); // 发出post 请求帖子数据, 这里的action 发出后会去做post网络请求, 一般由中间件完成post请求</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //-----到这里整个页面自动的渲染工作就结束了,后面当对页面做一些数据修改的操作,会用到下面的成员函数</div><div class="line">    //-----以下称为updating方法, 当改变了props 或者state 后，下面这些方法会被执行</div><div class="line"></div><div class="line">    //2.1 接受props前</div><div class="line">    // 每次接受新的props触发, 这里有个注意点,state发生变化后是不会触发函数调用的,该函数调用关心的是props,</div><div class="line">    // 注意：在接受到新的props 后，如果你需要更新state， 可以在此处执行setState， 这里可以看作完成状态变化的工作</div><div class="line">    // state 和props 可以做个理解,props 是父组件传给自己的参数,但是自己也可以维护一个state, 部分数据用props, 部分数据用state, 比如计算props里面的post 数量放在state中</div><div class="line">    componentWillReceiveProps(nextProps) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //2.2 是否需要重新渲染</div><div class="line">    // 如果该返回false， render将不会被调用，表示组件不需要更新, 默认情况下每次state变化后返回true， 初始化渲染或者forceUpdate 的时候是不会调用该成员函数</div><div class="line">    // 当返回false的时候，子组件的state变化还是会继续渲染； 但是本组件的 componentWillUpdate(),render(), and componentDidUpdate() 不会被调用</div><div class="line">    shouComponentUpdate(nextProps, nextState)&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 2.3 将要重新渲染</div><div class="line">    // 第一次初始渲染的时候不会调用，当接受到新的 props 或者state的时候，使用该方法来做更新组件前的准备工作</div><div class="line">    // 注意，在这里不要调用this.setState(), 如果需要更新state，在 componentWillReceiveProps 中调用，我的理解是 此时的nextState 已经ok， 就不要再改变了</div><div class="line">    componentWillUpdate(nextProps, nextState)&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 2.4 render() 重新执行1.3 的渲染函数</div><div class="line"></div><div class="line">    // 2.5 组件更新后</div><div class="line">    componentDidUpdate()&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 2.* Unmounting 当改组件从DOM 中移除时，调用此方法</div><div class="line">    componentWillUnmount()&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /* OtherApis 每个组件都提供了一些成员函数调用接口</div><div class="line">    1.setState(nextState, callback) 第一个参数是需要更新的状态，第二个参数是一个回调，表示状态更新完成后执行动作，一般不需要，直接用componentDidUpdate 代替回调函数作用即可</div><div class="line">    注意：setState 类似一个异步接口，不会立即修改state，这里不实现同步的原因应该是 setState 里面是一个批处理，以改善setState的性能</div><div class="line">         setState 一定会重新render组件，所以要保证需要的时候才调用，或者通过控制shouldComponentUpdate() 返回bool值,避免无意义刷新</div><div class="line"></div><div class="line">    2.forceUpdate() 如果组件依赖与其它数据，此时希望强制重新渲染，调用后跳过shouldComponentUpdate(), 其它生命周期的函数正常调用</div><div class="line">    */</div><div class="line"></div><div class="line">    /* Class 成员属性</div><div class="line">        1.defaultProps 默认属性值，</div><div class="line">        2.displayName 一般不关心,react自动赋值</div><div class="line">        3.propTypes 需要属性类型</div><div class="line">    */</div><div class="line"></div><div class="line">    /* 对象实例 成员属性, 所有有意义的数据都在他们里面, 设计好每个组件的state和props 是成功的第一步</div><div class="line">        1.props</div><div class="line">        2.state</div><div class="line">    */</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">// redux 会自动调用,通过下面的connect 绑定到组件上, 所有的reducer 操作后返回的newstate 都会进入这个mapStateToProps 函数,</div><div class="line">// 次函数把感兴趣的数据取出来, 以props的形式给绑定的组件</div><div class="line">const mapStateToProps=(state, props)=&gt;&#123;</div><div class="line">    var posts_data = state[&apos;api&apos;][APIS.HOME.GET_POSTS_DATA] || [</div><div class="line">        &#123;</div><div class="line">            &apos;id&apos;: 1,</div><div class="line">            &apos;title&apos;: &apos;&apos;,</div><div class="line">            &apos;type&apos;: 1,</div><div class="line">            &apos;url&apos;: &apos;&apos;,</div><div class="line">            &apos;icon&apos;: &apos;&apos;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">            &apos;id&apos;: 2,</div><div class="line">            &apos;title&apos;: &apos;&apos;,</div><div class="line">            &apos;type&apos;: 1,</div><div class="line">            &apos;url&apos;: &apos;&apos;,</div><div class="line">            &apos;icon&apos;: &apos;&apos;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">            &apos;id&apos;: 3,</div><div class="line">            &apos;title&apos;: &apos;&apos;,</div><div class="line">            &apos;type&apos;: 1,</div><div class="line">            &apos;url&apos;: &apos;&apos;,</div><div class="line">            &apos;icon&apos;: &apos;&apos;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">            &apos;id&apos;: 4,</div><div class="line">            &apos;title&apos;: &apos;&apos;,</div><div class="line">            &apos;type&apos;: 1,</div><div class="line">            &apos;url&apos;: &apos;&apos;,</div><div class="line">            &apos;icon&apos;: &apos;&apos;</div><div class="line">        &#125;,</div><div class="line">    ];</div><div class="line">    // 注意使用切片操作，这样才能更新 render，不然内容地址不变，里面的内容变了也不会刷新， 感觉这是redux 的坑</div><div class="line">    return Object.assign(&#123;&#125;, &#123;&apos;post_data&apos;: posts_data.slice()&#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// redux 框架中非常重要的 connect 函数, mapStateToProps映射函数绑定到组件, 组件接受store的影响, store 通过reducer 创建出来, reducer 接受 action 处理state</div><div class="line">export default connect(mapStateToProps)(PostsPage);</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/28/python学习笔记-元类-metaclass/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="suyuan的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/28/python学习笔记-元类-metaclass/" itemprop="url">python学习笔记-元类__metaclass__</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-28T00:05:06+08:00">
+                2016-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>type 其实就是元类，type 是python 背后创建所有对象的元类</p>
+<p>python 中的类的创建规则：<br>假设创建Foo 这个类<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">class Foo(Bar):</div><div class="line">　　def __init__():</div><div class="line">　　　　pass</div></pre></td></tr></table></figure></p>
 <ul>
-<li>每一个对象要多负担一个word的vptr。</li>
-<li>给每一个构造函数（不论是显示的还是编译器合成的），插入一些代码来初始化vptr，这些代码必须被放在所有基类构造函数的调用之后，但需在任意用户代码之前。没有构造函数则需要合成，并插入代码。</li>
-<li>合成一个拷贝构造函数和一个复制操作符（如果没有的话），并插入对vptr的初始化代码，有的话也需要插入vptr的初始化代码。</li>
-<li>意味着，如果具有bitwise语意，将不再具有，然后是变大的对象、没有那么高效的构造函数，没有那么高效的复制控制。</li>
+<li>Foo中有<strong>metaclass</strong>这个属性吗？如果有，Python会在内存中通过<strong>metaclass</strong>创建一个名字为Foo的类对象，他是一个类，但是本身类就是对象，一个python文件模块也属于一个对象。<br>如果Python没有找到<strong>metaclass</strong>，它会继续在Bar（父类）中寻找<strong>metaclass</strong>属性，并尝试做和前面同样的操作。</li>
+<li>如果Python在任何父类中都找不到<strong>metaclass</strong>，它就会在模块层次中去寻找<strong>metaclass</strong>，并尝试做同样的操作。</li>
+<li>如果还是找不到<strong>metaclass</strong>,Python就会用内置的type来创建这个类对象。</li>
 </ul>
-</li>
-<li><p>不能决定一个虚函数是否需要 const ，那么就不要它。</p>
-</li>
-<li><p>决不在构造函数或析构函数中使用虚函数机制。在构造函数中，每次调用虚函数会被决议为当前构造函数所对应类的虚函数实体，虚函数机制并不起作用。当一个base类的构造函数含有对虚函数vf()的调用，当其派生类derived的构造函数调用基类base的构造函数的时候，其中调用的虚函数vf()是base中的实体，而不是derived中的实体。这是由vptr初始化的位置决定的——在所有基类构造函数调用之后，在程序员供应的代码或是成员初始化队列之前。因构造函数的调用顺序是：有根源到末端，由内而外，所以对象的构造过程可以看成是，从构建一个最基础的对象开始，一步步构建成一个目标对象。析构函数则有着与构造相反的顺序，因此在构造或析构函数中使用虚函数机制，往往不是程序员的意图。若要在构造函数或析构函数中调用虚函数，应当直接以静态方式调用，而不要通过虚函数机制。</p>
-</li>
-</ul>
-<h2 id="构造、复制、析构语意学"><a href="#构造、复制、析构语意学" class="headerlink" title="构造、复制、析构语意学"></a>构造、复制、析构语意学</h2><p>一种所谓的Plain OI’Data声明形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">struct Point &#123;</div><div class="line">    float x,y,z;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>概念上来讲，对于一段这样的C++代码,编译器会为之合成一个默认构造函数、复制构造函数、析构函数、赋值操作符。然而实际上编译器会分析这段代码，并给Point贴上Plain OI’Data标签。编译器在此后对于Point的处理与在C中完全一样,也就是说上述的函数都不会被合成。可见概念上应当由编译器合成的函数，并不一定会合成，编译器只有在必要的时候才会合成它们。由此一来，原本在观念上应该调用这些函数的地方实质上不会调用，而是用其它的方法来完成上面的功能，比方复制控制会用bitwise copy。</p>
-<h3 id="对象构造语意学"><a href="#对象构造语意学" class="headerlink" title="对象构造语意学"></a>对象构造语意学</h3><h3 id="无继承情况下的对象构造：略。"><a href="#无继承情况下的对象构造：略。" class="headerlink" title="无继承情况下的对象构造：略。"></a>无继承情况下的对象构造：略。</h3><h4 id="单继承体系下的对象构造"><a href="#单继承体系下的对象构造" class="headerlink" title="单继承体系下的对象构造"></a>单继承体系下的对象构造</h4><p>对于简单定义的一个对象T object;,很明显它的默认构造函数会被调用（被编译器合成的或用户提供的）。但是一个构造函数究竟做了什么，就显得比较复杂了——编译器给了它很多的隐藏代码。编译器一般会做如下扩充操作：</p>
-<ul>
-<li><p>调用所有虚基类的构造函数，从左到右，从最深到最浅：</p>
-<ul>
-<li>如果该类被列于成员初始化列表中，任何明确明确指定的参数，都应该被传递过来。若没有列入成员初始化列表中，虚基类的一个默认构造函数被调用（有的话）。</li>
-<li>此外，要保证虚基类的偏移量在执行期可存取，对于使用vbptr来实现虚基类的编译器来说，满足这点要求就是对vbptr的初始化。</li>
-<li>然而，只有在类对象代表着“most-derived class”时，这些构造函数才可能会被调用。一些支持这个行为的代码会被放进去^注2（直观点说就是，虚基类的构造由最外层类控制)。</li>
-</ul>
-</li>
-<li><p>调用所有基类构造函数，依声明顺序：</p>
-<ul>
-<li>如果该基类被列入了成员初始化队列，那么所有明确指定的参数，应该被传递过来。</li>
-<li>没有列入的话，那么调用其默认构造函数，如果有的话。</li>
-<li>如果该基类是第二顺位或之后的基类，this 指针必须被调整。</li>
-</ul>
-</li>
-<li><p>正确初始化vptr,如果有的话。</p>
-</li>
-<li>调用没有出现在初始化成员列表中的member object的默认构造函数，如果有的话。</li>
-<li>记录在成员初始化队列中的数据成员初始化操作以声明的顺序被放进构造函数中。</li>
-</ul>
-<h4 id="虚拟继承下的构造抑制"><a href="#虚拟继承下的构造抑制" class="headerlink" title="虚拟继承下的构造抑制"></a>虚拟继承下的构造抑制</h4><p>有如下继承体系：</p>
-<p><img src="/images/cpp/cpp_10.png" alt=""></p>
-<p>根据c++ 语法，Point 的初始化应有most-derived class来施行。也就是说当Vertex3d为most-derived class的时候，应当由它的构造函数来调用Point的构造函数初始化Point子对象，Vertex3d的子对象的构造函数对于Point的调用则应当抑制。如果没有抑制会怎么样?当我们定义Vertex3d cv;时，Vertex3d的构造函数中调用Point的构造函数、而随之调用它的子对象，Point3d和Vertex的<br>构造函数中也调用了Point的构造函数。先不说，对于同一个子对象进行三次初始化是否有效率，更重要的是，这将不可避免的带来错误。由Vertex3d指定的子对象Point的值，会被覆盖掉。</p>
-<p>编译器通常使用一个条件变量来表示是否为most-derived class,各构造函数根据这个条件变量来决定是否调用虚基类的构造函数，因此通过控制这个条件变量，就可以抑制非most-derived class调用虚基类的构造函数。当然也有其它的方法来做同样的事。</p>
-<h3 id="对象复制语意学"><a href="#对象复制语意学" class="headerlink" title="对象复制语意学"></a>对象复制语意学</h3><p>设计一个类，并考虑到要以一个对象指定给另一个对象时，有三种选择：</p>
-<ul>
-<li>什么都不做，采用编译器提供默认行为（bitwise copy或者由编译器合成一个）。</li>
-<li>自己提供一个赋值运算符操作。</li>
-<li>明确拒绝将一个对象指定给另一个对象。<br>对于第三点，只要将赋值操作符声明为private，且不定义它就可以了。对于第二点，只有在第一点的行为不安全或不正确，或你特别想往其中插入点东西的时候。</li>
-</ul>
-<p>以下四种情况 copy assignment operator(还是用它的英文名，感觉顺畅点)，不具有bitwise copy语意，也就是说这些情况下，编译器要合成copy assignmentoperator而不能依靠bitwise copy来完成赋值操作，这四种情况与构造函数、拷贝构造函数的情况类似，原因可以参考它们的。四种情况如下：</p>
-<ul>
-<li>类包含有定义了copy assignment operator的class object成员。</li>
-<li>类的基类有copy assignment operator。</li>
-<li>类声明有任何虚函数的时候（问题同样会出现在由继承类对象向基类对象拷贝的时候）。</li>
-<li>当class继承体系中有虚基类时。<br>在虚拟继承情况下，copy assignment opertator会遇到一个不可避免的问题，virtual base class subobject的复制行为会发生多次，与前面说到的在虚拟继承情况下虚基类被构造多次是一个意思，不同的是在这里不能抑制非most-derivedclass 对virtual base class 的赋值行为。</li>
-</ul>
-<p>安全的做法是把虚基类的赋值放在最后，避免被覆盖。</p>
-<h3 id="对象析构语意学"><a href="#对象析构语意学" class="headerlink" title="对象析构语意学"></a>对象析构语意学</h3><p>只有在基类拥有析构函数，或者object member拥有析构函数的时候，编译器才为类合成析构函数，否则都被视为不需要。</p>
-<p>析构的顺序正好与构造相反：</p>
-<ul>
-<li>本身的析构函数被执行。</li>
-<li>以声明的相反顺序调用member object 的析构函数，如果有的话。</li>
-<li>重设vptr 指向适当的基类的虚函数表，如果有的话。</li>
-<li>以声明相反的顺序调用上一层的析构函数，如果有的话。</li>
-<li>如果当前类是 most-derivedclass，那么以构造的相反顺序调用虚基类的析构函数。</li>
-</ul>
-<p>“在此之前”的叙述并不适合我，我喜欢很直白的方式，按顺序来。书中的方式在于，从最浅显的步骤入手，然后告诉你，做这步之前，你还该做点什么。所以，我以对原文的理解写下这点。Lippman的原文为：</p>
-<blockquote>
-<p>These constructors, however, may be invoked if, and only if, the class object represents the “most-derived class.” Some mechanism supporting this must be put into place.</p>
-</blockquote>
-<p>侯捷的译文为：</p>
-<blockquote>
-<p>如果class object是最底层（most-derived）的class,其constructors可能被调用；某些用以支持这个行为的机制必须被放进来。</p>
-</blockquote>
-<p>我认为，Lippman在这一句上要说的是，虚基类的构造函数只能由most-derived class调用，而为了支持这一机制，需要插入一些代码来抑制非most-derived class对虚基类构造函数的调用。</p>
+<p>用途：元类的主要目的就是为了当创建类时能够自动地改变类，元类的主要用途是创建API。一个典型的例子是Django ORM。它允许你像这样定义：<br>Flask sqlalchemy ORM 类的定义也是通过继承一个被创建的类Base， 并且要注意sqlalchemy 中所有的表类必须继承一个Base 对象，不然继承后创建的Base的表将无法实现ORM映射；<br> sqlalchemy 实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">from sqlalchemy.ext.declarative import declarative_base</div><div class="line"></div><div class="line">Base = declarative_base()</div><div class="line"></div><div class="line"></div><div class="line">class HotWordType(Base):</div><div class="line">    # 表名称</div><div class="line">    __tablename__ = &apos;hotWordType&apos;</div><div class="line">    # id typeName</div><div class="line">    id = Column(Integer, primary_key=True)  # 主键</div><div class="line">    typeName = Column(String(20), nullable=False)  # 类型名</div><div class="line">    hotWord = relationship(&apos;HotWord&apos;, backref=&apos;hotWordType&apos;)</div></pre></td></tr></table></figure></p>
+<p>declarative_base 中的元类源码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">The new base class will be given a metaclass that produces</div><div class="line">appropriate :class:`~sqlalchemy.schema.Table` objects and makes</div><div class="line">the appropriate :func:`~sqlalchemy.orm.mapper` calls based on the</div><div class="line">information provided declaratively in the class and any subclasses</div><div class="line">of the class.</div><div class="line"></div><div class="line">class DeclarativeMeta(type):</div><div class="line">    def __init__(cls, classname, bases, dict_):</div><div class="line">        if &apos;_decl_class_registry&apos; not in cls.__dict__:</div><div class="line">            _as_declarative(cls, classname, cls.__dict__)</div><div class="line">        type.__init__(cls, classname, bases, dict_)</div><div class="line"></div><div class="line">    def __setattr__(cls, key, value):</div><div class="line">        _add_attribute(cls, key, value)</div></pre></td></tr></table></figure></p>
 
           
         
@@ -1679,7 +1633,7 @@ ECMAScript就是javascript语言的标准。
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/04/22/执行期语意学/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/23/算法之-快速排序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="suyuan">
@@ -1698,7 +1652,7 @@ ECMAScript就是javascript语言的标准。
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/04/22/执行期语意学/" itemprop="url">执行期语意学</a></h1>
+                <a class="post-title-link" href="/2016/03/23/算法之-快速排序/" itemprop="url">算法之 快速排序</a></h1>
         
 
         <div class="post-meta">
@@ -1710,8 +1664,8 @@ ECMAScript就是javascript语言的标准。
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-04-22T20:27:34+08:00">
-                2015-04-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-23T23:15:53+08:00">
+                2016-03-23
               </time>
             
 
@@ -1733,8 +1687,8 @@ ECMAScript就是javascript语言的标准。
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
                   </a>
                 </span>
 
@@ -1769,282 +1723,13 @@ ECMAScript就是javascript语言的标准。
       
         
           
-            <h2 id="new-expression、operator-new-和-placement-new"><a href="#new-expression、operator-new-和-placement-new" class="headerlink" title="new expression、operator new 和 placement new"></a>new expression、operator new 和 placement new</h2><p>之前虽然一直知道有new expression、operator new和placement new，但对于这三个“new”,却不甚了了，这些天从《深度探索C++对象模型》读到new和delete，特意结合《C++ Primer》写下这篇笔记，以作总结。三个虽然都是new，但每个new都不相同各有各的特点，各有各的风味，本文重点在于总结比较这三个“new”，但期间也不忘提一提推倒这三个“new”的哥们——delete。</p>
-<p>new expression 和 operator new</p>
-<p>一个看起来很简单的new expression运算，其实暗含一些步骤，像这样的一次简单运用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int *p=new int (5)实际上包含着两个步骤：</div></pre></td></tr></table></figure></p>
-<ul>
-<li>调用一个合适的operator new实体分配足够的未类型化的内存。</li>
-<li>调用合适的构造函数初始化这块内存，当然int没有构造函数，但是会进行赋值操作：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">*p=5。</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>由此可见：new expression和operator new完全不是一回事，但关系不浅——operator new 为new expression分配内存。</p>
-<p>摘录一下 《C++ primer》关于对比new expression 和 operator new的一小段话：</p>
-<blockquote>
-<p>标准库函数 operator new和 operator delete 的命名容易让人误解。与其他operator 函数（如 operator=）不同，这些函数没有重载new或delete expression，实际上，我们不能重定义new或delete expression的行为。</p>
-</blockquote>
-<p>这段话有两个要点：</p>
-<ul>
-<li>operator new和operator delete不是new expression和delete expression的重载，它们完全是另外的一个独立的东西，具有不同的语意，这与operator +是对+ expression的重载不同。</li>
-<li>new expression和delete expression是不能被重载的，可以看出它们与普通的expression 不同。</li>
-<li>operator new其实也是可以直接利用的，譬如当我们只想分配内存，而不愿意进行初始化的时候，我们就可以直接用operator new 来进行。用法如下：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">T* newelements = static_cast&lt;T*&gt;(operator new ( sizeof(T) );</div></pre></td></tr></table></figure>
-<p>标准库重载有两个版本的operator new，分别为单个对象和数组对象服务，单个对象版本的<br>提供给分配单个对象new expression调用，数组版的提供给分配数组的 new expression 调<br>用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">void *operator new(size_t);       // allocate an object</div><div class="line">void *operator new[](size_t);     // allocate an array</div></pre></td></tr></table></figure></p>
-<p>我们可以分别重载这两个版本，来定义我们自己的分配单个对象或对象数组的内存方式。当我们自己在重载operator new时，不一定要完全按照上面两个版本的原型重载，唯一的两个要求是：返回一个void*类型和第一个参数的类型必须为size_t。</p>
-<p>还要注意的是，在类中重载的operator new和operator delete是隐式静态的，因为前者运行于对象构造之前，后者运行与对象析构之后，所以他们不能也不应该拥有一个this指针来存取数据。另外，new expression 默认调用的是单参数的operator new——上面声明的那种，而其它不同形式的重载，则只能显式调用了。</p>
-<p>delete expression与new expression相对应，而operator delete则与operator new对应。<br>依上所述，则不难推断出关于delete expression和operator delete之间的关系以及一些特性，此略。</p>
-<p>当使用new expression来动态分配数组的时候，Lippman在《深度探索C++对象模型》中指出：</p>
-<ul>
-<li>当分配的类型有一个默认构造函数的时候，new expression将调用一个所谓的vec_new()函数来分配内存，而不是operator new内存。但我在VC ++ 20102上测试的结果却是，不论有没有构造函数，new expression都是调用operator new来分配内存，并在此之后，调用默认构造函数逐个初始化它们，而不调用所谓的vec_new()，也许cfront确实离我们有点遥远。</li>
-</ul>
-<h2 id="两个-delete-后的问题"><a href="#两个-delete-后的问题" class="headerlink" title="两个 delete 后的问题"></a>两个 delete 后的问题</h2><p>最近在网上看到两个关于指针 delete 后的问题。第一种情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int* p = new int;</div><div class="line">delete p;</div><div class="line">delete p;// p为什么能delete两次，而程序运行的时候还不报错。</div></pre></td></tr></table></figure></p>
-<p>第二种情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int* p = new int ;</div><div class="line">delete p;</div><div class="line">*p = 5;     //delete后对*p进行再赋值居然也可以（他的平台上运行并没有引发什么错误）？</div></pre></td></tr></table></figure></p>
-<p>在回答这两个问题之前，我们先想想delete p; 这一语句意味着什么？p指向一个地址，以该地址为起始地址保存有一个int变量（虽然该变量并没有进行初始化），delete p之后p所指向的地址空间被释放，也就是说这个int变量的生命结束，但是p仍旧是一个合法的指针，它仍旧指向原来的地址，而且该地址仍旧代表着一个合法的程序空间。与delete之前唯一的不同是，你已经丧失了那快程序空间的所有权。这带来一个什么样的问题？你租了一间储物室（int* p = new int;），后来退租了（delete p;），但你却保存了出入该储物室的钥匙（指针p）没有归还。拥有这片钥匙，你或许什么都不做，这自然没有问题。<br>但是：你或许出于好心，又跑过去告诉房东，“Hi！这储物室已经退租了（第一种情况）”。哦噢，会发生什么？我们假设此时这个房子已经有了新的租客。愚笨的房东直接相信了你的话，认为这<br>个储物室空着，把它又租给新的人。于是一间只能给一个人用的储物室，却租给了两个人，再之后各种难以预料的情况就会发生。</p>
-<p>又或许，你很无耻，你虽然退租，但却想用你的钥匙依旧享有储物室的使用权（第二种情况），结果呢，你存在这间储物室的东西可能会被现在的租客丢掉，而你也可能把他的东西丢掉，腾出空间来放你的。</p>
-<p>回到上面的程序上来，毫无疑问的是上面的程序在语法上来讲是合乎规范的，但是暗藏着很大<br>的逻辑错误，不论你对一块已经释放的内存再度delete，还是再度给它赋值，都暗含着很大<br>的危险，因为当你delete后，就代表着将这块内存归还。而这块被归还的内存很可能已经被再<br>度分配出去，此时不论是你再度delete还是重新赋值，都将破坏其它代码的数据，同时你存<br>储在其中的数据也很容易被覆盖。至于报不报错，崩不崩溃，这取决于有一个怎么样的“房东”，<br>聪明且负责的“房东”会阻止你上述的行为——终止你的程序，懒惰的房东，则听之任之。</p>
-<p>上述情况下的指针p被称为野指针——指向了一块“垃圾内存”，或者说指向了一块不应该读写的<br>内存。避免野指针的好方法是，当一个指针变为野指针的时候，马上赋值为NULL，其缘由在<br>于，你可以很容易的判断一个指针是否为NULL,却难以抉择其是否为野指针。而且，delete<br>一个空指针，不会做任何操作，因此总是安全的。</p>
-<h2 id="不用一个基类指针指向派生类数组？"><a href="#不用一个基类指针指向派生类数组？" class="headerlink" title="不用一个基类指针指向派生类数组？"></a>不用一个基类指针指向派生类数组？</h2><p>《深度探索C++对象模型》中指出，不要用一个基类指针指向派生类的数组。因为在他的cfront中的vec_delete是根据被删除指针的类型来调用析构函数——也就是说虚函数机制在这儿不起作用了。照这样的思路来说，对一个派生类的数组依次调用其基类的析构函数，显然大多时候不能正确析构——派生类一般大于其基类。但是我感兴趣的一点是，这么多年过去了，这样一个不太合理的设计是否有所改进呢？说它不太合理是，以C++编程者的思路，在这样一种情况下，它应该支持多态，而且在这种情况下支持多态并不需要太复杂的机制和代价。我在vc++2008和vc++ 2010下的结果是：是的，有与cfront不同，它支持多态。</p>
-<p>我的测试代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">class point&#123;</div><div class="line">public:</div><div class="line">        virtual ~point()&#123;</div><div class="line">            std::cout&lt;&lt;&quot;point::~point()&quot;&lt;&lt;std::endl;</div><div class="line">        &#125;</div><div class="line">private:</div><div class="line">    int  a;</div><div class="line">&#125;;</div><div class="line">class point3d:public point&#123;</div><div class="line">public:</div><div class="line">    virtual ~point3d()</div><div class="line">        &#123;</div><div class="line">            std::cout&lt;&lt;&quot;point3d::~point3d()&quot;&lt;&lt;std::endl;</div><div class="line">        &#125;</div><div class="line">private:</div><div class="line">    int b;</div><div class="line">&#125;;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    point *p=new point3d[2];</div><div class="line">    delete[] p;</div><div class="line">    system(&quot;pause&quot;);</div><div class="line">&#125; ;</div></pre></td></tr></table></figure>
-<p>输出的结果，也令人满意：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">point3d::~point3d()</div><div class="line">point::~point()</div><div class="line">point3d::~point3d()</div><div class="line">point::~point()</div></pre></td></tr></table></figure>
-<p>确实调用了派生类的析构函数，而非基类的析构函数。</p>
-<p>即使如此，是否能安心的使用一个基类指针指向派生类数组？我不太安心！——对于基类的析构函数是否为虚函数没有把握。所以最好还是不要把一个基类的指针指向派生类数组。非得这么做？那么我认为delete的时候将之类类型转换为派生类就差不多了，可以这样:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">delete[] static_cast&lt;point3d*&gt;(p);</div></pre></td></tr></table></figure>
-<p>似乎不必要像Lippman说的这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">for ( int ix = 0; ix &lt; elem_count; ++ix ) </div><div class="line">&#123;  </div><div class="line">    Point3d *p = &amp;((Point3d*)ptr)[ ix ];  </div><div class="line">    delete p;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="placement-operator-new"><a href="#placement-operator-new" class="headerlink" title="placement operator new"></a>placement operator new</h2><p>placement operator new用来在指定地址上构造对象，要注意的是，它并不分配内存，仅仅是对指定地址调用构造函数。其调用方式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">point *pt=new(p) point3d;</div></pre></td></tr></table></figure></p>
-<p>观其名字可知，它是operator new的一个重载版本。它的实现方式异常简单，传回一个指针即 可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">void* operator new(site_t,void *p)</div><div class="line">&#123;</div><div class="line">    return p;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>不必要惊讶于它的简单，《深度探索C++对象模型》中Lippman告诉我们，它有另一半重要的工作是被扩充而来。我在想，扩充一个类中定义的placement operator new还好说，但是要如何 扩充一个库中提供的placement operator new呢？毕竟它要放之四海而皆准，我原以为这其中 有什么高超的技巧。后来我则坚信根本就没有什么扩充，placement operator new 也并不强 大。</p>
-<p>我先明确调用了 placement operator new ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">point *pt=(point*)operator new(sizeof(point), p) ;</div></pre></td></tr></table></figure></p>
-<p>如我所料，输出结果显示（我在point的默认构造函数和placement operator new中间各输 出一句不同的话），此时 point的默认构造函数并不会被调用。然后我通过new expression 的方式来间接调用placement operator new：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">point *pt=new(p) point();</div></pre></td></tr></table></figure></p>
-<p>这个时候 point 的默认的构造函数被调用了。可见 placement operator new并没有什么奇特 的地方，它与一般的operator new不同处在于，它不会申请内存。它也不会在指定的地址调用 构造函数，而调用构造函数的的全部原因在于new expression总是先调用一个匹配参数的 operator new然后再调用指定类型的匹配参数的构造函数，而说到底 placement operator new 也是一个operator new。</p>
-<p>通过一个placement operator new构建的一个对象，如果你使用delete来撤销对象，那么其内 存也被回收，如果想保存内存而析构对象，好的办法是显示调用其析构函数。</p>
-<p>看一份代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">struct Base &#123; int j; virtual void f(); &#125;;</div><div class="line">struct Derived : Base &#123; void f(); &#125;;</div><div class="line">void fooBar() &#123;  </div><div class="line">   Base b;  </div><div class="line">   b.f(); // Base::f() invoked  </div><div class="line">   b.~Base();  </div><div class="line">   new ( &amp;b ) Derived; // 1  </div><div class="line">   b.f(); // which f() invoked?  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上述两个类的大小相同，因此将Derived对象放在 Base对象中是安全的，但是在最后一句代码 中 b.f()调用的是哪一个类的f()。答案是Base::f() 的。虽然此时b中存储的实际上是一个 Derived对象，但是，通过一个对象来调用虚函数，将被静态决议出来，虚函数机制不会被启用。</p>
-<p>参考：Lippman 的两本书《深度探索C++对象模型》和《C++ Primer》。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/04/15/Function语意学（The-Semantics-of-Function）/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="suyuan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAH0AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopyoz/AHVZvoM0phlUZaNwPdTRcBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU+KGSeVY4Y2kdjgKoyTXZaN4Dll2zaoxjTr5KH5j9T2rKrWhSV5smU1Hc5Ox0+61GcQ2kDyv3wOB9T2rutH8CW8AWXUmE8nXyl4UfX1rq7SytrCAQ2sKRRjso6/X1qevIr4+c9IaL8TmnWb2IYLW3tkCQQRxqOgRQKlZVYYZQR6EUtFcDberMTE1TwrpepoSYBDMekkQwfxHQ1wOseFdQ0gs5Tz7cf8tYx0+o7V6zQQCMHpXVQxlSlpujSFWUTwqivT9Z8F2Oo7pbXFrcHn5R8jH3H+FcBqei32kS7LqEhf4ZF5Vvxr2KGKp1tnr2OqFSMjPooorpLCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK1dJ8Q6ho7Yt5d0XeJ+VP+FZVFTKEZq0ldCaT0Z6Ha/EK0dB9qtJY27mMhh/Sp5PH+lKuUiuXPptA/rXmtFcjy+g3exn7GB1eqeOr68Vo7NBaxn+IHLn8e1cq7tI5d2LMeSSck0lFdNOlCmrQVi4xUdgooorQoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="suyuan的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/04/15/Function语意学（The-Semantics-of-Function）/" itemprop="url">Function语意学（The Semantics of Function）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-04-15T23:23:39+08:00">
-                2015-04-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="C-之成员函数调用"><a href="#C-之成员函数调用" class="headerlink" title="C++之成员函数调用"></a>C++之成员函数调用</h2><p>c++支持三种类型的成员函数，分别为<code>static</code>,<code>nostatic</code>,<code>virtual</code>。每一种调用方式都不尽相同。</p>
-<h3 id="非静态成员函数（Nonstatic-Member-Functions）"><a href="#非静态成员函数（Nonstatic-Member-Functions）" class="headerlink" title="非静态成员函数（Nonstatic Member Functions）"></a>非静态成员函数（Nonstatic Member Functions）</h3><p>保证nostatic member function至少必须和一般的nonmember function有相同的效率是C++的设计准则之一。事实上在c++中非静态成员函数（nostatic member function）与普通函数的调用也确实具有相同的效率，因为本质上非静态成员函数就如同一个普通函数,如一个非静态成员函数Xfloat Point::X();就相当于一个普通函数float X(Point* this);。编译器内部会将成员函数等价转换为非成员函数，具体是这样做的:</p>
-<ul>
-<li>改写成员函数的签名，使得其可以接受一个额外参数，这个额外参数即是this指针：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">float Point::X();</div><div class="line">//成员函数X被插入额外参数this</div><div class="line">float Point:: X(Point* this );</div><div class="line">当然如果成员函数是const的，插入的参数类型将为 const Point* 类型。</div></pre></td></tr></table></figure>
-<ul>
-<li><p>将每一个对非静态数据成员的操作都改写为经过this操作。</p>
-</li>
-<li><p>将成员函数写成一个外部函数，对函数名进行“mangling”处理，使之成为独一无二的名称。</p>
-</li>
-</ul>
-<p>可以看出，将一个成员函数改写成一个外部函数的关键在于两点，一是给函数提供一个可以直接读写成员数据的通道；<br>二是解决好有可能带来的名字冲突。第一点通过给函数提供一个额外的指针参数来解决，第二点则是通过一定的规则将名字转换，使之独一无二。</p>
-<p>由此可以做出一点总结：一个成员函数实际上就是一个被插入了一个接受其类的指针类型的额外参数的非成员函数，当然还要额外对函数的名称进行处理。额外插入的参数用来访问数据成员，而名称的特殊处理用来避免名字冲突。</p>
-<p>对于名称的特殊处理并没有统一的标准，各大编译器厂商可能有不同的处理规则。在VC下上述的成员函数X()的名称X处理后就成了<code>?X@Point@@QAEMXZ</code>更多信息可以参见维基百科的Visual C++名字修饰。</p>
-<p>于是在VC中对于上面的例子中的成员函数的调用将发生如下的转换：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//p-&gt;X();被转化为</div><div class="line">?X@Point@@QAEMXZ(p);</div><div class="line">//obj.X();被转化为</div><div class="line">?X@Point@@QAEMXZ(&amp;obj);</div></pre></td></tr></table></figure>
-<h3 id="虚拟成员函数-Virtual-Member-Functions"><a href="#虚拟成员函数-Virtual-Member-Functions" class="headerlink" title="虚拟成员函数(Virtual Member Functions)"></a>虚拟成员函数(Virtual Member Functions)</h3><p>如果function()是一个虚拟函数，那么用指针或引用进行的调用将发生一点特别的转换——一个中间层被引入进来。例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// p-&gt;function()</div><div class="line">//将转化为</div><div class="line">(*p-&gt;vptr[1])(p);</div></pre></td></tr></table></figure>
-<ul>
-<li>其中vptr为指向虚函数表的指针，它由编译器产生。vptr也要进行名字处理，因为一个继承体系可能有多个vptr。</li>
-<li>1是虚函数在虚函数表中的索引，通过它关联到虚函数function().<br>何时发生这种转换？答案是在必需的时候——一个再熟悉不过的答案。当通过指针调用的时候，要调用的函数实体无法在编译期决定，必需待到执行期才能获得，所以上面引入一个间接层的转换必不可少。但是当我们通过对象（不是引用，也不是指针）来调用的时候，进行上面的转换就显得多余了，因为在编译器要调用的函数实体已经被决定。此时调用发生的转换，与一个非静态成员函数(Nonstatic Member Functions)调用发生的转换一致。</li>
-</ul>
-<h3 id="静态成员函数-Static-Member-Functions"><a href="#静态成员函数-Static-Member-Functions" class="headerlink" title="静态成员函数(Static Member Functions)"></a>静态成员函数(Static Member Functions)</h3><p>静态成员函数的一些特性：</p>
-<ul>
-<li>不能够直接存取其类中的非静态成员（nostatic members），包括不能调用非静态成员函数(Nonstatic Member Functions)。</li>
-<li>不能够声明为 const、voliatile或virtual。</li>
-<li>它不需经由对象调用，当然，通过对象调用也被允许。<br>除了缺乏一个this指针他与非静态成员函数没有太大的差别。在这里通过对象调用和通过指针或引用调用，将被转化为同样的调用代码。</li>
-</ul>
-<p>需要注意的是通过一个表达式或函数对静态成员函数进行调用，被C++ Standard要求对表达式进行求值。如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(a+=b).static_fuc();</div></pre></td></tr></table></figure>
-<p>虽然省去对a+b求值对于static_fuc()的调用并没有影响，但是程序员肯定会认为表达式a+=b已经执行，一旦编译器为了效率省去了这一步，很难说会浪费多少程序员多少时间。这无疑是一个明智的规定。</p>
-<h2 id="C-之虚函数-Virtual-Member-Functions"><a href="#C-之虚函数-Virtual-Member-Functions" class="headerlink" title="C++之虚函数(Virtual Member Functions)"></a>C++之虚函数(Virtual Member Functions)</h2><p>《深度探索C++对象模型》是这样来说多态的:</p>
-<p>在C++中,多态表示“以一个public base<br>class的指针（或引用），寻址出一个derived class object”的意思。</p>
-<h3 id="消极多态与积极多态"><a href="#消极多态与积极多态" class="headerlink" title="消极多态与积极多态"></a>消极多态与积极多态</h3><p>用基类指针来寻址继承类的对象，我们可以这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Point ptr=new Point3d;               //Point3d继承自Point</div></pre></td></tr></table></figure>
-<p>在这种情况下，多态可以在编译期完成（虚基类情况除外），因此被称作消极多态（没有进行虚函数的调用）。相对于消极多态，则有积极多态——指向的对象类型需要在执行期在能决定。积极多态的例子如虚函数和RTTI：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">//例1，虚函数的调用</div><div class="line">ptr-&gt;z();</div><div class="line">//例2，RTTI 的应用</div><div class="line">if(Point3d *p=dynamic_cast&lt;Point3d*&gt;(ptr) )</div><div class="line">	return p-&gt;z();</div></pre></td></tr></table></figure>
-<p>关于RTTI的笔记可见笔记EH &amp; RTTI。本文主要精力将集中于虚函数上。对于一个如上例关于虚函数的调用，要如何来保证在执行期调用的是正确的z()实体——Point3d::z()而不是调用了Point::z()。来看看虚函数的实现机制吧，它将保证这一点。</p>
-<h3 id="单继承下的虚函数"><a href="#单继承下的虚函数" class="headerlink" title="单继承下的虚函数"></a>单继承下的虚函数</h3><p>虚函数的实现：</p>
-<ul>
-<li>为每个有虚函数的类配一张虚函数表，它存储该类类型信息和所有虚函数执行期的地址。</li>
-<li>为每个有虚函数的类插入一个指针（vptr）,这个指针指向该类的虚函数表。</li>
-<li>给每一个虚函数指派一个在表中的索引。<br>用这种模型来实现虚函数得益于在C++中,虚函数的地址在编译期是可知的，而且这一地址是固定不变的。而且表的大小不会在执行期增大或减小。</li>
-</ul>
-<p>一个类的虚函数表中存储有类型信息（存储在索引为0的位置）和所有虚函数地址，这些虚函数地址包括三种：</p>
-<ul>
-<li>这个类定义的虚函数，会改写（overriding）一个可能存在的基类的虚函数实体——假如基类也定义有这个虚函数。</li>
-<li>继承自基类的虚函数实体，——基类定义有，而这个类却没有定义。直接继承之。</li>
-<li>一个纯虚函数实体。用来在虚函数表中占座，有时候也可以当做执行期异常处理函数。<br>每一个虚函数都被指派一个固定的索引值，这个索引值在整个继承体系中保持前后关联，例如,假如z()在Point虚函数表中的索引值为2，那么在Point3d虚函数表中的索引值也为2。</li>
-</ul>
-<p>当一个类单继承自有虚函数的基类的时候，将按如下步骤构建虚函数表：</p>
-<ul>
-<li>继承基类中声明的虚函数——这些虚函数的实体地址被拷贝到继承类中的虚函数表中对于的slot中。</li>
-<li>如果有改写（override）基类的虚函数，那么在1中应将改写（override）的函数实体的地址放入对应的slot中而不是拷贝基类的。</li>
-<li>如果有定义新的虚函数，那么将虚函数表扩大一个slot以存放新的函数实体地址。<br>我们假设z()函数在Point虚函数表中的索引为4，回到最初的问题——要如何来保证在执行期调用的是正确的z()实体？其中微妙在于，编译将做一个小小的转换:</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ptr-&gt;z();</div><div class="line">//被编译器转化为：</div><div class="line">(*ptr-&gt;vptr[4])(ptr);</div></pre></td></tr></table></figure>
-<p>这个转换保证了调用到正确的实体，因为：</p>
-<ul>
-<li>虽然我们不知道ptr所指的真正类型,但它可以通过vptr找到正确类型的虚函数表。</li>
-<li>在整个继承体系中z()的地址总是被放在slot 4。</li>
-</ul>
-<h3 id="多重继承下的虚函数"><a href="#多重继承下的虚函数" class="headerlink" title="多重继承下的虚函数"></a>多重继承下的虚函数</h3><p>在多重继承下，继承类需要为每一条继承线路维护一个虚函数表（也有可能这些表被合成为一个，但本质意义并没有变化）。当然这一切都发生在需要的情况下。</p>
-<p>当使用第一继承的基类指针来调用继承类的虚函数的时候，与单继承的情况没有什么异样，问题出生在当以第二或后继的基类指针（或引用）的使用上。例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">//假设有这样的继承关系：class Derived:public base1,public base2;</div><div class="line">//base1,base2都定义有虚析构函数。</div><div class="line">base2 *ptr = new derived;</div><div class="line">//需要被转换为，这个转换在编译期完成</div><div class="line">base2 *ptr = temp ? temp + sizeof(base1) : 0 ;</div></pre></td></tr></table></figure>
-<p>如果不做出上面的转换，那么 ptr 指向的并不是 derived 的 base2 subobject。后果是，ptr 将一个derived类型当做base2类型来用。</p>
-<p>当要delete ptr时又面临了一次转换，因为在delete ptr的时候，需要对整个对象而不是其子对象施行delete运算符，这期间需要调整ptr指向完整的对象起点，因为不论是调用正确的析构函数还是delete运算符都需要一个指向对象起点的指针，想一想给予一个derived类的成员函数指向base2 subobjuect 的this指针会发生什么吧。因为ptr的具体类型并不知道，所以必须要等到执行期来完成。</p>
-<p>Bjame的解决方法是将每一个虚函数表的slot扩展，以使之存放一个额外的偏移量。于是虚函数的调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(*ptr-&gt;vptr[1])(ptr);</div><div class="line">//将变成：</div><div class="line">(*ptr-&gt;vptr[1].addr)(ptr+*ptr-&gt;vptr[1].offset);</div></pre></td></tr></table></figure></p>
-<p>其中使用ptr-&gt;vptr[1].addr用以获取正确的虚函数地址，而ptr+*ptr-&gt;vptr[1].offset来获得指向对象完整的起点。这种方法的缺点显而易见，代价过大了一点，所有的情况都被这一种占比较小的情况拖累。</p>
-<p>还有一种叫做thunk的方法，thunk的作用在于:</p>
-<ul>
-<li>以适当的offset值来this调整指针.</li>
-<li>跳到虚函数中去。</li>
-</ul>
-<p>Thunk技术即是：虚函数表中的slot仍然继续放一个虚函数实体地址，但是如果调用这个虚函数需要进行this调整的话,该slot中的地址就指向一个Thunk而不是一个虚函数实体的地址。</p>
-<p>书中纷杂的讲到不少中种情况，但我以我的理解，做如下小结：</p>
-<p>多继承下的虚函数，影响到虚函数的调用的实际质上为this的调整。而this调整一般为两种：</p>
-<ul>
-<li>调整指针指向对应的subobject，一般发生在继承类类型指针向基类类型指针赋值的情况下。</li>
-<li>将指向subobject的指针调整回继承类对象的起始点，一般发生在基类指针对继承类虚函数进行调用的时候。</li>
-</ul>
-<p>第一点，使得该基类指针指向一个与其指针类型匹配的子对象，唯有如此才能保证使得该指针在执行与其指针类型相匹配的特定行为的正确性。比方调用基类的成员，获得正确的虚函数地址。可以想象如果不调整，用ptr存取base2 subobject的数据成员时，会发生什么？调用base2的成员函数的时候，其成员函数接受的this指针指向derived类型对象，这又会发生什么？结果是整个对象的内存结构有可能都被破坏。还有别忘了，vptr也可以看做一个数据成员，要找到虚函数，前提是获取正确的vptr偏移量。</p>
-<p>而第二点，显然是让一个继承类的虚函数获取一个正确的this指针，因为一个继承类虚函数要的是一个指向继承类对象的this指针，而不是指向其子对象。</p>
-<p>第一顺序继承类之所以不需要进行调整的关键在于，其subobject的起点与继承类对象的起点一致。</p>
-<h3 id="虚拟继承下的虚函数"><a href="#虚拟继承下的虚函数" class="headerlink" title="虚拟继承下的虚函数"></a>虚拟继承下的虚函数</h3><p>Lippman说，如果一个虚基类派生自另一虚基类，而且它们都支持虚函数和非静态数据成员的时候，编译器对虚基类的支持就像迷宫一样复杂。</p>
-<p>虽然书中没有介绍太多，但不难猜测的是在虚继承情况下，复杂点在仍旧在于this指针的调整，然而其复杂度显然又在多继承之上，因为又多了一个vbptr了。</p>
+            <p>先放一段python 跑跑<br>本段只说递归方式的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">L = [5, 2, 0, 7, 3, 8, 9, 4, 2, 1]</div><div class="line"></div><div class="line"></div><div class="line">def quick_sort(L, low, hight):</div><div class="line">    i = low</div><div class="line">    j = hight</div><div class="line">    if i &gt;= j:</div><div class="line">        return L</div><div class="line"></div><div class="line">    key = L[low]</div><div class="line">    while i&lt;j: # 本L的左右拆分整理</div><div class="line">        while i&lt;j and key &lt;=L[j]:</div><div class="line">            j-=1</div><div class="line">        L[i] = L[j]</div><div class="line">        # i=i+1 # 错误, 因为 i=j的时候,while 不循环,但是 i=i+1产生了副作用</div><div class="line"></div><div class="line">        while i&lt;j and key &gt;= L[i]:</div><div class="line">            i+=1</div><div class="line">        L[j] = L[i]</div><div class="line">        # j = j-1</div><div class="line"></div><div class="line">    L[i] = key</div><div class="line">    quick_sort(L, low, i-1) # left sort</div><div class="line">    quick_sort(L, j+1, hight) # right sort</div><div class="line">    return L</div><div class="line"> </div><div class="line">quick_sort(L, 0, len(L)-1)</div></pre></td></tr></table></figure>
+<p>描述， 首选选择第一个数作为key基础，将L拆分成右边大于key，左边小于key<br>第一个L[i]数取出来做key，此时i的位置空出来留给 从右边开始遍历到的第一个小于key的数；<br>找到该数j后， j的数值放到i上，j空出来了，从i向右遍历，找出第一个大于key的数来填充j；<br>i=j 以后，说明我们描述工作完成了， 后面在对左右两边进行 相同的整理； </p>
+<p>不稳定，因为左右两边的位置会经常互换</p>
+<p>如果数组已经有序时，此时的分割就是一个非常不好的分割。因为每次划分只能使待排序序列减一，此时为最坏情况，快速排序沦为冒泡排序，时间复杂度为Θ(n^2)。</p>
+<p>平均时间复杂度：尽管快速排序的最坏时间为 O(n^2 ), 但就平均性能而言，它是基于关键字比较的内部排序算法中速度最快的，快速排序亦因此而得名。它的平均时间复杂度为 O(n×lgn)。</p>
+<p>空间复杂度：快速排序在系统内部需要一个栈来实现递归。若每次划分较为均匀，则其递归树的高度为 O(lgn), 故递归后所需栈空间为 O(lgn) 。最坏情况下，递归树的高度为 O(n), 所需的栈空间为 O(n) 。</p>
 
           
         
@@ -2083,7 +1768,7 @@ ECMAScript就是javascript语言的标准。
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2129,7 +1814,7 @@ ECMAScript就是javascript语言的标准。
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-count">47</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2140,7 +1825,7 @@ ECMAScript就是javascript语言的标准。
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2151,7 +1836,7 @@ ECMAScript就是javascript语言的标准。
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
